@@ -5,13 +5,13 @@
 int dataPin = 12;
 int clockPin = 11;
 int loadPin = 10;
+int voicePin = 3;
 
-Grandbot gb = Grandbot(dataPin, clockPin, loadPin);
+Grandbot gb = Grandbot(dataPin, clockPin, loadPin, voicePin);
 
-void setup() {
-
-}
+void setup() {}
 
 void loop() {
-  gb.update();
+  int light = analogRead(A0);
+  gb.update(light);
 }
