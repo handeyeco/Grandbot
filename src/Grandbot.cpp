@@ -4,6 +4,13 @@
 
 int forward[4] = {
   B00000000,
+  B01111110,
+  B01111110,
+  B00000000
+};
+
+int forwardEyebrows[4] = {
+  B00000000,
   B01011101,
   B01011101,
   B00000000
@@ -17,7 +24,8 @@ int blinking[4] = {
 };
 
 Expression expressions[] = {
-  Expression(forward, blinking)
+  Expression(forward, blinking),
+  Expression(forwardEyebrows, blinking)
 };
  
 Grandbot::Grandbot(int dataPin, int clockPin, int loadPin)
