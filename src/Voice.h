@@ -5,14 +5,15 @@ class Voice {
   private:
     int m_voicePin;
     static const int pitches[];
-  public:
-    Voice(int voicePin);
-    void happy();
-    void sleepy();
+    void playMajor7th();
     void playRandomSequence();
     void playRandomNote();
     void play(int note);
     void play(int note, int duration);
+  public:
+    Voice(int voicePin);
+    void feedback();
+    void emote(int state);
 };
 
 #endif

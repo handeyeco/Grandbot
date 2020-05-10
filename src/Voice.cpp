@@ -36,13 +36,7 @@ Voice::Voice(int voicePin) {
   m_voicePin = voicePin;
 }
 
-void Voice::happy() {
-  for (int i = 0; i < 5; i++) {
-    playRandomNote();
-  }
-}
-
-void Voice::sleepy() {
+void Voice::playMajor7th() {
   int duration = 250;
   int start = random(0, 12);
 
@@ -74,4 +68,30 @@ void Voice::play(int note, int duration) {
   tone(m_voicePin, note);
   delay(duration);
   noTone(m_voicePin);
+}
+
+void Voice::feedback() {
+  playRandomNote();
+}
+
+void Voice::emote(int state) {
+  switch(state) {
+    // Sleeping
+    case 0:
+      playMajor7th();
+      return;
+    // Happy
+    case 1:
+      playRandomSequence();
+      return;
+    // Neutral
+    case 2:
+      playRandomNote();
+      return;
+    // Unhappy
+    case 3:
+      play(200, 1000);
+      play(100, 1000);
+      break;
+  }
 }

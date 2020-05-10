@@ -46,8 +46,14 @@ void Grandbot::writeExpression() {
 }
 
 void Grandbot::setState(int next) {
+  int lastState = state;
+
   state = next;
   setExpression();
+
+  if (lastState > -1 && lastState != state) {
+    voice.emote(state);
+  }
 }
 
 void Grandbot::setExpression() {
@@ -56,15 +62,22 @@ void Grandbot::setExpression() {
 }
 
 void Grandbot::sleep() {
-  setState(0);
   lc.setIntensity(0, 1);
+  setState(0);
 }
 
 void Grandbot::wakeup() {
-  setState(1);
   lc.setIntensity(0, 14);
+  setState(1);
   nextBlink = getNextBlink();
   blinkLength = getBlinkLength();
+}
+
+void Grandbot::play() {
+  // voice.feedback();
+  
+  // Keep state between 1-3
+  setState(((state + 1) % 3) + 1);
 }
 
 void Grandbot::update(int light) {
@@ -76,13 +89,11 @@ void Grandbot::update(int light) {
     // Wakeup
     if (lightOn) {
       wakeup();
-      voice.playRandomSequence();
     }
   } else if (state > 0) {
     // Sleep
     if (!lightOn) {
       sleep();
-      voice.sleepy();
     } 
     // Normal
     else {
