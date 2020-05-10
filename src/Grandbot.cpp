@@ -32,34 +32,36 @@ unsigned long Grandbot::getNextExpressionChange() {
 }
 
 void Grandbot::writeExpression() {
-  int* expr;
+  Expression expr = *expression;
+  int* data;
   if (isBlinking) {
-    expr = Expressions::expressions[exprIndex].getBlinking();
+    data = expr.getBlinking();
   } else {
-    expr = Expressions::expressions[exprIndex].getRegular();
+    data = expr.getRegular();
   }
 
   for (int i = 0; i < 4; i++) {
-    lc.setRow(0, i, expr[i]);
+    lc.setRow(0, i, data[i]);
   }
 }
 
-void Grandbot::setExpression(int expressionIndex) {
-    exprIndex = expressionIndex;
-    writeExpression();
+void Grandbot::setState(int next) {
+  state = next;
+  setExpression();
+}
+
+void Grandbot::setExpression() {
+  expression = Expressions::getExpression(state);
+  writeExpression();
 }
 
 void Grandbot::sleep() {
-  state = 0;
-  int nextExpr = Expressions::getSleepyIndex();
-  setExpression(nextExpr);
+  setState(0);
   lc.setIntensity(0, 1);
 }
 
 void Grandbot::wakeup() {
-  state = 1;
-  int nextExpr = Expressions::getHappyIndex();
-  setExpression(nextExpr);
+  setState(1);
   lc.setIntensity(0, 14);
   nextBlink = getNextBlink();
   blinkLength = getBlinkLength();
@@ -85,8 +87,7 @@ void Grandbot::update(int light) {
     // Normal
     else {
       if (now > nextExpressionChange) {
-        int nextExpr = Expressions::getNeutralIndex();
-        setExpression(nextExpr);
+        setExpression();
         nextExpressionChange = getNextExpressionChange();
       }
 

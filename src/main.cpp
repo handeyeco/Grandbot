@@ -7,7 +7,9 @@ int clockPin = 11;
 int loadPin = 10;
 int voicePin = 3;
 int lightPin = A0;
-int randomPin = A5; // Leave floating
+
+// Leave floating
+int randomPin = A5;
 
 Grandbot gb = Grandbot(dataPin, clockPin, loadPin, voicePin);
 

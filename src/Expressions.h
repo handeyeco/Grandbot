@@ -4,12 +4,10 @@
 #define EXPRESSIONS_INCL_GUARD
 
 struct Expressions {
-  public:
+  private:
     static Expression expressions[];
-    static int getSleepyIndex();
-    static int getHappyIndex();
-    static int getNeutralIndex();
-    static int getUpsetIndex();
+  public:
+    static Expression* getExpression(int state);
 };
 
 #endif
