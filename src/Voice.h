@@ -1,3 +1,5 @@
+#include <Arduino.h>
+
 #ifndef VOICE_INCL_GUARD
 #define VOICE_INCL_GUARD
 

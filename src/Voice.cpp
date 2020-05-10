@@ -1,4 +1,3 @@
-#include <Arduino.h>
 #include <Voice.h>
 
 const int Voice::pitches[28] = { 
@@ -92,6 +91,6 @@ void Voice::emote(int state) {
     case 3:
       play(200, 1000);
       play(100, 1000);
-      break;
+      return;
   }
 }

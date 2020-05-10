@@ -1,5 +1,4 @@
 #include <Expressions.h>
-#include <Expression.h>
 
 const int blank      = B00000000;
 const int dot        = B10000000;

@@ -1,10 +1,7 @@
 #include <Grandbot.h>
-#include <Expression.h>
-#include <Expressions.h>
-#include <LedControl.h>
  
-Grandbot::Grandbot(int dataPin, int clockPin, int loadPin, int voicePin)
-  : lc(LedControl(dataPin, clockPin, loadPin)), voice(Voice(voicePin)) {
+Grandbot::Grandbot(int dataPin, int clockPin, int loadPin, int voicePin, int redPin, int greenPin, int bluePin)
+  : lc(LedControl(dataPin, clockPin, loadPin)), voice(Voice(voicePin)), light(Light(redPin, greenPin, bluePin)) {
     // Wake up Max7219
     lc.shutdown(0, false);
     // Set the brightness
@@ -52,6 +49,7 @@ void Grandbot::setState(int next) {
   setExpression();
 
   if (lastState > -1 && lastState != state) {
+    light.update(state);
     voice.emote(state);
   }
 }
@@ -75,7 +73,7 @@ void Grandbot::wakeup() {
 
 void Grandbot::play() {
   // voice.feedback();
-  
+
   // Keep state between 1-3
   setState(((state + 1) % 3) + 1);
 }

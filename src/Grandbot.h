@@ -1,5 +1,6 @@
 #include <LedControl.h>
 #include <Voice.h>
+#include <Light.h>
 #include <Expression.h>
 #include <Expressions.h>
 
@@ -10,6 +11,7 @@ class Grandbot {
     private:
         LedControl lc;
         Voice voice;
+        Light light;
         Expression* expression;
 
         void setState(int next);
@@ -39,7 +41,7 @@ class Grandbot {
 
         void debug(unsigned long now);
     public:
-        Grandbot(int dataPin, int clockPin, int loadPin, int voicePin);
+        Grandbot(int dataPin, int clockPin, int loadPin, int voicePin, int redPin, int greenPin, int bluePin);
         void play();
         void update(int light);
 };
