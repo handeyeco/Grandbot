@@ -1,3 +1,6 @@
+#ifndef VOICE_INCL_GUARD
+#define VOICE_INCL_GUARD
+
 class Voice {
   private:
     int m_voicePin;
@@ -11,3 +14,5 @@ class Voice {
     void play(int note);
     void play(int note, int duration);
 };
+
+#endif

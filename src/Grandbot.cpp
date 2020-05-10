@@ -1,32 +1,7 @@
 #include <Grandbot.h>
 #include <Expression.h>
+#include <Expressions.h>
 #include <LedControl.h>
-
-int sleeping[4] = {
-  B00000000,
-  B10000001,
-  B00000001,
-  B00000000
-};
-
-int forward[4] = {
-  B00000000,
-  B01111110,
-  B01111110,
-  B00000000
-};
-
-int blinking[4] = {
-  B00000000,
-  B00001000,
-  B00001000,
-  B00000000
-};
-
-Expression expressions[] = {
-  Expression(sleeping, sleeping),
-  Expression(forward, blinking)
-};
  
 Grandbot::Grandbot(int dataPin, int clockPin, int loadPin, int voicePin)
   : lc(LedControl(dataPin, clockPin, loadPin)), voice(Voice(voicePin)) {
@@ -41,14 +16,19 @@ Grandbot::Grandbot(int dataPin, int clockPin, int loadPin, int voicePin)
 
     nextBlink = getNextBlink();
     blinkLength = getBlinkLength();
+    nextExpressionChange = getNextExpressionChange();
 }
 
-int Grandbot::getNextBlink() {
+unsigned long Grandbot::getNextBlink() {
   return millis() + random(2000, 10000);
 }
 
 int Grandbot::getBlinkLength() {
   return random(100, 300);
+}
+
+unsigned long Grandbot::getNextExpressionChange() {
+  return millis() + random(10000, 100000);
 }
 
 void Grandbot::writeExpression(int expr[4]) {
@@ -59,36 +39,47 @@ void Grandbot::writeExpression(int expr[4]) {
 
 void Grandbot::setExpression(int expressionIndex) {
     expression = expressionIndex;
+    writeExpression(expressions[expression].getRegular());
+}
+
+void Grandbot::sleep() {
+  state = 0;
+  setExpression(0);
+  lc.setIntensity(0, 1);
+}
+
+void Grandbot::wakeup() {
+  state = 1;
+  setExpression(1);
+  lc.setIntensity(0, 14);
+  nextBlink = getNextBlink();
+  blinkLength = getBlinkLength();
 }
 
 void Grandbot::update(int light) {
-  int now = millis();
+  unsigned long now = millis();
+  // debug(now);
 
   if (state == 0) {
     // Wakeup
     if (light > Grandbot::lightThreshold) {
-      state = 1;
-      setExpression(1);
-
-      lc.setIntensity(0, 14);
-      writeExpression(expressions[expression].getRegular());
+      wakeup();
       voice.playRandomSequence();
-
-      nextBlink = getNextBlink();
-      blinkLength = getBlinkLength();
     }
-  } else {
+  } else if (state > 0) {
     // Sleep
     if (light < Grandbot::lightThreshold) {
-      state = 0;
-      setExpression(0);
-
-      lc.setIntensity(0, 1);
-      writeExpression(expressions[expression].getRegular());
+      sleep();
       voice.sleepy();
     } 
     // Normal
     else {
+      if (now > nextExpressionChange) {
+        int next = random(1, 6);
+        setExpression(next);
+        nextExpressionChange = getNextExpressionChange();
+      }
+
       if (!isBlinking && now > nextBlink) {
         isBlinking = true;
         writeExpression(expressions[expression].getBlinking());
@@ -101,5 +92,25 @@ void Grandbot::update(int light) {
         blinkLength = getBlinkLength();
       }
     }
+  } else {
+    // Initialize (no sound)
+    if (light > Grandbot::lightThreshold) {
+      wakeup();
+    } else {
+      sleep();
+    }
   }
+}
+
+void Grandbot::debug(unsigned long now) {
+  Serial.print("now: ");
+  Serial.print(now);
+  Serial.print(" isBlinking: ");
+  Serial.print(isBlinking);
+  Serial.print(" nextBlink: ");
+  Serial.print(nextBlink);
+  Serial.print(" blinkLength: ");
+  Serial.print(blinkLength);
+  Serial.print(" nextExpressionChange: ");
+  Serial.println(nextExpressionChange);
 }

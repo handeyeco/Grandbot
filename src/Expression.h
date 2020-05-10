@@ -1,5 +1,8 @@
 #include <Arduino.h>
 
+#ifndef EXPRESSION_INCL_GUARD
+#define EXPRESSION_INCL_GUARD
+
 struct Expression {
   private:
     int (&m_regular)[4];
@@ -10,3 +13,5 @@ struct Expression {
     int* getRegular();
     int* getBlinking();
 };
+
+#endif

@@ -6,12 +6,17 @@ int dataPin = 12;
 int clockPin = 11;
 int loadPin = 10;
 int voicePin = 3;
+int lightPin = A0;
+int randomPin = A5; // Leave floating
 
 Grandbot gb = Grandbot(dataPin, clockPin, loadPin, voicePin);
 
-void setup() {}
+void setup() {
+  Serial.begin(9600);
+  randomSeed(analogRead(randomPin));
+}
 
 void loop() {
-  int light = analogRead(A0);
+  int light = analogRead(lightPin);
   gb.update(light);
 }
