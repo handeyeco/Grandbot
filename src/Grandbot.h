@@ -1,5 +1,6 @@
 #include <LedControl.h>
 #include <Voice.h>
+#include <Expressions.h>
 
 #ifndef GRANDBOT_INCL_GUARD
 #define GRANDBOT_INCL_GUARD
@@ -9,9 +10,9 @@ class Grandbot {
         LedControl lc;
         Voice voice;
 
-        int expression = 0;
+        int exprIndex = 0;
         void setExpression(int expressionIndex);
-        void writeExpression(int expr[4]);
+        void writeExpression();
 
         unsigned long nextBlink;
         int blinkLength;

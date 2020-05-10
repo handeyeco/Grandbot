@@ -31,26 +31,35 @@ unsigned long Grandbot::getNextExpressionChange() {
   return millis() + random(10000, 100000);
 }
 
-void Grandbot::writeExpression(int expr[4]) {
+void Grandbot::writeExpression() {
+  int* expr;
+  if (isBlinking) {
+    expr = Expressions::expressions[exprIndex].getBlinking();
+  } else {
+    expr = Expressions::expressions[exprIndex].getRegular();
+  }
+
   for (int i = 0; i < 4; i++) {
     lc.setRow(0, i, expr[i]);
   }
 }
 
 void Grandbot::setExpression(int expressionIndex) {
-    expression = expressionIndex;
-    writeExpression(expressions[expression].getRegular());
+    exprIndex = expressionIndex;
+    writeExpression();
 }
 
 void Grandbot::sleep() {
   state = 0;
-  setExpression(0);
+  int nextExpr = Expressions::getSleepyIndex();
+  setExpression(nextExpr);
   lc.setIntensity(0, 1);
 }
 
 void Grandbot::wakeup() {
   state = 1;
-  setExpression(1);
+  int nextExpr = Expressions::getHappyIndex();
+  setExpression(nextExpr);
   lc.setIntensity(0, 14);
   nextBlink = getNextBlink();
   blinkLength = getBlinkLength();
@@ -58,43 +67,44 @@ void Grandbot::wakeup() {
 
 void Grandbot::update(int light) {
   unsigned long now = millis();
+  boolean lightOn = light > Grandbot::lightThreshold;
   // debug(now);
 
   if (state == 0) {
     // Wakeup
-    if (light > Grandbot::lightThreshold) {
+    if (lightOn) {
       wakeup();
       voice.playRandomSequence();
     }
   } else if (state > 0) {
     // Sleep
-    if (light < Grandbot::lightThreshold) {
+    if (!lightOn) {
       sleep();
       voice.sleepy();
     } 
     // Normal
     else {
       if (now > nextExpressionChange) {
-        int next = random(1, 6);
-        setExpression(next);
+        int nextExpr = Expressions::getNeutralIndex();
+        setExpression(nextExpr);
         nextExpressionChange = getNextExpressionChange();
       }
 
       if (!isBlinking && now > nextBlink) {
         isBlinking = true;
-        writeExpression(expressions[expression].getBlinking());
+        writeExpression();
       }
       
       else if (isBlinking && now > nextBlink + blinkLength) {
         isBlinking = false;
-        writeExpression(expressions[expression].getRegular());
+        writeExpression();
         nextBlink = getNextBlink();
         blinkLength = getBlinkLength();
       }
     }
   } else {
     // Initialize (no sound)
-    if (light > Grandbot::lightThreshold) {
+    if (lightOn) {
       wakeup();
     } else {
       sleep();
