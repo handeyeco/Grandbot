@@ -2,35 +2,30 @@
 #include <Grandbot.h>
 
 // Arduino Pins
-int dataPin = 12;
-int clockPin = 11;
-int loadPin = 10;
-int voicePin = 3;
-int playPin = 2;
-int lightPin = A0;
+#define dataPin 12
+#define clockPin 11
+#define loadPin 10
+#define voicePin 3
+#define playPin 2
+#define lightPin A0
 
-int red = 5;
-int green = 6;
-int blue = 9;
+#define redPin 5
+#define greenPin 6
+#define bluePin 9
 
 // Leave floating
-int randomPin = A5;
+#define randomPin A5
 
-Grandbot gb = Grandbot(dataPin, clockPin, loadPin, voicePin, red, green, blue);
+Grandbot gb = Grandbot(dataPin, clockPin, loadPin, voicePin, redPin, greenPin, bluePin);
 
 int lastPlayState = 0;
 
 void setup() {
   pinMode(playPin, INPUT);
-  pinMode(red, OUTPUT);
-  pinMode(green, OUTPUT);
-  pinMode(blue, OUTPUT);
-  Serial.begin(9600);
+
   randomSeed(analogRead(randomPin));
 
-  analogWrite(red, 10);
-  analogWrite(green, 20);
-  analogWrite(blue, 40);
+  // Serial.begin(9600);
 }
 
 void loop() {

@@ -80,17 +80,18 @@ void Grandbot::play() {
 
 void Grandbot::update(int light) {
   unsigned long now = millis();
-  boolean lightOn = light > Grandbot::lightThreshold;
+  boolean awake = light > Grandbot::wakeThreshold;
+  boolean asleep = light < Grandbot::sleepThreshold;
   // debug(now);
 
   if (state == 0) {
     // Wakeup
-    if (lightOn) {
+    if (awake) {
       wakeup();
     }
   } else if (state > 0) {
     // Sleep
-    if (!lightOn) {
+    if (asleep) {
       sleep();
     } 
     // Normal
@@ -113,12 +114,7 @@ void Grandbot::update(int light) {
       }
     }
   } else {
-    // Initialize (no sound)
-    if (lightOn) {
-      wakeup();
-    } else {
-      sleep();
-    }
+    sleep();
   }
 }
 

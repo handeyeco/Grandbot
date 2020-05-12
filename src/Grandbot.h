@@ -30,7 +30,8 @@ class Grandbot {
         void sleep();
         void wakeup();
 
-        static const int lightThreshold = 100;
+        static const int wakeThreshold = 200;
+        static const int sleepThreshold = 100;
 
         // -1 = uninitialized
         //  0 = sleeping
