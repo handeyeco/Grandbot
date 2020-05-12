@@ -6,6 +6,7 @@ const int middleDash = B00000001;
 const int lowDash    = B00001000;
 const int bigEye     = B01111110;
 const int eyebrow    = B01011101;
+const int uEyebrow   = B01011100;
 
 int error[4] = {
   B01001111,
@@ -19,6 +20,13 @@ int sleeping[4] = {
   dot,
   blank,
   middleDash
+};
+
+int sleeping2[4] = {
+  uEyebrow,
+  blank,
+  blank,
+  uEyebrow
 };
 
 int closeBigEyes[4] = {
@@ -70,45 +78,55 @@ int skeptical[4] = {
   bigEye
 };
 
-Expression Expressions::expressions[] = {
-  Expression(error, error),
+Expression Expressions::errorExpressions[] = {
+  Expression(error, error)
+};
 
-  // Sleeping
+Expression Expressions::sleepingExpressions[] = {
   Expression(sleeping, sleeping),
+  Expression(sleeping2, sleeping2)
+};
 
-  // Happy
+Expression Expressions::happyExpressions[] = {
   Expression(closeBigEyes, closeBlinking),
-  Expression(splitBigEyes, splitBlinking),
+  Expression(splitBigEyes, splitBlinking)
+};
 
-  // Neutral
+Expression Expressions::neutralExpressions[] = {
   Expression(closeEyebrows, closeBlinking),
-  Expression(splitEyebrows, splitBlinking),
+  Expression(splitEyebrows, splitBlinking)
+};
 
-  // Unhappy
+Expression Expressions::unhappyExpressions[] = {
   Expression(skeptical, splitBlinking)
 };
 
 Expression* Expressions::getExpression(int state) {
   int i = 0;
+  int length;
 
   switch(state) {
     // Sleeping
     case 0:
-      i = 1;
-      break;
+      length = sizeof(sleepingExpressions) / sizeof(sleepingExpressions[0]);
+      i = random(0, length);
+      return &Expressions::sleepingExpressions[i];
     // Happy
     case 1:
-      i = random(2, 4);
-      break;
+      length = sizeof(happyExpressions) / sizeof(happyExpressions[0]);
+      i = random(0, length);
+      return &Expressions::happyExpressions[i];
     // Neutral
     case 2:
-      i = random(4, 6);
-      break;
+      length = sizeof(neutralExpressions) / sizeof(neutralExpressions[0]);
+      i = random(0, length);
+      return &Expressions::neutralExpressions[i];
     // Unhappy
     case 3:
-      i = 6;
-      break;
+      length = sizeof(unhappyExpressions) / sizeof(unhappyExpressions[0]);
+      i = random(0, length);
+      return &Expressions::unhappyExpressions[i];
+    default:
+      return &Expressions::unhappyExpressions[0];
   }
-
-  return &Expressions::expressions[i];
 }
