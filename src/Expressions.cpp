@@ -4,9 +4,15 @@ const int blank      = B00000000;
 const int dot        = B10000000;
 const int middleDash = B00000001;
 const int lowDash    = B00001000;
+const int lowDashDot = B10001000;
 const int bigEye     = B01111110;
 const int eyebrow    = B01011101;
+const int plainU     = B00011100;
 const int uEyebrow   = B01011100;
+const int uTop       = B00100011;
+const int tiredEye   = B01101011;
+const int lilEyeHigh = B01100011;
+const int lilEyeLow  = B00011101;
 
 int error[4] = {
   B01001111,
@@ -29,6 +35,62 @@ int sleeping2[4] = {
   uEyebrow
 };
 
+int sleeping3[4] = {
+  uTop,
+  middleDash,
+  uTop,
+  blank
+};
+
+int sleeping4[4] = {
+  blank,
+  blank,
+  lowDashDot,
+  lowDash
+};
+
+int bigEyeSmileLeft[4] = {
+  bigEye,
+  plainU,
+  bigEye,
+  blank
+};
+
+int smallSmileLeft[4] = {
+  eyebrow,
+  plainU,
+  eyebrow,
+  blank
+};
+
+int smileBlinkLeft[4] = {
+  middleDash,
+  plainU,
+  middleDash,
+  blank
+};
+
+int bigEyeSmileRight[4] = {
+  blank,
+  bigEye,
+  plainU,
+  bigEye
+};
+
+int smallSmileRight[4] = {
+  blank,
+  eyebrow,
+  plainU,
+  eyebrow
+};
+
+int smileBlinkRight[4] = {
+  blank,
+  middleDash,
+  plainU,
+  middleDash
+};
+
 int closeBigEyes[4] = {
   blank,
   bigEye,
@@ -43,7 +105,7 @@ int closeEyebrows[4] = {
   blank
 };
 
-int closeBlinking[4] = {
+int closeLowBlinking[4] = {
   blank,
   lowDash,
   lowDash,
@@ -64,7 +126,7 @@ int splitEyebrows[4] = {
   eyebrow
 };
 
-int splitBlinking[4] = {
+int splitLowBlinking[4] = {
   lowDash,
   blank,
   blank,
@@ -78,27 +140,96 @@ int skeptical[4] = {
   bigEye
 };
 
+int tiredEyesSplit[4] = {
+  tiredEye,
+  blank,
+  blank,
+  tiredEye
+};
+
+int splitMidBlinking[4] = {
+  middleDash,
+  blank,
+  blank,
+  middleDash
+};
+
+
+int tiredEyesClose[4] = {
+  blank,
+  tiredEye,
+  tiredEye,
+  blank
+};
+
+int closeMidBlinking[4] = {
+  blank,
+  middleDash,
+  middleDash,
+  blank
+};
+
+int splitLilEyesHigh[4] = {
+  lilEyeHigh,
+  blank,
+  blank,
+  lilEyeHigh
+};
+
+int splitLilEyesLow[4] = {
+  lilEyeLow,
+  blank,
+  blank,
+  lilEyeLow
+};
+
+int closeLilEyesHigh[4] = {
+  blank,
+  lilEyeHigh,
+  lilEyeHigh,
+  blank
+};
+
+int closeLilEyesLow[4] = {
+  blank,
+  lilEyeLow,
+  lilEyeLow,
+  blank
+};
+
 Expression Expressions::errorExpressions[] = {
   Expression(error, error)
 };
 
 Expression Expressions::sleepingExpressions[] = {
   Expression(sleeping, sleeping),
-  Expression(sleeping2, sleeping2)
+  Expression(sleeping2, sleeping2),
+  Expression(sleeping3, sleeping3),
+  Expression(sleeping4, sleeping4)
 };
 
 Expression Expressions::happyExpressions[] = {
-  Expression(closeBigEyes, closeBlinking),
-  Expression(splitBigEyes, splitBlinking)
+  Expression(bigEyeSmileLeft, smileBlinkLeft),
+  Expression(bigEyeSmileRight, smileBlinkRight),
+  Expression(smallSmileLeft, smileBlinkLeft),
+  Expression(smallSmileRight, smileBlinkRight)
 };
 
 Expression Expressions::neutralExpressions[] = {
-  Expression(closeEyebrows, closeBlinking),
-  Expression(splitEyebrows, splitBlinking)
+  Expression(closeBigEyes, closeMidBlinking),
+  Expression(splitBigEyes, splitMidBlinking),
+  Expression(closeEyebrows, closeLowBlinking),
+  Expression(splitEyebrows, splitLowBlinking),
+  Expression(splitLilEyesHigh, splitMidBlinking),
+  Expression(splitLilEyesLow, splitLowBlinking)
 };
 
 Expression Expressions::unhappyExpressions[] = {
-  Expression(skeptical, splitBlinking)
+  Expression(skeptical, splitLowBlinking),
+  Expression(tiredEyesSplit, splitMidBlinking),
+  Expression(tiredEyesClose, closeMidBlinking),
+  Expression(closeLilEyesHigh, closeMidBlinking),
+  Expression(closeLilEyesLow, closeLowBlinking)
 };
 
 Expression* Expressions::getExpression(int state) {
