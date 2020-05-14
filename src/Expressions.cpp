@@ -1,153 +1,153 @@
 #include <Expressions.h>
 
-const int blank      = B00000000;
-const int dot        = B10000000;
-const int middleDash = B00000001;
-const int lowDash    = B00001000;
-const int lowDashDot = B10001000;
-const int bigEye     = B01111110;
-const int eyebrow    = B01011101;
-const int plainU     = B00011100;
-const int uEyebrow   = B01011100;
-const int uTop       = B00100011;
-const int tiredEye   = B01101011;
-const int lilEyeHigh = B01100011;
-const int lilEyeLow  = B00011101;
+const byte blank      = B00000000;
+const byte dot        = B10000000;
+const byte middleDash = B00000001;
+const byte lowDash    = B00001000;
+const byte lowDashDot = B10001000;
+const byte bigEye     = B01111110;
+const byte eyebrow    = B01011101;
+const byte plainU     = B00011100;
+const byte uEyebrow   = B01011100;
+const byte uTop       = B00100011;
+const byte tiredEye   = B01101011;
+const byte lilEyeHigh = B01100011;
+const byte lilEyeLow  = B00011101;
 
-int error[4] = {
+ byte error[4] = {
   B01001111,
   B00000101,
   B00000101,
   blank
 };
 
-int sleeping[4] = {
+ byte sleeping[4] = {
   middleDash,
   dot,
   blank,
   middleDash
 };
 
-int sleeping2[4] = {
+ byte sleeping2[4] = {
   uEyebrow,
   blank,
   blank,
   uEyebrow
 };
 
-int sleeping3[4] = {
+ byte sleeping3[4] = {
   uTop,
   middleDash,
   uTop,
   blank
 };
 
-int sleeping4[4] = {
+ byte sleeping4[4] = {
   blank,
   blank,
   lowDashDot,
   lowDash
 };
 
-int bigEyeSmileLeft[4] = {
+ byte bigEyeSmileLeft[4] = {
   bigEye,
   plainU,
   bigEye,
   blank
 };
 
-int smallSmileLeft[4] = {
+ byte smallSmileLeft[4] = {
   eyebrow,
   plainU,
   eyebrow,
   blank
 };
 
-int smileBlinkLeft[4] = {
+ byte smileBlinkLeft[4] = {
   middleDash,
   plainU,
   middleDash,
   blank
 };
 
-int bigEyeSmileRight[4] = {
+ byte bigEyeSmileRight[4] = {
   blank,
   bigEye,
   plainU,
   bigEye
 };
 
-int smallSmileRight[4] = {
+ byte smallSmileRight[4] = {
   blank,
   eyebrow,
   plainU,
   eyebrow
 };
 
-int smileBlinkRight[4] = {
+ byte smileBlinkRight[4] = {
   blank,
   middleDash,
   plainU,
   middleDash
 };
 
-int closeBigEyes[4] = {
+ byte closeBigEyes[4] = {
   blank,
   bigEye,
   bigEye,
   blank
 };
 
-int closeEyebrows[4] = {
+ byte closeEyebrows[4] = {
   blank,
   eyebrow,
   eyebrow,
   blank
 };
 
-int closeLowBlinking[4] = {
+ byte closeLowBlinking[4] = {
   blank,
   lowDash,
   lowDash,
   blank
 };
 
-int splitBigEyes[4] = {
+ byte splitBigEyes[4] = {
   bigEye,
   blank,
   blank,
   bigEye
 };
 
-int splitEyebrows[4] = {
+ byte splitEyebrows[4] = {
   eyebrow,
   blank,
   blank,
   eyebrow
 };
 
-int splitLowBlinking[4] = {
+ byte splitLowBlinking[4] = {
   lowDash,
   blank,
   blank,
   lowDash
 };
 
-int skeptical[4] = {
+ byte skeptical[4] = {
   eyebrow,
   lowDash,
   blank,
   bigEye
 };
 
-int tiredEyesSplit[4] = {
+ byte tiredEyesSplit[4] = {
   tiredEye,
   blank,
   blank,
   tiredEye
 };
 
-int splitMidBlinking[4] = {
+ byte splitMidBlinking[4] = {
   middleDash,
   blank,
   blank,
@@ -155,42 +155,42 @@ int splitMidBlinking[4] = {
 };
 
 
-int tiredEyesClose[4] = {
+ byte tiredEyesClose[4] = {
   blank,
   tiredEye,
   tiredEye,
   blank
 };
 
-int closeMidBlinking[4] = {
+ byte closeMidBlinking[4] = {
   blank,
   middleDash,
   middleDash,
   blank
 };
 
-int splitLilEyesHigh[4] = {
+ byte splitLilEyesHigh[4] = {
   lilEyeHigh,
   blank,
   blank,
   lilEyeHigh
 };
 
-int splitLilEyesLow[4] = {
+ byte splitLilEyesLow[4] = {
   lilEyeLow,
   blank,
   blank,
   lilEyeLow
 };
 
-int closeLilEyesHigh[4] = {
+ byte closeLilEyesHigh[4] = {
   blank,
   lilEyeHigh,
   lilEyeHigh,
   blank
 };
 
-int closeLilEyesLow[4] = {
+ byte closeLilEyesLow[4] = {
   blank,
   lilEyeLow,
   lilEyeLow,

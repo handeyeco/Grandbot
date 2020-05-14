@@ -30,7 +30,7 @@ unsigned long Grandbot::getNextExpressionChange() {
 
 void Grandbot::writeExpression() {
   Expression expr = *expression;
-  int* data;
+  byte* data;
   if (isBlinking) {
     data = expr.getBlinking();
   } else {

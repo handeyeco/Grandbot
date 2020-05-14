@@ -1,17 +1,17 @@
 #include <Expression.h>
 
-Expression::Expression(int (&regular)[4], int (&blinking)[4]) 
+Expression::Expression(byte (&regular)[4], byte (&blinking)[4]) 
   : m_regular(regular), m_blinking(blinking)
   {}
 
-Expression::Expression(int (*regular)[4], int (*blinking)[4]) 
+Expression::Expression(byte (*regular)[4], byte (*blinking)[4]) 
   : m_regular(*regular), m_blinking(*blinking)
   {}
 
-int* Expression::getRegular() {
+byte* Expression::getRegular() {
   return m_regular;
 }
 
-int* Expression::getBlinking() {
+byte* Expression::getBlinking() {
   return m_blinking;
 }
