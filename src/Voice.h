@@ -15,7 +15,7 @@ class Voice {
   public:
     Voice(int voicePin);
     void feedback();
-    void emote(int state);
+    void emote(int mood);
 };
 
 #endif

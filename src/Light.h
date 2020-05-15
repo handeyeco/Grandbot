@@ -12,7 +12,7 @@ class Light {
     void write(int rValue, int gValue, int bValue);
   public:
     Light(int redPin, int greenPin, int bluePin);
-    void update(int state);
+    void update(int mood);
 };
 
 #endif

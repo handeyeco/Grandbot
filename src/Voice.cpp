@@ -73,8 +73,8 @@ void Voice::feedback() {
   playRandomNote();
 }
 
-void Voice::emote(int state) {
-  switch(state) {
+void Voice::emote(int mood) {
+  switch(mood) {
     // Sleeping
     case 0:
       playMajor7th();

@@ -14,7 +14,6 @@ class Grandbot {
         Light light;
         Expression* expression;
 
-        void setState(int next);
         void setExpression();
         void writeExpression();
 
@@ -38,7 +37,14 @@ class Grandbot {
         //  1 = happy
         //  2 = neutral
         //  3 = unhappy
-        int state = -1;
+        int mood = -1;
+
+        // between 0 (unhappiest) and 9 (happiest)
+        int esteem = 7;
+
+        void updateEsteem();
+        void updateMood();
+        unsigned long lastPlayTime = 0;
 
         void debug(unsigned long now);
     public:

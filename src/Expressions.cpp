@@ -232,11 +232,11 @@ Expression Expressions::unhappyExpressions[] = {
   Expression(closeLilEyesLow, closeLowBlinking)
 };
 
-Expression* Expressions::getExpression(int state) {
+Expression* Expressions::getExpression(int mood) {
   int i = 0;
   int length;
 
-  switch(state) {
+  switch(mood) {
     // Sleeping
     case 0:
       length = sizeof(sleepingExpressions) / sizeof(sleepingExpressions[0]);

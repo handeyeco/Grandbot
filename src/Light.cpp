@@ -16,28 +16,19 @@ void Light::write(int rValue, int gValue, int bValue) {
   analogWrite(blue, bValue);
 }
 
-void Light::update(int state) {
-  int r = 0;
-  int g = 0;
-  int b = 0;
+void Light::update(int mood) {
+  int r = random(0, 256);
+  int g = random(0, 256);
+  int b = random(0, 256);
 
-  if (state == 1) {
-    r = random(150, 256);
-    b = random(150, 256);
-  } else if (state == 2) {
-    r = random(0, 100);
-    g = random(150, 256);
-    b = random(0, 100);
-  }
-
-  switch(state) {
+  switch(mood) {
     // Sleeping
     case 0:
       write(0, 0, 0);
       return;
     // Happy
     case 1:
-      write(r, g, b);
+      write(r, g, 255);
       return;
     // Neutral
     case 2:
