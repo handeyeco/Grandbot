@@ -1,42 +1,70 @@
 #include <Light.h>
 
-Light::Light(int redPin, int greenPin, int bluePin) {
-  red = redPin;
-  green = greenPin;
-  blue = bluePin;
+Light::Light(int rPin, int gPin, int bPin) {
+  redPin = rPin;
+  greenPin = gPin;
+  bluePin = bPin;
 
-  pinMode(red, OUTPUT);
-  pinMode(green, OUTPUT);
-  pinMode(blue, OUTPUT);
+  pinMode(redPin, OUTPUT);
+  pinMode(greenPin, OUTPUT);
+  pinMode(bluePin, OUTPUT);
 }
 
-void Light::write(int rValue, int gValue, int bValue) {
-  analogWrite(red, rValue);
-  analogWrite(green, gValue);
-  analogWrite(blue, bValue);
+void Light::write(int rVal, int gVal, int bVal) {
+  analogWrite(redPin, rVal);
+  analogWrite(greenPin, gVal);
+  analogWrite(bluePin, bVal);
+}
+
+void Light::setColor(int mood) {
+  prevR = nextR;
+  prevG = nextG;
+  prevB = nextB;
+
+  if (mood == 0) {
+    nextR = 0;
+    nextG = 0;
+    nextB = 0;
+  } else if (mood == 3) {
+    nextR = 255;
+    nextG = 0;
+    nextB = 0;
+  } else {
+    nextR = random(0, 256);
+    nextG = random(0, 256);
+    nextB = random(0, 256);
+  }
+
+  animating = true;
+  startTween = millis();
 }
 
 void Light::update(int mood) {
-  int r = random(0, 256);
-  int g = random(0, 256);
-  int b = random(0, 256);
+  if (!animating) return;
 
-  switch(mood) {
-    // Sleeping
-    case 0:
-      write(0, 0, 0);
+  unsigned long now = millis();
+  if (now > startTween + tweenLength) {
+    if (mood == 1) {
+      // Keep swirling the lights if he's happy
+      setColor(mood);
+    } else {
+      // Otherwise stop when the target color is reached
+      write(nextR, nextG, nextB);
+      animating = false;
       return;
-    // Happy
-    case 1:
-      write(r, g, 255);
-      return;
-    // Neutral
-    case 2:
-      write(r, g, b);
-      return;
-    // Unhappy
-    case 3:
-      write(255, 0, 0);
-      return;
+    }
   }
+
+  int elapsed = now - startTween;
+  float progress = min((float) elapsed / (float) tweenLength, 1);
+
+  int rDelta = nextR - prevR;
+  int gDelta = nextG - prevG;
+  int bDelta = nextB - prevB;
+
+  int r = prevR + (progress * rDelta);
+  int g = prevG + (progress * gDelta);
+  int b = prevB + (progress * bDelta);
+
+  write(r, g, b);
 }

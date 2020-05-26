@@ -5,14 +5,30 @@
 
 class Light {
   private:
-    int red;
-    int green;
-    int blue;
+    int redPin;
+    int greenPin;
+    int bluePin;
 
-    void write(int rValue, int gValue, int bValue);
+    // Use all this for color transition
+    int nextR = 0;
+    int nextG = 0;
+    int nextB = 0;
+    int prevR = 0;
+    int prevG = 0;
+    int prevB = 0;
+    int rDelta;
+    int gDelta;
+    int bDelta;
+
+    boolean animating = false;
+    static const int tweenLength = 1000;
+    unsigned long startTween;
+
+    void write(int rVal, int gVal, int bVal);
   public:
-    Light(int redPin, int greenPin, int bluePin);
+    Light(int rPin, int gPin, int bPin);
     void update(int mood);
+    void setColor(int mood);
 };
 
 #endif

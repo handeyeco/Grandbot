@@ -29,8 +29,8 @@ class Grandbot {
         void sleep();
         void wakeup();
 
-        static const int wakeThreshold = 200;
-        static const int sleepThreshold = 100;
+        static const int wakeThresh = 200;
+        static const int sleepThresh = 100;
 
         // -1 = uninitialized
         //  0 = sleeping
@@ -40,17 +40,22 @@ class Grandbot {
         int mood = -1;
 
         // between 0 (unhappiest) and 9 (happiest)
-        int esteem = 7;
+        int esteem = 8;
 
         void updateEsteem();
         void updateMood();
         unsigned long lastPlayTime = 0;
 
+        // One hour
+        static const unsigned long playThresh = 3600000LL;
+        // Two hours
+        static const unsigned long ignoreThresh = 7200000LL;
+
         void debug(unsigned long now);
     public:
         Grandbot(int dataPin, int clockPin, int loadPin, int voicePin, int redPin, int greenPin, int bluePin);
         void play();
-        void update(int light);
+        void update(int lightReading);
 };
 
 #endif
