@@ -10,7 +10,7 @@ class Voice {
     int setTriad(int startIndex, int root, boolean major);
     int setMajor7th(int startIndex, int root);
 
-    int setRandomSequence();
+    int setRandomSequence(int len);
     int setUnhappy();
     int setSong();
 
@@ -25,7 +25,7 @@ class Voice {
     int rhythm[30];
   public:
     Voice(int voicePin);
-    void emote(int mood);
+    void emote(int mood, int esteem);
     void update();
 };
 

@@ -92,9 +92,7 @@ int Voice::setSong() {
   return melodyIndex;
 }
 
-int Voice::setRandomSequence() {
-  int len = random (3, 10);
-
+int Voice::setRandomSequence(int len) {
   for (int i = 0, rand; i < len; i++) {
     rand = random(0, 28);
     melody[i] = pitches[rand];
@@ -119,7 +117,7 @@ void Voice::play(int playLength) {
   currNoteIndex = -1;
 }
 
-void Voice::emote(int mood) {
+void Voice::emote(int mood, int esteem) {
   int len = 0;
 
   switch(mood) {
@@ -133,7 +131,7 @@ void Voice::emote(int mood) {
       break;
     // Neutral
     case 2:
-      len = setRandomSequence();
+      len = setRandomSequence(esteem);
       break;
     // Unhappy
     case 3:

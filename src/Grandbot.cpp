@@ -69,7 +69,7 @@ void Grandbot::updateMood() {
   setExpression();
 
   if (last != nextMood) {
-    voice.emote(mood);
+    voice.emote(mood, esteem);
   }
 }
 
@@ -88,7 +88,7 @@ void Grandbot::sleep() {
   // So we don't play a sound
   // if we reset at night
   if (lastMood >= 0) {
-    voice.emote(mood);
+    voice.emote(mood, esteem);
   }
 }
 
@@ -116,7 +116,7 @@ void Grandbot::play() {
   }
 
   updateMood();
-  voice.emote(mood);
+  voice.emote(mood, esteem);
 }
 
 void Grandbot::update(int lightReading) {
