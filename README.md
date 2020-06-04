@@ -13,6 +13,15 @@ Grandbot is an ongoing project, but right now:
 - He has an onboard passive buzzer and uses it to make music. The music is mostly randomly generated and is influenced by his mood.
 - He likes to set mood lighting using an RGB LED as another indicator of how he's feeling.
 
+## Schematic
+
+![Grandbot schematic](https://raw.githubusercontent.com/handeyeco/Grandbot/master/schematic.jpeg)
+
+Uses:
+- Arduino Uno
+- Max7219
+- TDCG1060M common cathode 4-digit, 7-segment display
+
 ## Blog Posts
 
 Grandbot development is what I'm using to learn more about electronics and C++. I write about what I've been learning on my blog. Here are the Grandbot posts:
@@ -23,3 +32,4 @@ Grandbot development is what I'm using to learn more about electronics and C++. 
 - [Grandbot Update - Voice](https://handeyeco.github.io/tech-blog/grandbot-update-voice/)
 - [Grandbot Update - Play](https://handeyeco.github.io/tech-blog/grandbot-update-play/)
 - [Grandbot Update - Light](https://handeyeco.github.io/tech-blog/grandbot-update-light/)
+- [Concurrent Arduino](https://handeyeco.github.io/tech-blog/concurrent-arduino/)
