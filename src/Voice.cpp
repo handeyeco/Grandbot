@@ -35,62 +35,127 @@ Voice::Voice(int voicePin) {
   m_voicePin = voicePin;
 }
 
-void Voice::playMajor7th() {
-  int duration = 250;
-  int start = random(0, 12);
+int Voice::setMajor7th(int startIndex, int root) {
+  int len = 4;
 
-  // Major 7th chord
-  play(pitches[start], duration);
-  play(pitches[start+4], duration);
-  play(pitches[start+7], duration);
-  play(pitches[start+11], duration);
-}
+  int notes[len] = {
+    pitches[root],
+    pitches[root+4],
+    pitches[root+7],
+    pitches[root+11]
+  };
 
-void Voice::playRandomSequence() {
-  int len = random (3, 10);
   for (int i = 0; i < len; i++) {
-    playRandomNote();
+    melody[startIndex + i] = notes[i];
+    rhythm[startIndex + i] = 250;
   }
+
+  return len;
 }
 
-void Voice::playRandomNote() {
-  int rand = random(0, 28);
-  int note = Voice::pitches[rand];
-  play(note);
+int Voice::setTriad(int startIndex, int root, boolean major) {
+  int len = 3;
+  int third = major ? 4 : 3;
+
+  int notes[len] = {
+    pitches[root],
+    pitches[root + third],
+    pitches[root + 7]
+  };
+
+  int noteLenFlip = random(0, 4);
+  int noteLen = noteLenFlip == 0 ? 100
+    : noteLenFlip == 1 ? 200
+    : noteLenFlip == 2 ? 300
+    : 400;
+  for (int i = 0; i < len; i++) {
+    melody[startIndex + i] = notes[i];
+    rhythm[startIndex + i] = noteLen;
+  }
+
+  return len;
 }
 
-void Voice::play(int note) {
-  play(note, 75);
+int Voice::setSong() {
+  int start = random(0, 12);
+  int chords = random(4, 9);
+
+  int interval;
+  boolean major;
+  int melodyIndex = 0;
+  for (int i = 0; i < chords; i++) {
+    interval = random(0, 7);
+    major = interval == 0 || interval == 3 || interval == 4;
+    melodyIndex += setTriad(melodyIndex, start + interval, major);
+  }
+  
+  return melodyIndex;
 }
 
-void Voice::play(int note, int duration) {
-  tone(m_voicePin, note);
-  delay(duration);
-  noTone(m_voicePin);
+int Voice::setRandomSequence(int len) {
+  for (int i = 0, rand; i < len; i++) {
+    rand = random(0, 28);
+    melody[i] = pitches[rand];
+    rhythm[i] = 75;
+  }
+
+  return len;
 }
 
-void Voice::feedback() {
-  playRandomNote();
+int Voice::setUnhappy() {
+  melody[0] = 200;
+  melody[1] = 100;
+  rhythm[0] = 1000;
+  rhythm[1] = 1000;
+
+  return 2;
 }
 
-void Voice::emote(int mood) {
+void Voice::play(int playLength) {
+  playing = true;
+  melodyLength = playLength;
+  currNoteIndex = -1;
+}
+
+void Voice::emote(int mood, int esteem) {
+  int len = 0;
+
   switch(mood) {
     // Sleeping
     case 0:
-      playMajor7th();
-      return;
+      len = setMajor7th(0, random(0, 12));
+      break;
     // Happy
     case 1:
-      playRandomSequence();
-      return;
+      len = setSong();
+      break;
     // Neutral
     case 2:
-      playRandomNote();
-      return;
+      len = setRandomSequence(esteem);
+      break;
     // Unhappy
     case 3:
-      play(200, 1000);
-      play(100, 1000);
+      len = setUnhappy();
+      break;
+  }
+
+  play(len);
+}
+
+void Voice::update() {
+  if (!playing) return;
+
+  unsigned long now = millis();
+  if (currNoteIndex == -1 || now > noteStart + rhythm[currNoteIndex]) {
+    currNoteIndex++;
+
+    if (currNoteIndex < melodyLength) {
+      tone(m_voicePin, melody[currNoteIndex]);
+      noteStart = now;
       return;
+    } else {
+      noTone(m_voicePin);
+      playing = false;
+    }
   }
 }

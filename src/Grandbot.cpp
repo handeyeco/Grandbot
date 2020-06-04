@@ -44,7 +44,7 @@ void Grandbot::writeExpression() {
 
 void Grandbot::updateEsteem() {
   unsigned long now = millis();
-  unsigned long thresh = lastPlayTime + 21600000LL;
+  unsigned long thresh = lastPlayTime + ignoreThresh;
 
   if (now > thresh) {
     lastPlayTime = now;
@@ -56,27 +56,27 @@ void Grandbot::updateEsteem() {
 void Grandbot::updateMood() {
   int last = mood;
 
-  int next;
-  if (esteem > 7) {
-    next = 1;
-  } else if (esteem < 4) {
-    next = 3;
+  int nextMood;
+  if (esteem > 8) {
+    nextMood = 1;
+  } else if (esteem < 2) {
+    nextMood = 3;
   } else {
-    next = 2;
+    nextMood = 2;
   }
-  mood = next;
+  mood = nextMood;
 
   setExpression();
 
-  if (last != next) {
-    voice.emote(mood);
+  if (last != nextMood) {
+    voice.emote(mood, esteem);
   }
 }
 
 void Grandbot::setExpression() {
   expression = Expressions::getExpression(mood);
   writeExpression();
-  light.update(mood);
+  light.setColor(mood);
 }
 
 void Grandbot::sleep() {
@@ -88,7 +88,7 @@ void Grandbot::sleep() {
   // So we don't play a sound
   // if we reset at night
   if (lastMood >= 0) {
-    voice.emote(mood);
+    voice.emote(mood, esteem);
   }
 }
 
@@ -103,8 +103,12 @@ void Grandbot::wakeup() {
 }
 
 void Grandbot::play() {
+  if (mood < 1) {
+    return;
+  }
+
   unsigned long now = millis();
-  unsigned long thresh = lastPlayTime + 3600000LL;
+  unsigned long thresh = lastPlayTime + playThresh;
 
   if (now > thresh) {
     lastPlayTime = now;
@@ -112,13 +116,13 @@ void Grandbot::play() {
   }
 
   updateMood();
-  voice.emote(mood);
+  voice.emote(mood, esteem);
 }
 
-void Grandbot::update(int light) {
+void Grandbot::update(int lightReading) {
   unsigned long now = millis();
-  boolean awake = light > Grandbot::wakeThreshold;
-  boolean asleep = light < Grandbot::sleepThreshold;
+  boolean awake = lightReading > wakeThresh;
+  boolean asleep = lightReading < sleepThresh;
   // debug(now);
 
   if (mood == 0) {
@@ -154,6 +158,9 @@ void Grandbot::update(int light) {
   } else {
     sleep();
   }
+
+  light.update(mood);
+  voice.update();
 }
 
 void Grandbot::debug(unsigned long now) {
