@@ -17,14 +17,14 @@ class Grandbot {
         void setExpression();
         void writeExpression();
 
-        unsigned long nextBlink;
-        int blinkLength;
         boolean isBlinking = false;
-        unsigned long getNextBlink();
-        int getBlinkLength();
+        unsigned long lastBlinkChange;
+        unsigned long blinkDelay;
+        void handleChangeBlinkState();
 
-        unsigned long nextExpressionChange;
-        unsigned long getNextExpressionChange();
+        unsigned long lastExpressionChange;
+        unsigned long expressionChangeDelay;
+        void handleChangeExpressionState();
 
         void sleep();
         void wakeup();
@@ -47,7 +47,7 @@ class Grandbot {
         unsigned long lastPlayTime = 0;
 
         // One hour
-        static const unsigned long playThresh = 3600000LL;
+        static const unsigned long playThresh = 30000LL;
         // Two hours
         static const unsigned long ignoreThresh = 7200000LL;
 

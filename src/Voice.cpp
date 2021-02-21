@@ -146,7 +146,7 @@ void Voice::update() {
   if (!playing) return;
 
   unsigned long now = millis();
-  if (currNoteIndex == -1 || now > noteStart + rhythm[currNoteIndex]) {
+  if (currNoteIndex == -1 || now - noteStart > rhythm[currNoteIndex]) {
     currNoteIndex++;
 
     if (currNoteIndex < melodyLength) {

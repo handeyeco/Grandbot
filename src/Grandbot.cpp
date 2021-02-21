@@ -11,21 +11,24 @@ Grandbot::Grandbot(int dataPin, int clockPin, int loadPin, int voicePin, int red
     // Clear the display
     lc.clearDisplay(0);
 
-    nextBlink = getNextBlink();
-    blinkLength = getBlinkLength();
-    nextExpressionChange = getNextExpressionChange();
+    handleChangeBlinkState();
+    handleChangeExpressionState();
 }
 
-unsigned long Grandbot::getNextBlink() {
-  return millis() + random(2000, 10000);
+void Grandbot::handleChangeBlinkState() {
+  lastBlinkChange = millis();
+  isBlinking = !isBlinking;
+  if (isBlinking) {
+    blinkDelay = random(100, 300);
+  } else {
+    blinkDelay = random(2000, 10000);
+  }
 }
 
-int Grandbot::getBlinkLength() {
-  return random(100, 300);
-}
-
-unsigned long Grandbot::getNextExpressionChange() {
-  return millis() + random(10000, 100000);
+void Grandbot::handleChangeExpressionState() {
+  setExpression();
+  lastExpressionChange = millis();
+  expressionChangeDelay = random(10000, 100000);
 }
 
 void Grandbot::writeExpression() {
@@ -44,9 +47,8 @@ void Grandbot::writeExpression() {
 
 void Grandbot::updateEsteem() {
   unsigned long now = millis();
-  unsigned long thresh = lastPlayTime + ignoreThresh;
 
-  if (now > thresh) {
+  if (now - lastPlayTime > ignoreThresh) {
     lastPlayTime = now;
     esteem = max(0, esteem - 1);
     updateMood();
@@ -95,8 +97,7 @@ void Grandbot::sleep() {
 void Grandbot::wakeup() {
   // So he doesn't wake up angry
   lastPlayTime = millis();
-  nextBlink = getNextBlink();
-  blinkLength = getBlinkLength();
+  handleChangeBlinkState();
 
   lc.setIntensity(0, 14);
   updateMood();
@@ -108,9 +109,8 @@ void Grandbot::play() {
   }
 
   unsigned long now = millis();
-  unsigned long thresh = lastPlayTime + playThresh;
 
-  if (now > thresh) {
+  if (now - lastPlayTime > playThresh) {
     lastPlayTime = now;
     esteem = min(9, esteem + 1);
   }
@@ -123,7 +123,6 @@ void Grandbot::update(int lightReading) {
   unsigned long now = millis();
   boolean awake = lightReading > wakeThresh;
   boolean asleep = lightReading < sleepThresh;
-  // debug(now);
 
   if (mood == 0) {
     // Wakeup
@@ -137,22 +136,14 @@ void Grandbot::update(int lightReading) {
     } 
     // Normal
     else {
-      if (now > nextExpressionChange) {
+      if (now - lastExpressionChange > expressionChangeDelay) {
         updateEsteem();
-        setExpression();
-        nextExpressionChange = getNextExpressionChange();
+        handleChangeExpressionState();
       }
 
-      if (!isBlinking && now > nextBlink) {
-        isBlinking = true;
+      if (now - lastBlinkChange > blinkDelay) {
+        handleChangeBlinkState();
         writeExpression();
-      }
-      
-      else if (isBlinking && now > nextBlink + blinkLength) {
-        isBlinking = false;
-        writeExpression();
-        nextBlink = getNextBlink();
-        blinkLength = getBlinkLength();
       }
     }
   } else {
@@ -168,10 +159,12 @@ void Grandbot::debug(unsigned long now) {
   Serial.print(now);
   Serial.print(" isBlinking: ");
   Serial.print(isBlinking);
-  Serial.print(" nextBlink: ");
-  Serial.print(nextBlink);
-  Serial.print(" blinkLength: ");
-  Serial.print(blinkLength);
-  Serial.print(" nextExpressionChange: ");
-  Serial.println(nextExpressionChange);
+  Serial.print(" lastBlinkChange: ");
+  Serial.print(lastBlinkChange);
+  Serial.print(" blinkDelay: ");
+  Serial.print(blinkDelay);
+  Serial.print(" lastExpressionChange: ");
+  Serial.println(lastExpressionChange);
+  Serial.print(" expressionChangeDelay: ");
+  Serial.println(expressionChangeDelay);
 }

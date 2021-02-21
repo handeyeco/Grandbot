@@ -43,7 +43,7 @@ void Light::update(int mood) {
   if (!animating) return;
 
   unsigned long now = millis();
-  if (now > startTween + tweenLength) {
+  if (now - startTween > tweenLength) {
     if (mood == 1) {
       // Keep swirling the lights if he's happy
       setColor(mood);
