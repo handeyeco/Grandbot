@@ -16,6 +16,8 @@
 // Leave floating
 #define randomPin A5
 
+#define demoMode 0
+
 Grandbot gb = Grandbot(dataPin, clockPin, loadPin, voicePin, redPin, greenPin, bluePin);
 
 int lastPlayState = 0;
@@ -30,8 +32,17 @@ void setup() {
 
 void loop() {
   int light = analogRead(lightPin);
-
   int playing = digitalRead(playPin);
+
+  if (demoMode) {
+    Serial.print("Light: ");
+    Serial.print(light);
+    Serial.print(" Button: ");
+    Serial.println(playing);
+    gb.demo();
+    return;
+  }
+
   if (playing && lastPlayState == 0) {
     gb.play();
     lastPlayState = !lastPlayState;

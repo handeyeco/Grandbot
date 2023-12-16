@@ -39,6 +39,35 @@ void Light::setColor(int mood) {
   startTween = millis();
 }
 
+void Light::demo() {
+  unsigned long now = millis();
+
+  if (now - lastDemoChange > tweenLength) {
+    prevR = nextR;
+    prevG = nextG;
+    prevB = nextB;
+
+    if (prevR > 0) {
+      nextR = 0;
+      nextG = 255;
+    }
+
+    if (prevG > 0) {
+      nextG = 0;
+      nextB = 255;
+    }
+    
+    if (prevB > 0) {
+      nextB = 0;
+      nextR = 255;
+    }
+
+    write(nextR, nextG, nextB);
+
+    lastDemoChange = millis();
+  }
+}
+
 void Light::update(int mood) {
   if (!animating) return;
 

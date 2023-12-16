@@ -12,6 +12,7 @@ struct Expressions {
     static Expression unhappyExpressions[];
   public:
     static Expression* getExpression(int state);
+    static byte* getDemo(int demoIndex);
 };
 
 #endif

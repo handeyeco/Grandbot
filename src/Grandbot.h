@@ -15,6 +15,7 @@ class Grandbot {
         Expression* expression;
 
         void setExpression();
+        void writeLedControlData(byte* data);
         void writeExpression();
 
         boolean isBlinking = false;
@@ -22,6 +23,7 @@ class Grandbot {
         unsigned long blinkDelay;
         void handleChangeBlinkState();
 
+        int demoSegmentIndex = 0;
         unsigned long lastExpressionChange;
         unsigned long expressionChangeDelay;
         void handleChangeExpressionState();
@@ -56,6 +58,7 @@ class Grandbot {
         Grandbot(int dataPin, int clockPin, int loadPin, int voicePin, int redPin, int greenPin, int bluePin);
         void play();
         void update(int lightReading);
+        void demo();
 };
 
 #endif

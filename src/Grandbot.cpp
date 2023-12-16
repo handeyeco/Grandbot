@@ -31,6 +31,12 @@ void Grandbot::handleChangeExpressionState() {
   expressionChangeDelay = random(10000, 100000);
 }
 
+void Grandbot::writeLedControlData(byte* data) {
+  for (int i = 0; i < 4; i++) {
+    lc.setRow(0, i, data[i]);
+  }
+}
+
 void Grandbot::writeExpression() {
   Expression expr = *expression;
   byte* data;
@@ -40,9 +46,7 @@ void Grandbot::writeExpression() {
     data = expr.getRegular();
   }
 
-  for (int i = 0; i < 4; i++) {
-    lc.setRow(0, i, data[i]);
-  }
+  writeLedControlData(data);
 }
 
 void Grandbot::updateEsteem() {
@@ -79,6 +83,24 @@ void Grandbot::setExpression() {
   expression = Expressions::getExpression(mood);
   writeExpression();
   light.setColor(mood);
+}
+
+void Grandbot::demo() {
+  light.demo();
+
+  unsigned long now = millis();
+  if (now - lastExpressionChange > 1000) {
+    // rotate through 4D7S segments (there are 8)
+    demoSegmentIndex = (demoSegmentIndex + 1) % 8;
+    byte* demoData = Expressions::getDemo(demoSegmentIndex);
+    for (int i = 0; i < 4; i++) {
+      lc.setRow(0, i, *demoData);
+    }
+
+    voice.demo();
+
+    lastExpressionChange = millis();
+  }
 }
 
 void Grandbot::sleep() {

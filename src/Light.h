@@ -23,10 +23,12 @@ class Light {
     boolean animating = false;
     static const int tweenLength = 1000;
     unsigned long startTween;
+    unsigned long lastDemoChange;
 
     void write(int rVal, int gVal, int bVal);
   public:
     Light(int rPin, int gPin, int bPin);
+    void demo();
     void update(int mood);
     void setColor(int mood);
 };

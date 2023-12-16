@@ -27,6 +27,7 @@ class Voice {
     Voice(int voicePin);
     void emote(int mood, int esteem);
     void update();
+    void demo();
 };
 
 #endif

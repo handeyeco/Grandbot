@@ -159,3 +159,13 @@ void Voice::update() {
     }
   }
 }
+
+void Voice::demo() {
+  if (playing) {
+    tone(m_voicePin, 1047);
+  } else {
+    noTone(m_voicePin);
+  }
+
+  playing = !playing;
+}
