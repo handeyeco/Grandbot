@@ -7,7 +7,7 @@ Grandbot::Grandbot(int dataPin, int clockPin, int loadPin, int voicePin, int red
     // Set the brightness
     lc.setIntensity(0, 14);
     // Only scan 4 digits
-    lc.setScanLimit(0, 3);
+    lc.setScanLimit(0, 4);
     // Clear the display
     lc.clearDisplay(0);
 

@@ -2,9 +2,10 @@
 #include <Grandbot.h>
 
 // Arduino Pins
-#define dataPin 12
-#define clockPin 11
+#define dataPin 11
+#define clockPin 13
 #define loadPin 10
+
 #define voicePin 3
 #define playPin 2
 #define lightPin A0
@@ -16,14 +17,16 @@
 // Leave floating
 #define randomPin A5
 
+// Set this to 1 and upload to check that
+// everything is wired up as expected
 #define demoMode 0
 
 Grandbot gb = Grandbot(dataPin, clockPin, loadPin, voicePin, redPin, greenPin, bluePin);
 
-int lastPlayState = 0;
+int lastPlayRead = HIGH;
 
 void setup() {
-  pinMode(playPin, INPUT);
+  pinMode(playPin, INPUT_PULLUP);
 
   randomSeed(analogRead(randomPin));
 
@@ -32,23 +35,22 @@ void setup() {
 
 void loop() {
   int light = analogRead(lightPin);
-  int playing = digitalRead(playPin);
+  int playRead = digitalRead(playPin);
 
   if (demoMode) {
     Serial.print("Light: ");
     Serial.print(light);
     Serial.print(" Button: ");
-    Serial.println(playing);
+    Serial.println(playRead);
     gb.demo();
     return;
   }
 
-  if (playing && lastPlayState == 0) {
+  // play button is active LOW
+  if (playRead == LOW && lastPlayRead == HIGH) {
     gb.play();
-    lastPlayState = !lastPlayState;
-  } else if (!playing && lastPlayState == 1) {
-    lastPlayState = !lastPlayState;
   }
+  lastPlayRead = playRead;
 
   gb.update(light);
 }
