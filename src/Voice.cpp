@@ -1,51 +1,52 @@
 #include <Voice.h>
 
-const int Voice::singingPitches[28] = { 
-  NOTE_C6,
-  NOTE_CS6,
-  NOTE_D6,
-  NOTE_DS6,
-  NOTE_E6,
-  NOTE_F6,
-  NOTE_FS6,
-  NOTE_G6,
-  NOTE_GS6,
-  NOTE_A6,
-  NOTE_AS6,
-  NOTE_B6,
-  NOTE_C7,
-  NOTE_CS7,
-  NOTE_D7,
-  NOTE_DS7,
-  NOTE_E7,
-  NOTE_F7,
-  NOTE_FS7,
-  NOTE_G7,
-  NOTE_GS7,
-  NOTE_A7,
-  NOTE_AS7,
-  NOTE_B7,
-  NOTE_C8,
-  NOTE_CS8,
-  NOTE_D8,
-  NOTE_DS8,
+const int Voice::singingNotes[27] = {
+    84,
+    85,
+    86,
+    87,
+    88,
+    89,
+    90,
+    91,
+    92,
+    93,
+    94,
+    95,
+    96,
+    97,
+    98,
+    99,
+    100,
+    101,
+    102,
+    103,
+    104,
+    105,
+    106,
+    107,
+    108,
+    109,
+    110,
 };
 
-Voice::Voice(int voicePin) {
+Voice::Voice(int voicePin)
+{
   m_voicePin = voicePin;
 }
 
-int Voice::setMajor7th(int startIndex, int root) {
+int Voice::setMajor7th(int startIndex, int root)
+{
   int len = 4;
 
   int notes[len] = {
-    singingPitches[root],
-    singingPitches[root+4],
-    singingPitches[root+7],
-    singingPitches[root+11]
-  };
+      singingNotes[root],
+      singingNotes[root + 4],
+      singingNotes[root + 7],
+      singingNotes[root + 11]};
 
-  for (int i = 0; i < len; i++) {
+  for (int i = 0; i < len; i++)
+  {
     melody[startIndex + i] = notes[i];
     rhythm[startIndex + i] = 250;
   }
@@ -53,22 +54,23 @@ int Voice::setMajor7th(int startIndex, int root) {
   return len;
 }
 
-int Voice::setTriad(int startIndex, int root, boolean major) {
+int Voice::setTriad(int startIndex, int root, boolean major)
+{
   int len = 3;
   int third = major ? 4 : 3;
 
   int notes[len] = {
-    singingPitches[root],
-    singingPitches[root + third],
-    singingPitches[root + 7]
-  };
+      singingNotes[root],
+      singingNotes[root + third],
+      singingNotes[root + 7]};
 
   int noteLenFlip = random(0, 4);
-  int noteLen = noteLenFlip == 0 ? 100
-    : noteLenFlip == 1 ? 200
-    : noteLenFlip == 2 ? 300
-    : 400;
-  for (int i = 0; i < len; i++) {
+  int noteLen = noteLenFlip == 0   ? 100
+                : noteLenFlip == 1 ? 200
+                : noteLenFlip == 2 ? 300
+                                   : 400;
+  for (int i = 0; i < len; i++)
+  {
     melody[startIndex + i] = notes[i];
     rhythm[startIndex + i] = noteLen;
   }
@@ -76,106 +78,115 @@ int Voice::setTriad(int startIndex, int root, boolean major) {
   return len;
 }
 
-int Voice::setSong() {
+int Voice::setSong()
+{
   int start = random(0, 12);
   int chords = random(4, 9);
 
   int interval;
   boolean major;
   int melodyIndex = 0;
-  for (int i = 0; i < chords; i++) {
+  for (int i = 0; i < chords; i++)
+  {
     interval = random(0, 7);
     major = interval == 0 || interval == 3 || interval == 4;
     melodyIndex += setTriad(melodyIndex, start + interval, major);
   }
-  
+
   return melodyIndex;
 }
 
-int Voice::setRandomSequence(int len) {
-  for (int i = 0, rand; i < len; i++) {
-    rand = random(0, 28);
-    melody[i] = singingPitches[rand];
+int Voice::setRandomSequence(int len)
+{
+  for (int i = 0, rand; i < len; i++)
+  {
+    rand = random(0, 27);
+    melody[i] = singingNotes[rand];
     rhythm[i] = 75;
   }
 
   return len;
 }
 
-int Voice::setUnhappy() {
-  melody[0] = 200;
-  melody[1] = 100;
+int Voice::setUnhappy()
+{
+  melody[0] = 56;
+  melody[1] = 45;
   rhythm[0] = 1000;
   rhythm[1] = 1000;
 
   return 2;
 }
 
-void Voice::play(int playLength) {
+void Voice::play(int playLength)
+{
   playing = true;
   melodyLength = playLength;
   currNoteIndex = -1;
 }
 
-void Voice::emote(int mood, int esteem) {
+void Voice::emote(int mood, int esteem)
+{
   int len = 0;
 
-  switch(mood) {
-    // Sleeping
-    case 0:
-      len = setMajor7th(0, random(0, 12));
-      break;
-    // Happy
-    case 1:
-      len = setSong();
-      break;
-    // Neutral
-    case 2:
-      len = setRandomSequence(esteem);
-      break;
-    // Unhappy
-    case 3:
-      len = setUnhappy();
-      break;
+  switch (mood)
+  {
+  // Sleeping
+  case 0:
+    len = setMajor7th(0, random(0, 12));
+    break;
+  // Happy
+  case 1:
+    len = setSong();
+    break;
+  // Neutral
+  case 2:
+    len = setRandomSequence(esteem);
+    break;
+  // Unhappy
+  case 3:
+    len = setUnhappy();
+    break;
   }
 
   play(len);
 }
 
-void Voice::update() {
-  if (!playing) return;
+void Voice::update()
+{
+  if (!playing)
+    return;
 
   unsigned long now = millis();
-  if (currNoteIndex == -1 || now - noteStart > rhythm[currNoteIndex]) {
+  if (currNoteIndex == -1 || now - noteStart > rhythm[currNoteIndex])
+  {
     currNoteIndex++;
 
-    if (currNoteIndex < melodyLength) {
-      tone(m_voicePin, melody[currNoteIndex]);
+    if (currNoteIndex < melodyLength)
+    {
+      uint16_t pitch = getPitchByNote(melody[currNoteIndex]);
+      tone(m_voicePin, pitch);
       noteStart = now;
       return;
-    } else {
+    }
+    else
+    {
       noTone(m_voicePin);
       playing = false;
     }
   }
 }
 
-void Voice::demo() {
-  if (playing) {
+void Voice::demo()
+{
+  if (playing)
+  {
     tone(m_voicePin, 1047);
-  } else {
+  }
+  else
+  {
     noTone(m_voicePin);
   }
 
   playing = !playing;
-}
-
-void Voice::handleNoteOn(byte channel, byte note, byte velocity) {
-  playing = false;
-  tone(m_voicePin, sNotePitches[note - 23]);
-}
-
-void Voice::handleNoteOff(byte channel, byte note, byte velocity) {
-  playing = false;
-  noTone(m_voicePin);
 }

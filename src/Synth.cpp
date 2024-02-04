@@ -16,7 +16,7 @@ void Synth::sendNoteOff(byte channel, byte note, byte velocity) {
 }
 
 void Synth::handleNoteOn(byte channel, byte note, byte velocity) {
-  tone(voicePin, sNotePitches[note - 23]);
+  tone(voicePin, getPitchByNote(note));
   sendNoteOn(channel, note, velocity);
 }
 

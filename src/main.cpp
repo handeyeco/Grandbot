@@ -65,7 +65,7 @@ void loop() {
   }
 
   if (midiMode) {
-    if (now - lastMidiMessage > 30 * 1000) {
+    if (now - lastMidiMessage > 10 * 1000) {
       midiMode = false;
     }
 

@@ -7,7 +7,7 @@
 class Voice {
   private:
     int m_voicePin;
-    static const int singingPitches[];
+    static const int singingNotes[];
     int setTriad(int startIndex, int root, boolean major);
     int setMajor7th(int startIndex, int root);
 
@@ -29,8 +29,6 @@ class Voice {
     void emote(int mood, int esteem);
     void update();
     void demo();
-    void handleNoteOn(byte channel, byte pitch, byte velocity);
-    void handleNoteOff(byte channel, byte pitch, byte velocity);
 };
 
 #endif
