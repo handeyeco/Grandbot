@@ -30,8 +30,9 @@ const int Voice::singingNotes[27] = {
     110,
 };
 
-Voice::Voice(int voicePin)
+Voice::Voice(Synth* _synth, int voicePin)
 {
+  this->synth = _synth;
   m_voicePin = voicePin;
 }
 
@@ -162,9 +163,16 @@ void Voice::update()
   {
     currNoteIndex++;
 
+    if (currNoteIndex > 0) {
+      uint16_t prevNote = melody[currNoteIndex - 1];
+      synth->sendNoteOff(1, prevNote-12, 0);
+    }
+
     if (currNoteIndex < melodyLength)
     {
-      uint16_t pitch = getPitchByNote(melody[currNoteIndex]);
+      uint16_t note = melody[currNoteIndex];
+      uint16_t pitch = getPitchByNote(note);
+      synth->sendNoteOn(1, note-12, 100);
       tone(m_voicePin, pitch);
       noteStart = now;
       return;

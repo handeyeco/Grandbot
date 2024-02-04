@@ -20,7 +20,7 @@ LedControl lc = LedControl(SERIAL_DATA_PIN, SERIAL_CLOCK_PIN, SERIAL_LOAD_PIN, 1
 // MIDI/Synth control
 Synth synth = Synth(BUZZER_PIN);
 // Buzzer control
-Voice voice = Voice(BUZZER_PIN);
+Voice voice = Voice(&synth, BUZZER_PIN);
 // RGB LED control
 Light light = Light(RGB_R_PIN, RGB_G_PIN, RGB_B_PIN);
 Grandbot gb = Grandbot(&lc, &voice, &light);
@@ -65,7 +65,7 @@ void loop() {
   }
 
   if (midiMode) {
-    if (now - lastMidiMessage > 10 * 1000) {
+    if (now - lastMidiMessage > 1 * 1000) {
       midiMode = false;
     }
 

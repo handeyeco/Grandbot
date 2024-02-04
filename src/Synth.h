@@ -1,6 +1,6 @@
 #include <Arduino.h>
+#include <pitches.h>
 #include <MIDI.h>
-#include <Voice.h>
 
 #ifndef SYNTH_INCL_GUARD
 #define SYNTH_INCL_GUARD
