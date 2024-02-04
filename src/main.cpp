@@ -1,5 +1,6 @@
 #include <Arduino.h>
 #include <Grandbot.h>
+#include <MIDI.h>
 
 // Arduino Pins
 #define dataPin 11
@@ -21,27 +22,66 @@
 // everything is wired up as expected
 #define demoMode 0
 
+// MIDI and Serial don't play along with
+// one another, so keep MIDI off by default
+#define midiEnabled 1
+
+MIDI_CREATE_DEFAULT_INSTANCE();
 Grandbot gb = Grandbot(dataPin, clockPin, loadPin, voicePin, redPin, greenPin, bluePin);
 
 int lastPlayRead = HIGH;
+
+bool midiMode = false;
+int lastMidiMessage;
+
+
+void handleNoteOn(byte channel, byte pitch, byte velocity) {
+  gb.handleNoteOn(channel, pitch, velocity);
+}
+
+void handleNoteOff(byte channel, byte pitch, byte velocity) {
+  gb.handleNoteOff(channel, pitch, velocity);
+}
 
 void setup() {
   pinMode(playPin, INPUT_PULLUP);
 
   randomSeed(analogRead(randomPin));
 
-  Serial.begin(9600);
+  if (midiEnabled) {
+    MIDI.setHandleNoteOn(handleNoteOn);
+    MIDI.setHandleNoteOff(handleNoteOff);
+    MIDI.begin(MIDI_CHANNEL_OMNI);
+  } else {
+    Serial.begin(9600);
+  }
 }
 
 void loop() {
   int light = analogRead(lightPin);
   int playRead = digitalRead(playPin);
+  int now = millis();
+
+  if (MIDI.read()) {
+    midiMode = true;
+    lastMidiMessage = millis();
+  }
+
+  if (midiMode) {
+    if (now - lastMidiMessage > 30 * 1000) {
+      midiMode = false;
+    }
+
+    return;
+  }
 
   if (demoMode) {
-    Serial.print("Light: ");
-    Serial.print(light);
-    Serial.print(" Button: ");
-    Serial.println(playRead);
+    if (!midiEnabled) {
+      Serial.print("Light: ");
+      Serial.print(light);
+      Serial.print(" Button: ");
+      Serial.println(playRead);
+    }
     gb.demo();
     return;
   }

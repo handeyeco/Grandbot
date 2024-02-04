@@ -176,17 +176,10 @@ void Grandbot::update(int lightReading) {
   voice.update();
 }
 
-void Grandbot::debug(unsigned long now) {
-  Serial.print("now: ");
-  Serial.print(now);
-  Serial.print(" isBlinking: ");
-  Serial.print(isBlinking);
-  Serial.print(" lastBlinkChange: ");
-  Serial.print(lastBlinkChange);
-  Serial.print(" blinkDelay: ");
-  Serial.print(blinkDelay);
-  Serial.print(" lastExpressionChange: ");
-  Serial.println(lastExpressionChange);
-  Serial.print(" expressionChangeDelay: ");
-  Serial.println(expressionChangeDelay);
+void Grandbot::handleNoteOn(byte channel, byte pitch, byte velocity) {
+  voice.handleNoteOn(channel, pitch, velocity);
+}
+
+void Grandbot::handleNoteOff(byte channel, byte pitch, byte velocity) {
+  voice.handleNoteOff(channel, pitch, velocity);
 }

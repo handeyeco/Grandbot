@@ -1,34 +1,34 @@
 #include <Voice.h>
 
-const int Voice::pitches[28] = { 
-  1047, 
-  1109, 
-  1175, 
-  1245, 
-  1319, 
-  1397, 
-  1480, 
-  1568, 
-  1661, 
-  1760, 
-  1865, 
-  1976, 
-  2093, 
-  2217, 
-  2349, 
-  2489, 
-  2637, 
-  2794, 
-  2960, 
-  3136, 
-  3322, 
-  3520, 
-  3729, 
-  3951, 
-  4186, 
-  4435, 
-  4699, 
-  4978 
+const int Voice::singingPitches[28] = { 
+  NOTE_C6,
+  NOTE_CS6,
+  NOTE_D6,
+  NOTE_DS6,
+  NOTE_E6,
+  NOTE_F6,
+  NOTE_FS6,
+  NOTE_G6,
+  NOTE_GS6,
+  NOTE_A6,
+  NOTE_AS6,
+  NOTE_B6,
+  NOTE_C7,
+  NOTE_CS7,
+  NOTE_D7,
+  NOTE_DS7,
+  NOTE_E7,
+  NOTE_F7,
+  NOTE_FS7,
+  NOTE_G7,
+  NOTE_GS7,
+  NOTE_A7,
+  NOTE_AS7,
+  NOTE_B7,
+  NOTE_C8,
+  NOTE_CS8,
+  NOTE_D8,
+  NOTE_DS8,
 };
 
 Voice::Voice(int voicePin) {
@@ -39,10 +39,10 @@ int Voice::setMajor7th(int startIndex, int root) {
   int len = 4;
 
   int notes[len] = {
-    pitches[root],
-    pitches[root+4],
-    pitches[root+7],
-    pitches[root+11]
+    singingPitches[root],
+    singingPitches[root+4],
+    singingPitches[root+7],
+    singingPitches[root+11]
   };
 
   for (int i = 0; i < len; i++) {
@@ -58,9 +58,9 @@ int Voice::setTriad(int startIndex, int root, boolean major) {
   int third = major ? 4 : 3;
 
   int notes[len] = {
-    pitches[root],
-    pitches[root + third],
-    pitches[root + 7]
+    singingPitches[root],
+    singingPitches[root + third],
+    singingPitches[root + 7]
   };
 
   int noteLenFlip = random(0, 4);
@@ -95,7 +95,7 @@ int Voice::setSong() {
 int Voice::setRandomSequence(int len) {
   for (int i = 0, rand; i < len; i++) {
     rand = random(0, 28);
-    melody[i] = pitches[rand];
+    melody[i] = singingPitches[rand];
     rhythm[i] = 75;
   }
 
@@ -168,4 +168,14 @@ void Voice::demo() {
   }
 
   playing = !playing;
+}
+
+void Voice::handleNoteOn(byte channel, byte note, byte velocity) {
+  playing = false;
+  tone(m_voicePin, sNotePitches[note - 23]);
+}
+
+void Voice::handleNoteOff(byte channel, byte note, byte velocity) {
+  playing = false;
+  noTone(m_voicePin);
 }
