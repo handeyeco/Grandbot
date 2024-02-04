@@ -59,8 +59,6 @@ class Grandbot {
         void play();
         void update(int lightReading);
         void demo();
-        void handleNoteOn(byte channel, byte pitch, byte velocity);
-        void handleNoteOff(byte channel, byte pitch, byte velocity);
 };
 
 #endif

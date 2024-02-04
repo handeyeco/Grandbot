@@ -1,5 +1,8 @@
 #include <inttypes.h>
 
+#ifndef PITCHES_INCL_GUARD
+#define PITCHES_INCL_GUARD
+
 #define NOTE_B0  31
 #define NOTE_C1  33
 #define NOTE_CS1 35
@@ -108,6 +111,8 @@ static const uint16_t sNotePitches[] = {
     NOTE_G7, NOTE_GS7, NOTE_A7, NOTE_AS7, NOTE_B7, NOTE_C8, NOTE_CS8, NOTE_D8, NOTE_DS8,
 };
 
-static int getPitchFromNote(byte note) {
-    return sNotePitches[note - 23];
-} 
+// static int getPitchFromNote(byte note) {
+//     return sNotePitches[note - 23];
+// } 
+
+#endif

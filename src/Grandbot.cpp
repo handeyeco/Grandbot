@@ -167,11 +167,3 @@ void Grandbot::update(int lightReading) {
     sleep();
   }
 }
-
-void Grandbot::handleNoteOn(byte channel, byte pitch, byte velocity) {
-  voice->handleNoteOn(channel, pitch, velocity);
-}
-
-void Grandbot::handleNoteOff(byte channel, byte pitch, byte velocity) {
-  voice->handleNoteOff(channel, pitch, velocity);
-}
