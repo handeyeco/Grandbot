@@ -1,18 +1,11 @@
 #include <Grandbot.h>
  
-Grandbot::Grandbot(int dataPin, int clockPin, int loadPin, int voicePin, int redPin, int greenPin, int bluePin)
-  : lc(LedControl(dataPin, clockPin, loadPin)), voice(Voice(voicePin)), light(Light(redPin, greenPin, bluePin)) {
-    // Wake up Max7219
-    lc.shutdown(0, false);
-    // Set the brightness
-    lc.setIntensity(0, 14);
-    // Only scan 4 digits
-    lc.setScanLimit(0, 4);
-    // Clear the display
-    lc.clearDisplay(0);
-
-    handleChangeBlinkState();
-    handleChangeExpressionState();
+void Grandbot::init(LedControl* _lc, Voice* _voice, Light* _light) {
+  this->lc = _lc;
+  this->voice = _voice;
+  this->light = _light;
+  handleChangeBlinkState();
+  handleChangeExpressionState();
 }
 
 void Grandbot::handleChangeBlinkState() {
@@ -33,7 +26,7 @@ void Grandbot::handleChangeExpressionState() {
 
 void Grandbot::writeLedControlData(byte* data) {
   for (int i = 0; i < 4; i++) {
-    lc.setRow(0, i, data[i]);
+    lc->setRow(0, i, data[i]);
   }
 }
 
@@ -75,18 +68,18 @@ void Grandbot::updateMood() {
   setExpression();
 
   if (last != nextMood) {
-    voice.emote(mood, esteem);
+    voice->emote(mood, esteem);
   }
 }
 
 void Grandbot::setExpression() {
   expression = Expressions::getExpression(mood);
   writeExpression();
-  light.setColor(mood);
+  light->setColor(mood);
 }
 
 void Grandbot::demo() {
-  light.demo();
+  light->demo();
 
   unsigned long now = millis();
   if (now - lastExpressionChange > 1000) {
@@ -94,17 +87,17 @@ void Grandbot::demo() {
     demoSegmentIndex = (demoSegmentIndex + 1) % 8;
     byte* demoData = Expressions::getDemo(demoSegmentIndex);
     for (int i = 0; i < 4; i++) {
-      lc.setRow(0, i, *demoData);
+      lc->setRow(0, i, *demoData);
     }
 
-    voice.demo();
+    voice->demo();
 
     lastExpressionChange = millis();
   }
 }
 
 void Grandbot::sleep() {
-  lc.setIntensity(0, 0);
+  lc->setIntensity(0, 0);
   int lastMood = mood;
   mood = 0;
   setExpression();
@@ -112,7 +105,7 @@ void Grandbot::sleep() {
   // So we don't play a sound
   // if we reset at night
   if (lastMood >= 0) {
-    voice.emote(mood, esteem);
+    voice->emote(mood, esteem);
   }
 }
 
@@ -121,7 +114,7 @@ void Grandbot::wakeup() {
   lastPlayTime = millis();
   handleChangeBlinkState();
 
-  lc.setIntensity(0, 14);
+  lc->setIntensity(0, 14);
   updateMood();
 }
 
@@ -138,7 +131,7 @@ void Grandbot::play() {
   }
 
   updateMood();
-  voice.emote(mood, esteem);
+  voice->emote(mood, esteem);
 }
 
 void Grandbot::update(int lightReading) {
@@ -172,14 +165,14 @@ void Grandbot::update(int lightReading) {
     sleep();
   }
 
-  light.update(mood);
-  voice.update();
+  light->update(mood);
+  voice->update();
 }
 
 void Grandbot::handleNoteOn(byte channel, byte pitch, byte velocity) {
-  voice.handleNoteOn(channel, pitch, velocity);
+  voice->handleNoteOn(channel, pitch, velocity);
 }
 
 void Grandbot::handleNoteOff(byte channel, byte pitch, byte velocity) {
-  voice.handleNoteOff(channel, pitch, velocity);
+  voice->handleNoteOff(channel, pitch, velocity);
 }

@@ -1,22 +1,8 @@
 #include <Arduino.h>
+#include <pin_defs.h>
 #include <Grandbot.h>
 #include <MIDI.h>
-
-// Arduino Pins
-#define dataPin 11
-#define clockPin 13
-#define loadPin 10
-
-#define voicePin 3
-#define playPin 2
-#define lightPin A0
-
-#define redPin 5
-#define greenPin 6
-#define bluePin 9
-
-// Leave floating
-#define randomPin A5
+#include <LedControl.h>
 
 // Set this to 1 and upload to check that
 // everything is wired up as expected
@@ -27,7 +13,14 @@
 #define midiEnabled 1
 
 MIDI_CREATE_DEFAULT_INSTANCE();
-Grandbot gb = Grandbot(dataPin, clockPin, loadPin, voicePin, redPin, greenPin, bluePin);
+
+// 4D7S display control
+LedControl lc = LedControl(SERIAL_DATA_PIN, SERIAL_CLOCK_PIN, SERIAL_LOAD_PIN, 1);
+// Buzzer control
+Voice voice = Voice(BUZZER_PIN);
+// RGB LED control
+Light light = Light(RGB_R_PIN, RGB_G_PIN, RGB_B_PIN);
+Grandbot gb = Grandbot();
 
 int lastPlayRead = HIGH;
 
@@ -43,10 +36,23 @@ void handleNoteOff(byte channel, byte pitch, byte velocity) {
   gb.handleNoteOff(channel, pitch, velocity);
 }
 
-void setup() {
-  pinMode(playPin, INPUT_PULLUP);
+void setupLedControl() {
+  // Wake up Max7219
+  lc.shutdown(0, false);
+  // Set the brightness
+  lc.setIntensity(0, 14);
+  // Only scan 4 digits
+  lc.setScanLimit(0, 4);
+  // Clear the display
+  lc.clearDisplay(0);
+}
 
-  randomSeed(analogRead(randomPin));
+void setup() {
+  pinMode(PLAY_BUTTON_PIN, INPUT_PULLUP);
+  randomSeed(analogRead(RANDOM_PIN));
+
+  setupLedControl();
+  gb.init(&lc, &voice, &light);
 
   if (midiEnabled) {
     MIDI.setHandleNoteOn(handleNoteOn);
@@ -58,8 +64,8 @@ void setup() {
 }
 
 void loop() {
-  int light = analogRead(lightPin);
-  int playRead = digitalRead(playPin);
+  int light = analogRead(LIGHT_SENSOR_PIN);
+  int playRead = digitalRead(PLAY_BUTTON_PIN);
   int now = millis();
 
   if (MIDI.read()) {
