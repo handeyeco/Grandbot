@@ -1,6 +1,6 @@
 #include <Grandbot.h>
  
-void Grandbot::init(LedControl* _lc, Voice* _voice, Light* _light) {
+Grandbot::Grandbot(LedControl* _lc, Voice* _voice, Light* _light) {
   this->lc = _lc;
   this->voice = _voice;
   this->light = _light;
@@ -68,6 +68,7 @@ void Grandbot::updateMood() {
   setExpression();
 
   if (last != nextMood) {
+    light->setMood(nextMood);
     voice->emote(mood, esteem);
   }
 }
@@ -101,6 +102,7 @@ void Grandbot::sleep() {
   int lastMood = mood;
   mood = 0;
   setExpression();
+  light->setMood(0);
 
   // So we don't play a sound
   // if we reset at night
@@ -164,9 +166,6 @@ void Grandbot::update(int lightReading) {
   } else {
     sleep();
   }
-
-  light->update(mood);
-  voice->update();
 }
 
 void Grandbot::handleNoteOn(byte channel, byte pitch, byte velocity) {

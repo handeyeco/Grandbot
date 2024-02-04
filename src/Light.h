@@ -9,6 +9,8 @@ class Light {
     int greenPin;
     int bluePin;
 
+    int mood;
+
     // Use all this for color transition
     int nextR = 0;
     int nextG = 0;
@@ -29,8 +31,9 @@ class Light {
   public:
     Light(int rPin, int gPin, int bPin);
     void demo();
-    void update(int mood);
+    void update();
     void setColor(int mood);
+    void setMood(int mood);
 };
 
 #endif

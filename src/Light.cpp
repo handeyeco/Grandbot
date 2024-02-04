@@ -68,7 +68,11 @@ void Light::demo() {
   }
 }
 
-void Light::update(int mood) {
+void Light::setMood(int mood) {
+  this->mood = mood;
+}
+
+void Light::update() {
   if (!animating) return;
 
   unsigned long now = millis();

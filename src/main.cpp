@@ -12,15 +12,15 @@
 // one another, so keep MIDI off by default
 #define midiEnabled 1
 
+// Initialize MIDI library
 MIDI_CREATE_DEFAULT_INSTANCE();
-
 // 4D7S display control
 LedControl lc = LedControl(SERIAL_DATA_PIN, SERIAL_CLOCK_PIN, SERIAL_LOAD_PIN, 1);
 // Buzzer control
 Voice voice = Voice(BUZZER_PIN);
 // RGB LED control
 Light light = Light(RGB_R_PIN, RGB_G_PIN, RGB_B_PIN);
-Grandbot gb = Grandbot();
+Grandbot gb = Grandbot(&lc, &voice, &light);
 
 int lastPlayRead = HIGH;
 
@@ -52,7 +52,6 @@ void setup() {
   randomSeed(analogRead(RANDOM_PIN));
 
   setupLedControl();
-  gb.init(&lc, &voice, &light);
 
   if (midiEnabled) {
     MIDI.setHandleNoteOn(handleNoteOn);
@@ -64,7 +63,7 @@ void setup() {
 }
 
 void loop() {
-  int light = analogRead(LIGHT_SENSOR_PIN);
+  int lightRead = analogRead(LIGHT_SENSOR_PIN);
   int playRead = digitalRead(PLAY_BUTTON_PIN);
   int now = millis();
 
@@ -84,7 +83,7 @@ void loop() {
   if (demoMode) {
     if (!midiEnabled) {
       Serial.print("Light: ");
-      Serial.print(light);
+      Serial.print(lightRead);
       Serial.print(" Button: ");
       Serial.println(playRead);
     }
@@ -98,5 +97,7 @@ void loop() {
   }
   lastPlayRead = playRead;
 
-  gb.update(light);
+  gb.update(lightRead);
+  light.update();
+  voice.update();
 }

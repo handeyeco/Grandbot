@@ -55,7 +55,7 @@ class Grandbot {
 
         void debug(unsigned long now);
     public:
-        void init(LedControl* _lc, Voice* _voice, Light* _light);
+        Grandbot(LedControl* _lc, Voice* _voice, Light* _light);
         void play();
         void update(int lightReading);
         void demo();
