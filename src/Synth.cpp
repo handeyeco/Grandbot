@@ -3,20 +3,31 @@
 // Initialize MIDI library
 MIDI_CREATE_DEFAULT_INSTANCE();
 
-Synth::Synth(Voice* _voice) {
-  this->voice = _voice;
+Synth::Synth(int voicePin) {
+  this->voicePin = voicePin;
 }
 
-void Synth::handleNoteOn(byte channel, byte pitch, byte velocity) {
-  voice->handleNoteOn(channel, pitch, velocity);
+void Synth::sendNoteOn(byte channel, byte note, byte velocity) {
+  MIDI.sendNoteOn(note, velocity, channel);
 }
 
-void Synth::handleNoteOff(byte channel, byte pitch, byte velocity) {
-  voice->handleNoteOff(channel, pitch, velocity);
+void Synth::sendNoteOff(byte channel, byte note, byte velocity) {
+  MIDI.sendNoteOff(note, velocity, channel);
+}
+
+void Synth::handleNoteOn(byte channel, byte note, byte velocity) {
+  tone(voicePin, sNotePitches[note - 23]);
+  sendNoteOn(channel, note, velocity);
+}
+
+void Synth::handleNoteOff(byte channel, byte note, byte velocity) {
+  noTone(voicePin);
+  sendNoteOff(channel, note, velocity);
 }
 
 void Synth::setup() {
   MIDI.begin(MIDI_CHANNEL_OMNI);
+  MIDI.turnThruOff();
 }
 
 bool Synth::update() {

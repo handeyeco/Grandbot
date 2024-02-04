@@ -7,13 +7,15 @@
 
 class Synth {
   private:
-    Voice* voice;
+    int voicePin;
     void handleNoteOn(byte channel, byte pitch, byte velocity);
     void handleNoteOff(byte channel, byte pitch, byte velocity);
   public:
-    Synth(Voice* _voice);
+    Synth(int voicePin);
     void setup();
     bool update();
+    void sendNoteOn(byte channel, byte pitch, byte velocity);
+    void sendNoteOff(byte channel, byte pitch, byte velocity);
 };
 
 #endif

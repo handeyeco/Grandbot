@@ -17,10 +17,10 @@
 
 // 4D7S display control
 LedControl lc = LedControl(SERIAL_DATA_PIN, SERIAL_CLOCK_PIN, SERIAL_LOAD_PIN, 1);
+// MIDI/Synth control
+Synth synth = Synth(BUZZER_PIN);
 // Buzzer control
 Voice voice = Voice(BUZZER_PIN);
-// MIDI/Synth control
-Synth synth = Synth(&voice);
 // RGB LED control
 Light light = Light(RGB_R_PIN, RGB_G_PIN, RGB_B_PIN);
 Grandbot gb = Grandbot(&lc, &voice, &light);

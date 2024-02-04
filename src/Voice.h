@@ -1,5 +1,5 @@
 #include <Arduino.h>
-#include "pitches.h"
+#include <pitches.h>
 
 #ifndef VOICE_INCL_GUARD
 #define VOICE_INCL_GUARD
