@@ -1,4 +1,6 @@
 #include <Arduino.h>
+#include <LedControl.h>
+#include <Light.h>
 #include <pitches.h>
 #include <MIDI.h>
 
@@ -7,11 +9,16 @@
 
 class Synth {
   private:
+    LedControl* lc;
+    Light* light;
     int voicePin;
+    byte beat = 0;
+    byte count = 0;
     void handleNoteOn(byte channel, byte pitch, byte velocity);
     void handleNoteOff(byte channel, byte pitch, byte velocity);
+    void handleClock();
   public:
-    Synth(int voicePin);
+    Synth(LedControl* _lc, Light* _light, int voicePin);
     void setup();
     bool update();
     void sendNoteOn(byte channel, byte pitch, byte velocity);

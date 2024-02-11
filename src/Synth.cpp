@@ -3,7 +3,9 @@
 // Initialize MIDI library
 MIDI_CREATE_DEFAULT_INSTANCE();
 
-Synth::Synth(int voicePin) {
+Synth::Synth(LedControl* _lc, Light* _light, int voicePin) {
+  this->lc = _lc;
+  this->light = _light;
   this->voicePin = voicePin;
 }
 
@@ -25,6 +27,19 @@ void Synth::handleNoteOff(byte channel, byte note, byte velocity) {
   sendNoteOff(channel, note, velocity);
 }
 
+void Synth::handleClock() {
+  ++count;
+  if (count >= 20) {
+    ++beat;
+    count = 0;
+    if (beat >= 4) {
+      beat = 0;
+    }
+    lc->clearDisplay(0);
+    lc->setDigit(0,beat,beat+1,false);
+  }
+}
+
 void Synth::setup() {
   MIDI.begin(MIDI_CHANNEL_OMNI);
   MIDI.turnThruOff();
@@ -41,6 +56,9 @@ bool Synth::update() {
         break;
       case midi::NoteOff:
         handleNoteOff(MIDI.getChannel(), MIDI.getData1(), MIDI.getData2());
+        break;
+      case midi::Clock:
+        handleClock();
         break;
       default:
         // if we don't know what MIDI message this is,
