@@ -31,6 +31,7 @@ class Expressions {
     void update(int mood);
     void setExpression(int mood);
     byte* getDemo(int demoIndex);
+    void midiBeat(int beat);
 };
 
 #endif

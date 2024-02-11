@@ -13,7 +13,7 @@
 
 // MIDI and Serial don't play along with
 // one another, so keep MIDI off by default
-#define midiEnabled 0
+#define midiEnabled 1
 
 // RGB LED control
 Light light = Light(RGB_R_PIN, RGB_G_PIN, RGB_B_PIN);
@@ -22,7 +22,7 @@ LedControl lc = LedControl(SERIAL_DATA_PIN, SERIAL_CLOCK_PIN, SERIAL_LOAD_PIN, 1
 // Expression manager
 Expressions expr = Expressions(&lc, &light);
 // MIDI/Synth control
-Synth synth = Synth(&lc, &light, BUZZER_PIN);
+Synth synth = Synth(&expr, &light, BUZZER_PIN);
 // Buzzer control
 Voice voice = Voice(&synth, BUZZER_PIN);
 Grandbot gb = Grandbot(&expr, &lc, &voice, &light);

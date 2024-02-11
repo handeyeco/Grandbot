@@ -92,6 +92,12 @@ byte *Expressions::getDemo(int demoIndex)
   return &segments[demoIndex];
 }
 
+void Expressions::midiBeat(int beat) {
+  int half = beat % 2;
+  expression = &ExpressionSets::midiBeatExpressions[half];
+  writeExpression();
+}
+
 void Expressions::update(int mood) {
   unsigned long now = millis();
 

@@ -34,6 +34,7 @@ class Light {
     void update();
     void setColor(int mood);
     void setMood(int mood);
+    void midiBeat(int beat);
 };
 
 #endif

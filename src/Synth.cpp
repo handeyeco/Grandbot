@@ -3,8 +3,8 @@
 // Initialize MIDI library
 MIDI_CREATE_DEFAULT_INSTANCE();
 
-Synth::Synth(LedControl* _lc, Light* _light, int voicePin) {
-  this->lc = _lc;
+Synth::Synth(Expressions* _expr, Light* _light, int voicePin) {
+  this->expr = _expr;
   this->light = _light;
   this->voicePin = voicePin;
 }
@@ -35,16 +35,14 @@ void Synth::handleClock() {
     if (beat >= 4) {
       beat = 0;
     }
-    lc->clearDisplay(0);
-    lc->setDigit(0,beat,beat+1,false);
+    expr->midiBeat(beat);
+    light->midiBeat(beat);
   }
 }
 
 void Synth::handleStart() {
   count = 0;
   beat = 0;
-  lc->clearDisplay(0);
-  lc->setDigit(0,0,1,false);
 }
 
 void Synth::handleStop() {

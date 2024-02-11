@@ -1,5 +1,5 @@
 #include <Arduino.h>
-#include <LedControl.h>
+#include <Expressions.h>
 #include <Light.h>
 #include <pitches.h>
 #include <MIDI.h>
@@ -9,7 +9,7 @@
 
 class Synth {
   private:
-    LedControl* lc;
+    Expressions* expr;
     Light* light;
     int voicePin;
     byte beat = 0;
@@ -20,7 +20,7 @@ class Synth {
     void handleStart();
     void handleStop();
   public:
-    Synth(LedControl* _lc, Light* _light, int voicePin);
+    Synth(Expressions* _expr, Light* _light, int voicePin);
     void setup();
     bool update();
     void sendNoteOn(byte channel, byte pitch, byte velocity);

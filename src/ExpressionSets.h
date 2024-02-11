@@ -15,6 +15,7 @@ struct ExpressionSets {
     static int neutralLength;
     static Expression unhappyExpressions[];
     static int unhappyLength;
+    static Expression midiBeatExpressions[];
 };
 
 #endif

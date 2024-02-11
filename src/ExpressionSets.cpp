@@ -14,6 +14,10 @@ const byte tiredEye = B01101011;
 const byte lilEyeHigh = B01100011;
 const byte lilEyeLow = B00011101;
 
+byte fullBlank[4] = {
+    blank, blank, blank, blank
+};
+
 byte error[4] = {
     B01001111,
     B00000101,
@@ -204,3 +208,7 @@ Expression ExpressionSets::unhappyExpressions[] = {
     Expression(closeLilEyesHigh, closeMidBlinking),
     Expression(closeLilEyesLow, closeLowBlinking)};
 int ExpressionSets::unhappyLength = sizeof(ExpressionSets::unhappyExpressions) / sizeof(unhappyExpressions[0]);
+
+Expression ExpressionSets::midiBeatExpressions[] = {
+    Expression(bigEyeSmileLeft, smileBlinkLeft),
+    Expression(bigEyeSmileRight, smileBlinkRight)};
