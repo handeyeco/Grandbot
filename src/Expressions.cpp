@@ -1,6 +1,52 @@
 #include <Expressions.h>
 
-Expressions::Expressions() {
+Expressions::Expressions(LedControl* _lc, Light* _light) {
+  this->lc = _lc;
+  this->light = _light;
+}
+
+void Expressions::init() {
+  handleChangeBlinkState();
+  handleChangeExpressionState(1);
+  lastExpressionChange = millis();
+}
+
+void Expressions::handleChangeBlinkState() {
+  lastBlinkChange = millis();
+  isBlinking = !isBlinking;
+  if (isBlinking) {
+    blinkDelay = random(100, 300);
+  } else {
+    blinkDelay = random(2000, 10000);
+  }
+}
+
+void Expressions::handleChangeExpressionState(int mood) {
+  setExpression(mood);
+  expressionChangeDelay = random(10000, 100000);
+}
+
+void Expressions::writeLedControlData(byte* data) {
+  for (int i = 0; i < 4; i++) {
+    lc->setRow(0, i, data[i]);
+  }
+}
+
+void Expressions::writeExpression() {
+  Expression expr = *expression;
+  byte* data;
+  if (isBlinking) {
+    data = expr.getBlinking();
+  } else {
+    data = expr.getRegular();
+  }
+
+  writeLedControlData(data);
+}
+
+void Expressions::setExpression(int mood) {
+  expression = getExpression(mood);
+  writeExpression();
 }
 
 Expression *Expressions::getExpression(int mood)
@@ -44,4 +90,21 @@ byte segments[8] = {
 byte *Expressions::getDemo(int demoIndex)
 {
   return &segments[demoIndex];
+}
+
+void Expressions::update(int mood) {
+  unsigned long now = millis();
+
+  if (mood > 0) {
+      if (now - lastExpressionChange > expressionChangeDelay) {
+        lastExpressionChange = now;
+        handleChangeExpressionState(mood);
+        light->setColor(mood);
+      }
+
+      if (now - lastBlinkChange > blinkDelay) {
+        handleChangeBlinkState();
+        writeExpression();
+      }
+  }
 }

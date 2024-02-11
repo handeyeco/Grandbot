@@ -13,21 +13,8 @@ class Grandbot {
         LedControl* lc;
         Voice* voice;
         Light* light;
-        Expression* expression;
-
-        void setExpression();
-        void writeLedControlData(byte* data);
-        void writeExpression();
-
-        boolean isBlinking = false;
-        unsigned long lastBlinkChange;
-        unsigned long blinkDelay;
-        void handleChangeBlinkState();
 
         int demoSegmentIndex = 0;
-        unsigned long lastExpressionChange;
-        unsigned long expressionChangeDelay;
-        void handleChangeExpressionState();
 
         void sleep();
         void wakeup();
@@ -45,7 +32,6 @@ class Grandbot {
         // between 0 (unhappiest) and 9 (happiest)
         int esteem = 8;
 
-        void updateEsteem();
         void updateMood();
         unsigned long lastPlayTime = 0;
 

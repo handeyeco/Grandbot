@@ -17,6 +17,7 @@ void Light::write(int rVal, int gVal, int bVal) {
 }
 
 void Light::setColor(int mood) {
+  Serial.println(mood);
   prevR = nextR;
   prevG = nextG;
   prevB = nextB;
