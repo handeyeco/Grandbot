@@ -40,6 +40,18 @@ void Synth::handleClock() {
   }
 }
 
+void Synth::handleStart() {
+  count = 0;
+  beat = 0;
+  lc->clearDisplay(0);
+  lc->setDigit(0,0,1,false);
+}
+
+void Synth::handleStop() {
+  count = 0;
+  beat = 0;
+}
+
 void Synth::setup() {
   MIDI.begin(MIDI_CHANNEL_OMNI);
   MIDI.turnThruOff();
@@ -59,6 +71,12 @@ bool Synth::update() {
         break;
       case midi::Clock:
         handleClock();
+        break;
+      case midi::Start:
+        handleStart();
+        break;
+      case midi::Stop:
+        handleStop();
         break;
       default:
         // if we don't know what MIDI message this is,

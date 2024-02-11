@@ -17,6 +17,8 @@ class Synth {
     void handleNoteOn(byte channel, byte pitch, byte velocity);
     void handleNoteOff(byte channel, byte pitch, byte velocity);
     void handleClock();
+    void handleStart();
+    void handleStop();
   public:
     Synth(LedControl* _lc, Light* _light, int voicePin);
     void setup();
