@@ -15,6 +15,8 @@
 // one another, so keep MIDI off by default
 #define midiEnabled 1
 
+// Expression manager
+Expressions expr = Expressions();
 // RGB LED control
 Light light = Light(RGB_R_PIN, RGB_G_PIN, RGB_B_PIN);
 // 4D7S display control
@@ -23,7 +25,7 @@ LedControl lc = LedControl(SERIAL_DATA_PIN, SERIAL_CLOCK_PIN, SERIAL_LOAD_PIN, 1
 Synth synth = Synth(&lc, &light, BUZZER_PIN);
 // Buzzer control
 Voice voice = Voice(&synth, BUZZER_PIN);
-Grandbot gb = Grandbot(&lc, &voice, &light);
+Grandbot gb = Grandbot(&expr, &lc, &voice, &light);
 
 int lastPlayRead = HIGH;
 

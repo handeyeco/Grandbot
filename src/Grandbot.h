@@ -9,6 +9,7 @@
 
 class Grandbot {
     private:
+        Expressions* expr;
         LedControl* lc;
         Voice* voice;
         Light* light;
@@ -55,7 +56,7 @@ class Grandbot {
 
         void debug(unsigned long now);
     public:
-        Grandbot(LedControl* _lc, Voice* _voice, Light* _light);
+        Grandbot(Expressions* _expr, LedControl* _lc, Voice* _voice, Light* _light);
         void play();
         void update(int lightReading);
         void demo();

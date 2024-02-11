@@ -1,6 +1,7 @@
 #include <Grandbot.h>
  
-Grandbot::Grandbot(LedControl* _lc, Voice* _voice, Light* _light) {
+Grandbot::Grandbot(Expressions* _expr, LedControl* _lc, Voice* _voice, Light* _light) {
+  this->expr = _expr;
   this->lc = _lc;
   this->voice = _voice;
   this->light = _light;
@@ -74,7 +75,7 @@ void Grandbot::updateMood() {
 }
 
 void Grandbot::setExpression() {
-  expression = Expressions::getExpression(mood);
+  expression = expr->getExpression(mood);
   writeExpression();
   light->setColor(mood);
 }
@@ -86,7 +87,7 @@ void Grandbot::demo() {
   if (now - lastExpressionChange > 1000) {
     // rotate through 4D7S segments (there are 8)
     demoSegmentIndex = (demoSegmentIndex + 1) % 8;
-    byte* demoData = Expressions::getDemo(demoSegmentIndex);
+    byte* demoData = expr->getDemo(demoSegmentIndex);
     for (int i = 0; i < 4; i++) {
       lc->setRow(0, i, *demoData);
     }
