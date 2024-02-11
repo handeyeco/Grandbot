@@ -17,7 +17,7 @@ class Synth {
     void handleNoteOn(byte channel, byte pitch, byte velocity);
     void handleNoteOff(byte channel, byte pitch, byte velocity);
     void handleClock();
-    void handleStart();
+    void handleStartContinue(bool reset);
     void handleStop();
   public:
     Synth(Expressions* _expr, Light* _light, int voicePin);

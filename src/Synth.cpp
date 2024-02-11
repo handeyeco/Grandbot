@@ -40,9 +40,13 @@ void Synth::handleClock() {
   }
 }
 
-void Synth::handleStart() {
-  count = 0;
-  beat = 0;
+void Synth::handleStartContinue(bool reset) {
+  if (!reset) {
+    count = 0;
+    beat = 0;
+  }
+  expr->midiBeat(beat);
+  light->midiBeat(beat);
 }
 
 void Synth::handleStop() {
@@ -71,7 +75,10 @@ bool Synth::update() {
         handleClock();
         break;
       case midi::Start:
-        handleStart();
+        handleStartContinue(true);
+        break;
+      case midi::Continue:
+        handleStartContinue(false);
         break;
       case midi::Stop:
         handleStop();

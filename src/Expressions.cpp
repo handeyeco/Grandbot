@@ -94,8 +94,8 @@ byte *Expressions::getDemo(int demoIndex)
 
 void Expressions::midiBeat(int beat) {
   int half = beat % 2;
-  expression = &ExpressionSets::midiBeatExpressions[half];
-  writeExpression();
+  Expression e = ExpressionSets::midiBeatExpressions[half];
+  writeLedControlData(e.getRegular());
 }
 
 void Expressions::update(int mood) {
