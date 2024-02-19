@@ -44,6 +44,12 @@ void Synth::handleNoteOn(byte channel, byte note, byte velocity) {
 }
 
 void Synth::handleNoteOff(byte channel, byte note, byte velocity) {
+  // BUG: for some reason updating the LED is triggering Note Off?
+  // Arturia keystep sends a note off velocity of 64?
+  if (velocity != 64) {
+    return;
+  }
+
   byte noteIndex = -1;
   for (byte i = 0; i < numPressedNotes; i++) {
     if (pressedNotes[i] == note) {
