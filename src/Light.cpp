@@ -72,8 +72,7 @@ void Light::setMood(int mood) {
   this->mood = mood;
 }
 
-void Light::midiBeat(int beat) {
-  bool even = beat % 2 == 0;
+void Light::midiBeat(int even) {
   int r = even ? 0 : 255;
   int g = even ? 255 : 0;
   int b = even ? 255 : 255;

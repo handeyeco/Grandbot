@@ -92,9 +92,8 @@ byte *Expressions::getDemo(int demoIndex)
   return &segments[demoIndex];
 }
 
-void Expressions::midiBeat(int beat) {
-  int half = beat % 2;
-  Expression e = ExpressionSets::midiBeatExpressions[half];
+void Expressions::midiBeat(int even) {
+  Expression e = ExpressionSets::midiBeatExpressions[even];
   writeLedControlData(e.getRegular());
 }
 
