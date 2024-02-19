@@ -18,12 +18,55 @@ void Synth::sendNoteOff(byte channel, byte note, byte velocity) {
 }
 
 void Synth::handleNoteOn(byte channel, byte note, byte velocity) {
+  if (velocity == 0) {
+    handleNoteOff(channel, note, velocity);
+    return;
+  }
+
+  // exit if we're maxed out on space for new notes
+  if (numPressedNotes + 1 > MAX_NOTES) {
+    return;
+  }
+
+  for (byte i = 0; i < numPressedNotes; i++) {
+    // exit if the note is already pressed
+    if (pressedNotes[i] == note) {
+      return;
+    }
+  }
+
+  // append note to end of pressed note array
+  ++numPressedNotes;
+  pressedNotes[numPressedNotes-1] = note;
+
   tone(voicePin, getPitchByNote(note));
   sendNoteOn(channel, note, velocity);
 }
 
 void Synth::handleNoteOff(byte channel, byte note, byte velocity) {
-  noTone(voicePin);
+  byte noteIndex = -1;
+  for (byte i = 0; i < numPressedNotes; i++) {
+    if (pressedNotes[i] == note) {
+      noteIndex = i;
+    }
+    
+    // MAX_NOTES - 2 because at index 14 we can move index 15 over
+    // but at index 15 there's nothing to the right to move over
+    if (noteIndex >= 0 && i >= noteIndex && i < MAX_NOTES - 2) {
+      pressedNotes[i] = pressedNotes[i+1];
+    }
+  }
+
+  if (noteIndex >= 0 && numPressedNotes > 0) {
+    --numPressedNotes;
+  }
+
+  if (numPressedNotes > 0) {
+    tone(voicePin, getPitchByNote(pressedNotes[numPressedNotes-1]));
+  } else {
+    noTone(voicePin);
+  }
+
   sendNoteOff(channel, note, velocity);
 }
 

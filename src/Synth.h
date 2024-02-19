@@ -7,6 +7,8 @@
 #ifndef SYNTH_INCL_GUARD
 #define SYNTH_INCL_GUARD
 
+#define MAX_NOTES 16
+
 class Synth {
   private:
     Expressions* expr;
@@ -14,6 +16,10 @@ class Synth {
     int voicePin;
     byte beat = 0;
     byte count = 0;
+
+    byte pressedNotes[MAX_NOTES];
+    byte numPressedNotes = 0;
+
     void handleNoteOn(byte channel, byte pitch, byte velocity);
     void handleNoteOff(byte channel, byte pitch, byte velocity);
     void handleClock();
