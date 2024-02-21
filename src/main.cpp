@@ -48,7 +48,7 @@ void setup() {
   randomSeed(analogRead(RANDOM_PIN));
 
   setupLedControl();
-  // expr.init();
+  expr.init();
 
   if (midiEnabled) {
     synth.setup();
@@ -58,42 +58,41 @@ void setup() {
 }
 
 void loop() {
-  // int lightRead = analogRead(LIGHT_SENSOR_PIN);
-  // int playRead = digitalRead(PLAY_BUTTON_PIN);
-  // int now = millis();
+  int lightRead = analogRead(LIGHT_SENSOR_PIN);
+  int playRead = digitalRead(PLAY_BUTTON_PIN);
+  int now = millis();
 
-  synth.update();
-  // if (synth.update()) {
-  //   midiMode = true;
-  //   lastMidiMessage = millis();
-  // }
+  if (synth.update()) {
+    midiMode = true;
+    lastMidiMessage = millis();
+  }
 
-  // if (midiMode) {
-  //   if (now - lastMidiMessage > 1 * 1000) {
-  //     midiMode = false;
-  //   }
+  if (midiMode) {
+    if (now - lastMidiMessage > 1 * 1000) {
+      midiMode = false;
+    }
 
-  //   return;
-  // }
+    return;
+  }
 
-  // if (demoMode) {
-  //   if (!midiEnabled) {
-  //     Serial.print("Light: ");
-  //     Serial.print(lightRead);
-  //     Serial.print(" Button: ");
-  //     Serial.println(playRead);
-  //   }
-  //   gb.demo();
-  //   return;
-  // }
+  if (demoMode) {
+    if (!midiEnabled) {
+      Serial.print("Light: ");
+      Serial.print(lightRead);
+      Serial.print(" Button: ");
+      Serial.println(playRead);
+    }
+    gb.demo();
+    return;
+  }
 
-  // // play button is active LOW
-  // if (playRead == LOW && lastPlayRead == HIGH) {
-  //   gb.play();
-  // }
-  // lastPlayRead = playRead;
+  // play button is active LOW
+  if (playRead == LOW && lastPlayRead == HIGH) {
+    gb.play();
+  }
+  lastPlayRead = playRead;
 
-  // gb.update(lightRead);
-  // light.update();
-  // voice.update();
+  gb.update(lightRead);
+  light.update();
+  voice.update();
 }
