@@ -19,19 +19,19 @@ class Synth {
     byte pressedNotes[MAX_NOTES];
     byte numPressedNotes = 0;
 
-    byte currNoteIndex;
-    int nextNotePosition;
+    byte currNoteIndex = -1;
+    int nextNotePosition = 0;
 
     // 8 * 16 total 16th positons
-    byte sequenceNotes[128];
-    byte sequenceLengths[128];
+    byte sequenceNotes[128] = {62, 65, 69, 65, 62, 65, 69, 65};
+    byte sequenceLengths[128] = {4, 4, 4, 4, 4, 4, 4, 4};
     // number of discrete notes, NOT number of 16th notes
-    int totalSequenceLength = 0;
+    int totalSequenceLength = 8;
 
-    int pulseCount = 0;
+    unsigned long long pulseCount = 0;
     int sixteenthCount = 0;
-    void handleSixteenth();
     int quarterCount = 0;
+    void handleSixteenth();
     void handleQuarter();
     void resetCounts();
 

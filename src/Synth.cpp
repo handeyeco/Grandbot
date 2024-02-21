@@ -24,7 +24,7 @@ const byte possibleSequenceLengths[] = {
   5 * 16,
   6 * 16,
   7 * 16,
-  8 * 16  // 8 bar (8 bar * 16(th))
+  8 * 16  // 8 bar (8 bar * 16(th)) => 128
 };
 void Synth::generateSequence() {
   byte newSequenceLength = 0;
@@ -32,11 +32,13 @@ void Synth::generateSequence() {
 
   // This is the length in number of 16th notes
   // TODO make this use the length of the the array for random
-  int fullSequenceLength = possibleSequenceLengths[random(8)];
+  // int fullSequenceLength = possibleSequenceLengths[random(2)];
+  int fullSequenceLength = 128;
 
   while (newSequenceLength < fullSequenceLength) {
     byte randomNoteIndex = random(numPressedNotes);
-    byte randomNoteLength = random(1, 16);
+    // byte randomNoteLength = random(1, 16);
+    byte randomNoteLength = 2;
     // make sure we stay within bounds of the total seq length
     if (newSequenceLength + randomNoteLength > fullSequenceLength) {
       randomNoteLength = fullSequenceLength - newSequenceLength;
@@ -117,14 +119,12 @@ void Synth::handleNoteOff(byte channel, byte note, byte velocity) {
 }
 
 void Synth::handleQuarter() {
-  if (quarterCount >= 4) {
+  if (quarterCount >= 8) {
     quarterCount = 0;
   }
 
-  int even = quarterCount % 2;
-  if (!DEBUG_ARP) {
-    expr->midiBeat(even);
-  }
+  int even = quarterCount % 2 == 0;
+  expr->midiBeat(even);
   light->midiBeat(even);
 
   quarterCount++;
@@ -137,29 +137,32 @@ void Synth::handleSixteenth() {
   }
 
   if (sixteenthCount == nextNotePosition) {
-    sendNoteOff(1, sequenceNotes[currNoteIndex], 64);
+    // -1 is no current note
+    if (currNoteIndex >= 0) {
+      sendNoteOff(1, sequenceNotes[currNoteIndex], 64);
+    }
     currNoteIndex = (currNoteIndex + 1) % totalSequenceLength;
     sendNoteOn(1, sequenceNotes[currNoteIndex], 100);
     nextNotePosition = nextNotePosition + sequenceLengths[currNoteIndex];
   }
 
-  if (DEBUG_ARP) {
-    int v = sixteenthCount;
-    int ones;  
-    int tens;  
-    int hundreds;
+  // if (DEBUG_ARP) {
+  //   int v = sixteenthCount;
+  //   int ones;  
+  //   int tens;  
+  //   int hundreds;
 
-    ones = v%10;  
-    v = v/10;  
-    tens = v%10;  
-    v = v/10;
-    hundreds = v; 
+  //   ones = v%10;  
+  //   v = v/10;  
+  //   tens = v%10;  
+  //   v = v/10;
+  //   hundreds = v; 
 
-    lc->clearDisplay(0);
-    lc->setDigit(0,1,(byte)hundreds,false);
-    lc->setDigit(0,2,(byte)tens,false); 
-    lc->setDigit(0,3,(byte)ones,false);
-  }
+  //   lc->clearDisplay(0);
+  //   lc->setDigit(0,1,(byte)hundreds,false);
+  //   lc->setDigit(0,2,(byte)tens,false); 
+  //   lc->setDigit(0,3,(byte)ones,false);
+  // }
 
   ++sixteenthCount;
 }
@@ -169,9 +172,9 @@ void Synth::handleClock() {
     handleSixteenth();
   }
 
-  if (pulseCount == PULSES_PER_QUARTER_NOTE) {
+  if (pulseCount % PULSES_PER_QUARTER_NOTE == 0) {
     handleQuarter();
-    pulseCount = 0;
+    // pulseCount = 0;
   }
 
   ++pulseCount;
@@ -181,23 +184,24 @@ void Synth::resetCounts() {
   pulseCount = 0;
   sixteenthCount = 0;
   quarterCount = 0;
+  currNoteIndex = -1;
+  nextNotePosition = 0;
 }
 
 void Synth::handleStartContinue(bool reset) {
+  lc->clearDisplay(0);
+
   if (reset) {
     resetCounts();
   }
 
   int even = quarterCount % 2;
-  if (!DEBUG_ARP) {
-    expr->midiBeat(!even);
-  }
+  expr->midiBeat(!even);
   light->midiBeat(!even);
 }
 
 void Synth::handleStop() {
   sendNoteOff(1, sequenceNotes[currNoteIndex], 64);
-  resetCounts();
 }
 
 void Synth::setup() {
@@ -211,20 +215,22 @@ bool Synth::update() {
   if (MIDI.read()) {
     readMidi = true;
     switch(MIDI.getType()) {
+      case midi::Clock:
+        handleClock();
+        break;
       case midi::NoteOn:
         handleNoteOn(MIDI.getChannel(), MIDI.getData1(), MIDI.getData2());
         break;
       case midi::NoteOff:
         handleNoteOff(MIDI.getChannel(), MIDI.getData1(), MIDI.getData2());
         break;
-      case midi::Clock:
-        handleClock();
-        break;
       case midi::Start:
         handleStartContinue(true);
+        handleClock();
         break;
       case midi::Continue:
         handleStartContinue(false);
+        handleClock();
         break;
       case midi::Stop:
         handleStop();
