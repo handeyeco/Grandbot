@@ -1,11 +1,5 @@
 #include <Synth.h>
 
-#define PULSES_PER_QUARTER_NOTE 24
-#define PULSES_PER_SIXTEENTH_NOTE 6
-#define SIXTEENTH_PER_BAR 16
-
-#define DEBUG_ARP 1
-
 // Initialize MIDI library
 MIDI_CREATE_DEFAULT_INSTANCE();
 
@@ -14,19 +8,16 @@ Synth::Synth(LedControl* _lc, Expressions* _expr, Light* _light, int voicePin) {
   this->expr = _expr;
   this->light = _light;
   this->voicePin = voicePin;
-}
 
-// in 16th notes
-const byte possibleSequenceLengths[] = {
-  1 * 16, // 1 bar (1 bar * 16(th))
-  2 * 16,
-  3 * 16,
-  4 * 16,
-  5 * 16,
-  6 * 16,
-  7 * 16,
-  8 * 16  // 8 bar (8 bar * 16(th)) => 128
-};
+  SequenceStep* step0 = new SequenceStep(0, PULSES_PER_QUARTER_NOTE * 0);
+  SequenceStep* step1 = new SequenceStep(1, PULSES_PER_QUARTER_NOTE * 1);
+  SequenceStep* step2 = new SequenceStep(2, PULSES_PER_QUARTER_NOTE * 2);
+  SequenceStep* step3 = new SequenceStep(3, PULSES_PER_QUARTER_NOTE * 3);
+  sequenceSteps[0] = step0;
+  sequenceSteps[1] = step1;
+  sequenceSteps[2] = step2;
+  sequenceSteps[3] = step3;
+}
 
 const byte possibleNoteLengths[] = {
   1, // 16th
@@ -35,29 +26,36 @@ const byte possibleNoteLengths[] = {
 };
 
 void Synth::generateSequence() {
-  byte newSequenceLength = 0;
+  // This is the length in number of pulses
+  // (random number of bars between 1-8)
+  totalSequenceLength = random(1, 9) * PULSES_PER_BAR;
+
+  // This is the length of the note in pulses
+  byte randomNoteLength = possibleNoteLengths[random(3)] * PULSES_PER_SIXTEENTH_NOTE;
+
+  // Accumulator for steps (in pulses)
+  uint16_t newSequenceLength = 0;
+
+  // Discrete steps
   byte stepIndex = 0;
 
-  // This is the length in number of 16th notes
-  // TODO make this use the length of the the array for random
-  int fullSequenceLength = possibleSequenceLengths[random(8)];
-  byte randomNoteLength = possibleNoteLengths[random(3)];
+  while (newSequenceLength < totalSequenceLength) {
+    byte randomNoteInterval = random(MAX_NOTES);
 
-  while (newSequenceLength < fullSequenceLength) {
-    byte randomNoteIndex = random(numPressedNotes);
-    // make sure we stay within bounds of the total seq length
-    if (newSequenceLength + randomNoteLength > fullSequenceLength) {
-      randomNoteLength = fullSequenceLength - newSequenceLength;
-    }
+    // Make sure we stay within bounds of the total seq length
+    byte noteLength = randomNoteLength;
+    // if (newSequenceLength + noteLength > totalSequenceLength) {
+    //   noteLength = totalSequenceLength - newSequenceLength;
+    // }
 
-    newSequenceLength = newSequenceLength + randomNoteLength;
-    sequenceNotes[stepIndex] = pressedNotes[randomNoteIndex];
-    sequenceLengths[stepIndex] = randomNoteLength;
+    SequenceStep* step = new SequenceStep(randomNoteInterval, newSequenceLength);
+    newSequenceLength = newSequenceLength + noteLength;
+    sequenceSteps[stepIndex] = step;
 
     stepIndex++;
   }
 
-  totalSequenceLength = stepIndex;
+  totalSequenceSteps = stepIndex;
 }
 
 void Synth::sendNoteOn(byte channel, byte note, byte velocity) {
@@ -74,16 +72,18 @@ void Synth::handleNoteOn(byte channel, byte note, byte velocity) {
     return;
   }
 
-  sendNoteOff(1, sequenceNotes[currNoteIndex], 64);
+  if (numPressedNotes == 0) {
+    numActiveNotes = 0;
+  }
 
-  // exit if we're maxed out on space for new notes
-  if (numPressedNotes + 1 > MAX_NOTES) {
+  // Exit if we're maxed out on space for new notes
+  if (numPressedNotes + 1 > MAX_NOTES || numActiveNotes + 1 > MAX_NOTES) {
     return;
   }
 
-  for (byte i = 0; i < numPressedNotes; i++) {
-    // exit if the note is already pressed
-    if (pressedNotes[i] == note) {
+  for (byte i = 0; i < numActiveNotes; i++) {
+    // exit if the note is already active
+    if (activeNotes[i] == note) {
       return;
     }
   }
@@ -92,9 +92,8 @@ void Synth::handleNoteOn(byte channel, byte note, byte velocity) {
   ++numPressedNotes;
   pressedNotes[numPressedNotes-1] = note;
 
-  // tone(voicePin, getPitchByNote(note));
-  // sendNoteOn(channel, note, velocity);
-  generateSequence();
+  ++numActiveNotes;
+  activeNotes[numPressedNotes-1] = note;
 }
 
 void Synth::handleNoteOff(byte channel, byte note, byte velocity) {
@@ -111,76 +110,62 @@ void Synth::handleNoteOff(byte channel, byte note, byte velocity) {
     }
   }
 
-  if (noteIndex >= 0 && numPressedNotes > 0) {
+  if (noteIndex > -1 && numPressedNotes > 0) {
     --numPressedNotes;
   }
-
-  // if (numPressedNotes > 0) {
-  //   tone(voicePin, getPitchByNote(pressedNotes[numPressedNotes-1]));
-  // } else {
-  //   noTone(voicePin);
-  // }
-
-  // sendNoteOff(channel, note, velocity);
 }
 
-void Synth::handleQuarter() {
-  if (quarterCount >= 8) {
-    quarterCount = 0;
-  }
-
-  int even = quarterCount % 2 == 0;
-  expr->midiBeat(even);
-  light->midiBeat(even);
-
-  quarterCount++;
-}
-
-void Synth::handleSixteenth() {
-  if (sixteenthCount >= totalSequenceLength) {
-    sixteenthCount = 0;
-    nextNotePosition = 0;
-  }
-
-  if (sixteenthCount == nextNotePosition) {
-    // -1 is no current note
-    if (currNoteIndex >= 0) {
-      sendNoteOff(1, sequenceNotes[currNoteIndex], 64);
+// Find a step that starts on this pulse
+// (returns -1 if there isn't one)
+int Synth::findStepIndexForPulse(uint16_t pulse) {
+  for (int i = 0; i < MAX_STEPS_IN_SEQ; ++i) {
+    if (pulse == sequenceSteps[i]->noteStartPosition) {
+      return i;
     }
-    currNoteIndex = (currNoteIndex + 1) % totalSequenceLength;
-    sendNoteOn(1, sequenceNotes[currNoteIndex], 100);
-    nextNotePosition = nextNotePosition + sequenceLengths[currNoteIndex];
+
+    // steps are in sequential order, so if we haven't
+    // found the right step we aren't going to find it
+    if (pulse < sequenceSteps[i]->noteStartPosition) {
+      return -1;
+    }
   }
 
-  // if (DEBUG_ARP) {
-  //   int v = sixteenthCount;
-  //   int ones;  
-  //   int tens;  
-  //   int hundreds;
+  return -1;
+}
 
-  //   ones = v%10;  
-  //   v = v/10;  
-  //   tens = v%10;  
-  //   v = v/10;
-  //   hundreds = v; 
+void Synth::handleStep(int stepIndex) {
+  // -1 is no current note
+  if (currNote > -1) {
+    sendNoteOff(1, currNote, 64);
+  }
 
-  //   lc->clearDisplay(0);
-  //   lc->setDigit(0,1,(byte)hundreds,false);
-  //   lc->setDigit(0,2,(byte)tens,false); 
-  //   lc->setDigit(0,3,(byte)ones,false);
-  // }
+  SequenceStep* step = sequenceSteps[stepIndex];
+  int newNoteIndex = step->noteIndex % numActiveNotes;
+  currNote = activeNotes[newNoteIndex];
 
-  ++sixteenthCount;
+  sendNoteOn(1, currNote, 100);
 }
 
 void Synth::handleClock() {
-  if (pulseCount % PULSES_PER_SIXTEENTH_NOTE == 0) {
-    handleSixteenth();
+  if (pulseCount > totalSequenceLength) {
+    pulseCount = 0;
   }
 
-  if (pulseCount % PULSES_PER_QUARTER_NOTE == 0) {
-    handleQuarter();
-    // pulseCount = 0;
+  if (totalSequenceLength > 0) {
+    if (pulseCount % PULSES_PER_QUARTER_NOTE == 0) {
+      quarterFlipFlop = !quarterFlipFlop;
+
+      expr->midiBeat(quarterFlipFlop);
+      light->midiBeat(quarterFlipFlop);
+    }
+
+    // TODO Serious room for optimization here
+    // there's a better way than running through each step
+    // each clock cycle
+    int stepIndex = findStepIndexForPulse(pulseCount);
+    if (stepIndex > -1) {
+      handleStep(stepIndex);
+    }
   }
 
   ++pulseCount;
@@ -188,10 +173,7 @@ void Synth::handleClock() {
 
 void Synth::resetCounts() {
   pulseCount = 0;
-  sixteenthCount = 0;
-  quarterCount = 0;
-  currNoteIndex = -1;
-  nextNotePosition = 0;
+  currNote = -1;
 }
 
 void Synth::handleStartContinue(bool reset) {
@@ -201,13 +183,12 @@ void Synth::handleStartContinue(bool reset) {
     resetCounts();
   }
 
-  int even = quarterCount % 2;
-  expr->midiBeat(!even);
-  light->midiBeat(!even);
+  expr->midiBeat(quarterFlipFlop);
+  light->midiBeat(quarterFlipFlop);
 }
 
 void Synth::handleStop() {
-  sendNoteOff(1, sequenceNotes[currNoteIndex], 64);
+  sendNoteOff(1, currNote, 64);
 }
 
 void Synth::setup() {
@@ -250,4 +231,8 @@ bool Synth::update() {
   }
 
   return readMidi;
+}
+
+void Synth::playButtonPress() {
+  generateSequence();
 }
