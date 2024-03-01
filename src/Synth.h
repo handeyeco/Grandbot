@@ -18,6 +18,7 @@ class Synth {
 
     byte pressedNotes[MAX_NOTES];
     byte numPressedNotes = 0;
+    byte lastNoteBeforeSeqChange = -1;
 
     byte currNoteIndex = -1;
     int nextNotePosition = 0;

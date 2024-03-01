@@ -2,6 +2,7 @@
 
 #define PULSES_PER_QUARTER_NOTE 24
 #define PULSES_PER_SIXTEENTH_NOTE 6
+#define SIXTEENTH_PER_BAR 16
 
 #define DEBUG_ARP 1
 
@@ -26,19 +27,24 @@ const byte possibleSequenceLengths[] = {
   7 * 16,
   8 * 16  // 8 bar (8 bar * 16(th)) => 128
 };
+
+const byte possibleNoteLengths[] = {
+  1, // 16th
+  2, // 8th
+  4, // quarter
+};
+
 void Synth::generateSequence() {
   byte newSequenceLength = 0;
   byte stepIndex = 0;
 
   // This is the length in number of 16th notes
   // TODO make this use the length of the the array for random
-  // int fullSequenceLength = possibleSequenceLengths[random(2)];
-  int fullSequenceLength = 128;
+  int fullSequenceLength = possibleSequenceLengths[random(8)];
+  byte randomNoteLength = possibleNoteLengths[random(3)];
 
   while (newSequenceLength < fullSequenceLength) {
     byte randomNoteIndex = random(numPressedNotes);
-    // byte randomNoteLength = random(1, 16);
-    byte randomNoteLength = 2;
     // make sure we stay within bounds of the total seq length
     if (newSequenceLength + randomNoteLength > fullSequenceLength) {
       randomNoteLength = fullSequenceLength - newSequenceLength;
