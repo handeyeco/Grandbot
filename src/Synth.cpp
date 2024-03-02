@@ -94,6 +94,13 @@ void Synth::generateSequence() {
       noteLength = noteLength * 2;
     }
 
+    // Random rest
+    else if (diceRoll < 40) {
+      // use 255 to indicate rest
+      // TODO fix this, it's hacky
+      randomNoteInterval = 255;
+    }
+
     // Make sure we stay within bounds of the total seq length
     // if (newSequenceLength + noteLength > newTotalSequenceLength) {
     //   noteLength = newTotalSequenceLength - newSequenceLength;
@@ -200,7 +207,16 @@ void Synth::handleStep(int stepIndex) {
     sendNoteOff(1, currNote, 64);
   }
 
-  int newNoteIndex = sequenceIntervals[stepIndex] % numActiveNotes;
+  byte stepInterval = sequenceIntervals[stepIndex];
+
+  // use 255 to indicate rest
+  // TODO fix this, it's hacky
+  if (stepInterval == 255) {
+    currNote = 0;
+    return;
+  }
+
+  byte newNoteIndex =  stepInterval % numActiveNotes;
   byte nextNote = activeNotes[newNoteIndex];
 
   // check to make sure we can safely apply note/octave offset
