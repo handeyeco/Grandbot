@@ -195,8 +195,8 @@ bool Synth::noteInBounds(byte note) {
 }
 
 void Synth::handleStep(int stepIndex) {
-  // -1 is no current note
-  if (currNote > -1) {
+  // 0 is no current note
+  if (currNote > 0) {
     sendNoteOff(1, currNote, 64);
   }
 
@@ -209,7 +209,6 @@ void Synth::handleStep(int stepIndex) {
   }
 
   currNote = nextNote;
-
   sendNoteOn(1, currNote, 100);
 }
 
@@ -240,7 +239,7 @@ void Synth::handleClock() {
 
 void Synth::reset() {
   pulseCount = 0;
-  currNote = -1;
+  currNote = 0;
 }
 
 void Synth::handleStartContinue(bool resetSeq) {

@@ -30,7 +30,7 @@ class Synth {
     byte activeNotes[MAX_NOTES] = {62, 65, 69, 65};
     byte numActiveNotes = 4;
 
-    byte currNote = -1;
+    byte currNote = 0;
 
     byte sequenceIntervals[MAX_STEPS_IN_SEQ] = {0, 1, 2, 3};
 
