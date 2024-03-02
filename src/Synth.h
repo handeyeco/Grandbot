@@ -34,6 +34,9 @@ class Synth {
 
     byte sequenceIntervals[MAX_STEPS_IN_SEQ] = {0, 1, 2, 3};
 
+    // Offset the note at this step (like for octaves)
+    // 0=no offset; 12=+1 oct; -24=-2oct
+    int8_t sequenceOffset[MAX_STEPS_IN_SEQ] = {0, 0, 0, 0};
     uint16_t sequenceStartPositions[MAX_STEPS_IN_SEQ] = {
       PULSES_PER_QUARTER_NOTE * 0,
       PULSES_PER_QUARTER_NOTE * 1,
@@ -52,6 +55,7 @@ class Synth {
     void reset();
 
     int findStepIndexForPulse(uint16_t pulse);
+    bool noteInBounds(byte note);
     void handleNoteOn(byte channel, byte pitch, byte velocity);
     void handleNoteOff(byte channel, byte pitch, byte velocity);
     void handleClock();

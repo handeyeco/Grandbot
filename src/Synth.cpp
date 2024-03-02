@@ -31,14 +31,39 @@ void Synth::generateSequence() {
   byte stepIndex = 0;
 
   while (newSequenceLength < newTotalSequenceLength) {
+    byte noteLength = randomNoteLength;
+    // used for octaves
+    int8_t noteOffset = 0;
+
     byte randomNoteInterval = random(MAX_NOTES);
+    byte diceRoll = random(256);
+
+    if (diceRoll < 20) {
+      byte offsetDiceRoll = random(100);
+
+      // TODO this could be a switch,
+      // it just wasn't working as expected
+      if (offsetDiceRoll < 10) {
+          // two oct down
+          noteOffset = -24;
+      } else if (offsetDiceRoll < 20) {
+          // two oct up
+          noteOffset = 24;
+      } else if (offsetDiceRoll < 50) {
+          // one oct down
+          noteOffset = -12;
+      } else {
+          // one oct up
+          noteOffset = 12;
+      }
+    }
 
     // Make sure we stay within bounds of the total seq length
-    byte noteLength = randomNoteLength;
     // if (newSequenceLength + noteLength > newTotalSequenceLength) {
     //   noteLength = newTotalSequenceLength - newSequenceLength;
     // }
 
+    sequenceOffset[stepIndex] = noteOffset;
     sequenceIntervals[stepIndex] = randomNoteInterval;
     sequenceStartPositions[stepIndex] = newSequenceLength;
 
@@ -126,6 +151,12 @@ int Synth::findStepIndexForPulse(uint16_t pulse) {
   return -1;
 }
 
+// keep note between MIDI note ranges of
+// 23 (B0) and 110 (D8)
+bool Synth::noteInBounds(byte note) {
+  return note >= 23 && note <= 110;
+}
+
 void Synth::handleStep(int stepIndex) {
   // -1 is no current note
   if (currNote > -1) {
@@ -133,7 +164,14 @@ void Synth::handleStep(int stepIndex) {
   }
 
   int newNoteIndex = sequenceIntervals[stepIndex] % numActiveNotes;
-  currNote = activeNotes[newNoteIndex];
+  byte nextNote = activeNotes[newNoteIndex];
+
+  // check to make sure we can safely apply note/octave offset
+  if (sequenceOffset[stepIndex] && noteInBounds(nextNote + sequenceOffset[stepIndex])) {
+    nextNote = nextNote + sequenceOffset[stepIndex];
+  }
+
+  currNote = nextNote;
 
   sendNoteOn(1, currNote, 100);
 }
