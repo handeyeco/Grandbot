@@ -58,11 +58,12 @@ void setup() {
 }
 
 void loop() {
+  unsigned long long now = millis();
+
   int lightRead = analogRead(LIGHT_SENSOR_PIN);
   int playRead = digitalRead(PLAY_BUTTON_PIN);
   int playPress = playRead == LOW && lastPlayRead == HIGH;
   lastPlayRead = playRead;
-  int now = millis();
 
   if (playPress) {
     synth.playButtonPress();
@@ -92,9 +93,8 @@ void loop() {
     return;
   }
 
-  // play button is active LOW
   if (playPress) {
-    // gb.play();
+    gb.play();
   }
 
   gb.update(lightRead);

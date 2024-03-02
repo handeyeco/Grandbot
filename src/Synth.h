@@ -15,6 +15,7 @@
 // How many notes can be pressed or active
 #define MAX_NOTES 16
 // Max number of discrete steps in a sequence
+// 8 (bars) * 16th (notes)
 #define MAX_STEPS_IN_SEQ 8 * 16
 
 
@@ -32,8 +33,13 @@ class Synth {
 
     byte currNote = -1;
 
-    // 8 * 16 total 16th positons
-    SequenceStep* sequenceSteps[MAX_STEPS_IN_SEQ];
+    int sequenceIntervals[MAX_STEPS_IN_SEQ] = {0, 1, 2, 3};
+    uint16_t sequenceStartPositions[MAX_STEPS_IN_SEQ] = {
+      PULSES_PER_QUARTER_NOTE * 0,
+      PULSES_PER_QUARTER_NOTE * 1,
+      PULSES_PER_QUARTER_NOTE * 2,
+      PULSES_PER_QUARTER_NOTE * 3
+    };
     int totalSequenceSteps = 4;
 
     // Total sequence length in pulses

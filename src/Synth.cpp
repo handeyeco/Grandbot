@@ -8,16 +8,6 @@ Synth::Synth(LedControl* _lc, Expressions* _expr, Light* _light, int voicePin) {
   this->expr = _expr;
   this->light = _light;
   this->voicePin = voicePin;
-
-  int stepLength = PULSES_PER_QUARTER_NOTE;
-  SequenceStep* step0 = new SequenceStep(0, stepLength * 0);
-  SequenceStep* step1 = new SequenceStep(1, stepLength * 1);
-  SequenceStep* step2 = new SequenceStep(2, stepLength * 2);
-  SequenceStep* step3 = new SequenceStep(3, stepLength * 3);
-  sequenceSteps[0] = step0;
-  sequenceSteps[1] = step1;
-  sequenceSteps[2] = step2;
-  sequenceSteps[3] = step3;
 }
 
 const byte possibleNoteLengths[] = {
@@ -29,34 +19,36 @@ const byte possibleNoteLengths[] = {
 void Synth::generateSequence() {
   // This is the length in number of pulses
   // (random number of bars between 1-8)
-  totalSequenceLength = random(1, 9) * PULSES_PER_BAR;
+  uint16_t newTotalSequenceLength = random(1, 9) * PULSES_PER_BAR;
 
   // This is the length of the note in pulses
   byte randomNoteLength = possibleNoteLengths[random(3)] * PULSES_PER_SIXTEENTH_NOTE;
 
-  // Accumulator for steps (in pulses)
+  // Accumulator for steps in pulses
   uint16_t newSequenceLength = 0;
 
-  // Discrete steps
+  // Accumulator for discrete steps
   byte stepIndex = 0;
 
-  while (newSequenceLength < totalSequenceLength) {
+  while (newSequenceLength < newTotalSequenceLength) {
     byte randomNoteInterval = random(MAX_NOTES);
 
     // Make sure we stay within bounds of the total seq length
     byte noteLength = randomNoteLength;
-    // if (newSequenceLength + noteLength > totalSequenceLength) {
-    //   noteLength = totalSequenceLength - newSequenceLength;
+    // if (newSequenceLength + noteLength > newTotalSequenceLength) {
+    //   noteLength = newTotalSequenceLength - newSequenceLength;
     // }
 
-    SequenceStep* step = new SequenceStep(randomNoteInterval, newSequenceLength);
+    sequenceIntervals[stepIndex] = randomNoteInterval;
+    sequenceStartPositions[stepIndex] = newSequenceLength;
+
     newSequenceLength = newSequenceLength + noteLength;
-    sequenceSteps[stepIndex] = step;
 
     stepIndex++;
   }
 
   totalSequenceSteps = stepIndex;
+  totalSequenceLength = newTotalSequenceLength;
 }
 
 void Synth::sendNoteOn(byte channel, byte note, byte velocity) {
@@ -119,14 +111,14 @@ void Synth::handleNoteOff(byte channel, byte note, byte velocity) {
 // Find a step that starts on this pulse
 // (returns -1 if there isn't one)
 int Synth::findStepIndexForPulse(uint16_t pulse) {
-  for (int i = 0; i < MAX_STEPS_IN_SEQ; ++i) {
-    if (pulse == sequenceSteps[i]->noteStartPosition) {
+  for (int i = 0; i < totalSequenceSteps; ++i) {
+    if (pulse == sequenceStartPositions[i]) {
       return i;
     }
 
     // steps are in sequential order, so if we haven't
     // found the right step we aren't going to find it
-    if (pulse < sequenceSteps[i]->noteStartPosition) {
+    if (pulse < sequenceStartPositions[i]) {
       return -1;
     }
   }
@@ -140,8 +132,7 @@ void Synth::handleStep(int stepIndex) {
     sendNoteOff(1, currNote, 64);
   }
 
-  SequenceStep* step = sequenceSteps[stepIndex];
-  int newNoteIndex = step->noteIndex % numActiveNotes;
+  int newNoteIndex = sequenceIntervals[stepIndex] % numActiveNotes;
   currNote = activeNotes[newNoteIndex];
 
   sendNoteOn(1, currNote, 100);
