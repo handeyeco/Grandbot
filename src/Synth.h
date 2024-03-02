@@ -42,7 +42,7 @@ class Synth {
     bool quarterFlipFlop = false;
 
     unsigned long long pulseCount = 0;
-    void resetCounts();
+    void reset();
 
     int findStepIndexForPulse(uint16_t pulse);
     void handleNoteOn(byte channel, byte pitch, byte velocity);

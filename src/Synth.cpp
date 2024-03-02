@@ -9,10 +9,11 @@ Synth::Synth(LedControl* _lc, Expressions* _expr, Light* _light, int voicePin) {
   this->light = _light;
   this->voicePin = voicePin;
 
-  SequenceStep* step0 = new SequenceStep(0, PULSES_PER_QUARTER_NOTE * 0);
-  SequenceStep* step1 = new SequenceStep(1, PULSES_PER_QUARTER_NOTE * 1);
-  SequenceStep* step2 = new SequenceStep(2, PULSES_PER_QUARTER_NOTE * 2);
-  SequenceStep* step3 = new SequenceStep(3, PULSES_PER_QUARTER_NOTE * 3);
+  int stepLength = PULSES_PER_QUARTER_NOTE;
+  SequenceStep* step0 = new SequenceStep(0, stepLength * 0);
+  SequenceStep* step1 = new SequenceStep(1, stepLength * 1);
+  SequenceStep* step2 = new SequenceStep(2, stepLength * 2);
+  SequenceStep* step3 = new SequenceStep(3, stepLength * 3);
   sequenceSteps[0] = step0;
   sequenceSteps[1] = step1;
   sequenceSteps[2] = step2;
@@ -147,18 +148,11 @@ void Synth::handleStep(int stepIndex) {
 }
 
 void Synth::handleClock() {
-  if (pulseCount > totalSequenceLength) {
+  if (pulseCount >= totalSequenceLength) {
     pulseCount = 0;
   }
 
   if (totalSequenceLength > 0) {
-    if (pulseCount % PULSES_PER_QUARTER_NOTE == 0) {
-      quarterFlipFlop = !quarterFlipFlop;
-
-      expr->midiBeat(quarterFlipFlop);
-      light->midiBeat(quarterFlipFlop);
-    }
-
     // TODO Serious room for optimization here
     // there's a better way than running through each step
     // each clock cycle
@@ -166,21 +160,28 @@ void Synth::handleClock() {
     if (stepIndex > -1) {
       handleStep(stepIndex);
     }
+
+    if (pulseCount % PULSES_PER_QUARTER_NOTE == 0) {
+      quarterFlipFlop = !quarterFlipFlop;
+
+      expr->midiBeat(quarterFlipFlop);
+      light->midiBeat(quarterFlipFlop);
+    }
   }
 
   ++pulseCount;
 }
 
-void Synth::resetCounts() {
+void Synth::reset() {
   pulseCount = 0;
   currNote = -1;
 }
 
-void Synth::handleStartContinue(bool reset) {
+void Synth::handleStartContinue(bool resetSeq) {
   lc->clearDisplay(0);
 
-  if (reset) {
-    resetCounts();
+  if (resetSeq) {
+    reset();
   }
 
   expr->midiBeat(quarterFlipFlop);
