@@ -5,19 +5,19 @@
 
 class Light {
   private:
-    int redPin;
-    int greenPin;
-    int bluePin;
+    byte redPin;
+    byte greenPin;
+    byte bluePin;
 
     int mood;
 
     // Use all this for color transition
-    int nextR = 0;
-    int nextG = 0;
-    int nextB = 0;
-    int prevR = 0;
-    int prevG = 0;
-    int prevB = 0;
+    byte nextR = 0;
+    byte nextG = 0;
+    byte nextB = 0;
+    byte prevR = 0;
+    byte prevG = 0;
+    byte prevB = 0;
     int rDelta;
     int gDelta;
     int bDelta;
@@ -27,14 +27,14 @@ class Light {
     unsigned long startTween;
     unsigned long lastDemoChange;
 
-    void write(int rVal, int gVal, int bVal);
+    void write(byte rVal, byte gVal, byte bVal);
   public:
-    Light(int rPin, int gPin, int bPin);
+    Light(byte rPin, byte gPin, byte bPin);
     void demo();
     void update();
     void setColor(int mood);
     void setMood(int mood);
-    void midiBeat(int beat);
+    void midiBeat(bool beat);
 };
 
 #endif

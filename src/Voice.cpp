@@ -1,6 +1,6 @@
 #include <Voice.h>
 
-const int Voice::singingNotes[27] = {
+const byte Voice::singingNotes[27] = {
     84,
     85,
     86,
@@ -40,7 +40,7 @@ int Voice::setMajor7th(int startIndex, int root)
 {
   int len = 4;
 
-  int notes[len] = {
+  byte notes[len] = {
       singingNotes[root],
       singingNotes[root + 4],
       singingNotes[root + 7],
@@ -57,20 +57,20 @@ int Voice::setMajor7th(int startIndex, int root)
 
 int Voice::setTriad(int startIndex, int root, boolean major)
 {
-  int len = 3;
-  int third = major ? 4 : 3;
+  byte len = 3;
+  byte third = major ? 4 : 3;
 
-  int notes[len] = {
+  byte notes[len] = {
       singingNotes[root],
       singingNotes[root + third],
       singingNotes[root + 7]};
 
-  int noteLenFlip = random(0, 4);
+  byte noteLenFlip = random(0, 4);
   int noteLen = noteLenFlip == 0   ? 100
                 : noteLenFlip == 1 ? 200
                 : noteLenFlip == 2 ? 300
                                    : 400;
-  for (int i = 0; i < len; i++)
+  for (byte i = 0; i < len; i++)
   {
     melody[startIndex + i] = notes[i];
     rhythm[startIndex + i] = noteLen;
@@ -97,9 +97,9 @@ int Voice::setSong()
   return melodyIndex;
 }
 
-int Voice::setRandomSequence(int len)
+byte Voice::setRandomSequence(byte len)
 {
-  for (int i = 0, rand; i < len; i++)
+  for (byte i = 0, rand; i < len; i++)
   {
     rand = random(0, 27);
     melody[i] = singingNotes[rand];
@@ -126,7 +126,7 @@ void Voice::play(int playLength)
   currNoteIndex = -1;
 }
 
-void Voice::emote(int mood, int esteem)
+void Voice::emote(int mood, byte esteem)
 {
   int len = 0;
 
@@ -170,7 +170,7 @@ void Voice::update()
 
     if (currNoteIndex < melodyLength)
     {
-      uint16_t note = melody[currNoteIndex];
+      byte note = melody[currNoteIndex];
       uint16_t pitch = getPitchByNote(note);
       // synth->sendNoteOn(1, note-12, 100);
       tone(m_voicePin, pitch);

@@ -1,5 +1,4 @@
 #include <Arduino.h>
-#include <SequenceStep.h>
 #include <Expressions.h>
 #include <Light.h>
 #include <pitches.h>
@@ -33,15 +32,17 @@ class Synth {
 
     byte currNote = -1;
 
-    int sequenceIntervals[MAX_STEPS_IN_SEQ] = {0, 1, 2, 3};
+    byte sequenceIntervals[MAX_STEPS_IN_SEQ] = {0, 1, 2, 3};
+
     uint16_t sequenceStartPositions[MAX_STEPS_IN_SEQ] = {
       PULSES_PER_QUARTER_NOTE * 0,
       PULSES_PER_QUARTER_NOTE * 1,
       PULSES_PER_QUARTER_NOTE * 2,
       PULSES_PER_QUARTER_NOTE * 3
     };
-    int totalSequenceSteps = 4;
 
+    // Total sequence length in discrete steps
+    byte totalSequenceSteps = 4;
     // Total sequence length in pulses
     uint16_t totalSequenceLength = 4 * PULSES_PER_QUARTER_NOTE;
 

@@ -27,10 +27,10 @@ Synth synth = Synth(&lc, &expr, &light, BUZZER_PIN);
 Voice voice = Voice(&synth, BUZZER_PIN);
 Grandbot gb = Grandbot(&expr, &lc, &voice, &light);
 
-int lastPlayRead = HIGH;
+bool lastPlayRead = HIGH;
 
 bool midiMode = false;
-int lastMidiMessage;
+unsigned long lastMidiMessage;
 
 void setupLedControl() {
   // Wake up Max7219
@@ -58,11 +58,11 @@ void setup() {
 }
 
 void loop() {
-  unsigned long long now = millis();
+  unsigned long now = millis();
 
   int lightRead = analogRead(LIGHT_SENSOR_PIN);
-  int playRead = digitalRead(PLAY_BUTTON_PIN);
-  int playPress = playRead == LOW && lastPlayRead == HIGH;
+  bool playRead = digitalRead(PLAY_BUTTON_PIN);
+  bool playPress = playRead == LOW && lastPlayRead == HIGH;
   lastPlayRead = playRead;
 
   if (playPress) {
@@ -71,7 +71,7 @@ void loop() {
 
   if (synth.update()) {
     midiMode = true;
-    lastMidiMessage = millis();
+    lastMidiMessage = now;
   }
 
   if (midiMode) {
@@ -83,12 +83,6 @@ void loop() {
   }
 
   if (demoMode) {
-    if (!midiEnabled) {
-      Serial.print("Light: ");
-      Serial.print(lightRead);
-      Serial.print(" Button: ");
-      Serial.println(playRead);
-    }
     gb.demo();
     return;
   }

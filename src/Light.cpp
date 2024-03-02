@@ -1,6 +1,6 @@
 #include <Light.h>
 
-Light::Light(int rPin, int gPin, int bPin) {
+Light::Light(byte rPin, byte gPin, byte bPin) {
   redPin = rPin;
   greenPin = gPin;
   bluePin = bPin;
@@ -10,7 +10,7 @@ Light::Light(int rPin, int gPin, int bPin) {
   pinMode(bluePin, OUTPUT);
 }
 
-void Light::write(int rVal, int gVal, int bVal) {
+void Light::write(byte rVal, byte gVal, byte bVal) {
   analogWrite(redPin, rVal);
   analogWrite(greenPin, gVal);
   analogWrite(bluePin, bVal);
@@ -72,10 +72,10 @@ void Light::setMood(int mood) {
   this->mood = mood;
 }
 
-void Light::midiBeat(int even) {
-  int r = even ? 0 : 255;
-  int g = even ? 255 : 0;
-  int b = even ? 255 : 255;
+void Light::midiBeat(bool even) {
+  byte r = even ? 0 : 255;
+  byte g = even ? 255 : 0;
+  byte b = even ? 255 : 255;
   write(r, g, b);
 }
 
@@ -102,9 +102,9 @@ void Light::update() {
   int gDelta = nextG - prevG;
   int bDelta = nextB - prevB;
 
-  int r = prevR + (progress * rDelta);
-  int g = prevG + (progress * gDelta);
-  int b = prevB + (progress * bDelta);
+  byte r = prevR + (progress * rDelta);
+  byte g = prevG + (progress * gDelta);
+  byte b = prevB + (progress * bDelta);
 
   write(r, g, b);
 }

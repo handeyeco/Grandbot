@@ -30,7 +30,7 @@ class Grandbot {
         int mood = -1;
 
         // between 0 (unhappiest) and 9 (happiest)
-        int esteem = 8;
+        byte esteem = 8;
 
         void updateMood();
         unsigned long lastPlayTime = 0;

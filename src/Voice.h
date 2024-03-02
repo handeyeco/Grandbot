@@ -9,11 +9,11 @@ class Voice {
   private:
     Synth* synth;
     int m_voicePin;
-    static const int singingNotes[];
+    static const byte singingNotes[];
     int setTriad(int startIndex, int root, boolean major);
     int setMajor7th(int startIndex, int root);
 
-    int setRandomSequence(int len);
+    byte setRandomSequence(byte len);
     int setUnhappy();
     int setSong();
 
@@ -23,12 +23,11 @@ class Voice {
     int melodyLength;
     unsigned long noteStart = 0;
     boolean playing = false;
-    int melody[30];
+    byte melody[30];
     int rhythm[30];
-    int heldPitches[88];
   public:
     Voice(Synth* synth, int voicePin);
-    void emote(int mood, int esteem);
+    void emote(int mood, byte esteem);
     void update();
     void demo();
 };
