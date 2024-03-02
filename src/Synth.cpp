@@ -16,6 +16,20 @@ const byte possibleNoteLengths[] = {
   4, // quarter
 };
 
+uint16_t Synth::addStep(
+  byte stepIndex,
+  byte noteInterval,
+  int8_t noteOffset,
+  byte noteLength,
+  uint16_t startPosition
+) {
+    sequenceIntervals[stepIndex] = noteInterval;
+    sequenceOffset[stepIndex] = noteOffset;
+    sequenceStartPositions[stepIndex] = startPosition;
+
+    return startPosition + noteLength;
+}
+
 void Synth::generateSequence() {
   // This is the length in number of pulses
   // (random number of bars between 1-8)
@@ -31,6 +45,9 @@ void Synth::generateSequence() {
   byte stepIndex = 0;
 
   while (newSequenceLength < newTotalSequenceLength) {
+    // Due to adding chaos variation
+    // this particular step might not stay the same
+    // length as other steps
     byte noteLength = randomNoteLength;
     // used for octaves
     int8_t noteOffset = 0;
@@ -38,6 +55,7 @@ void Synth::generateSequence() {
     byte randomNoteInterval = random(MAX_NOTES);
     byte diceRoll = random(256);
 
+    // Random octave
     if (diceRoll < 20) {
       byte offsetDiceRoll = random(100);
 
@@ -58,17 +76,31 @@ void Synth::generateSequence() {
       }
     }
 
+    // Random ratchet (don't do this for 16ths)
+    else if (diceRoll < 40 && noteLength > PULSES_PER_SIXTEENTH_NOTE) {
+      noteLength = noteLength / 2;
+      newSequenceLength = addStep(
+        stepIndex,
+        randomNoteInterval,
+        noteOffset,
+        noteLength,
+        newSequenceLength
+      );
+      stepIndex++;
+    }
+
     // Make sure we stay within bounds of the total seq length
     // if (newSequenceLength + noteLength > newTotalSequenceLength) {
     //   noteLength = newTotalSequenceLength - newSequenceLength;
     // }
 
-    sequenceOffset[stepIndex] = noteOffset;
-    sequenceIntervals[stepIndex] = randomNoteInterval;
-    sequenceStartPositions[stepIndex] = newSequenceLength;
-
-    newSequenceLength = newSequenceLength + noteLength;
-
+    newSequenceLength = addStep(
+      stepIndex,
+      randomNoteInterval,
+      noteOffset,
+      noteLength,
+      newSequenceLength
+    );
     stepIndex++;
   }
 
