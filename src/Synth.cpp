@@ -56,7 +56,7 @@ void Synth::generateSequence() {
     byte diceRoll = random(256);
 
     // Random octave
-    if (diceRoll < 20) {
+    if (diceRoll < 10) {
       byte offsetDiceRoll = random(100);
 
       // TODO this could be a switch,
@@ -77,7 +77,7 @@ void Synth::generateSequence() {
     }
 
     // Random ratchet (don't do this for 16ths)
-    else if (diceRoll < 40 && noteLength > PULSES_PER_SIXTEENTH_NOTE) {
+    else if (diceRoll < 20 && noteLength > PULSES_PER_SIXTEENTH_NOTE) {
       noteLength = noteLength / 2;
       newSequenceLength = addStep(
         stepIndex,
@@ -87,6 +87,11 @@ void Synth::generateSequence() {
         newSequenceLength
       );
       stepIndex++;
+    }
+
+    // Double note length
+    else if (diceRoll < 30) {
+      noteLength = noteLength * 2;
     }
 
     // Make sure we stay within bounds of the total seq length
