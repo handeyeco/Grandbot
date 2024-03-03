@@ -30,9 +30,9 @@ const byte Voice::singingNotes[27] = {
     110,
 };
 
-Voice::Voice(Synth* _synth, int voicePin)
+Voice::Voice(Arp* _arp, int voicePin)
 {
-  this->synth = _synth;
+  this->arp = _arp;
   m_voicePin = voicePin;
 }
 
@@ -165,14 +165,14 @@ void Voice::update()
 
     if (currNoteIndex > 0) {
       uint16_t prevNote = melody[currNoteIndex - 1];
-      // synth->sendNoteOff(1, prevNote-12, 0);
+      // arp->sendNoteOff(1, prevNote-12, 0);
     }
 
     if (currNoteIndex < melodyLength)
     {
       byte note = melody[currNoteIndex];
       uint16_t pitch = getPitchByNote(note);
-      // synth->sendNoteOn(1, note-12, 100);
+      // arp->sendNoteOn(1, note-12, 100);
       tone(m_voicePin, pitch);
       noteStart = now;
       return;

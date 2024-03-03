@@ -1,9 +1,9 @@
-#include <Synth.h>
+#include <Arp.h>
 
 // Initialize MIDI library
 MIDI_CREATE_DEFAULT_INSTANCE();
 
-Synth::Synth(Expressions* _expr, Light* _light, int voicePin) {
+Arp::Arp(Expressions* _expr, Light* _light, int voicePin) {
   this->expr = _expr;
   this->light = _light;
   this->voicePin = voicePin;
@@ -15,7 +15,7 @@ const byte possibleNoteLengths[] = {
   4, // quarter
 };
 
-uint16_t Synth::addStep(
+uint16_t Arp::addStep(
   byte stepIndex,
   byte noteInterval,
   int8_t noteOffset,
@@ -29,7 +29,7 @@ uint16_t Synth::addStep(
     return startPosition + noteLength;
 }
 
-void Synth::generateSequence() {
+void Arp::generateSequence() {
   // This is the length in number of pulses
   // (random number of bars between 1-8)
   uint16_t newTotalSequenceLength = random(1, 9) * PULSES_PER_BAR;
@@ -119,15 +119,15 @@ void Synth::generateSequence() {
   totalSequenceLength = newTotalSequenceLength;
 }
 
-void Synth::sendNoteOn(byte channel, byte note, byte velocity) {
+void Arp::sendNoteOn(byte channel, byte note, byte velocity) {
   MIDI.sendNoteOn(note, velocity, channel);
 }
 
-void Synth::sendNoteOff(byte channel, byte note, byte velocity) {
+void Arp::sendNoteOff(byte channel, byte note, byte velocity) {
   MIDI.sendNoteOff(note, velocity, channel);
 }
 
-void Synth::handleNoteOn(byte channel, byte note, byte velocity) {
+void Arp::handleNoteOn(byte channel, byte note, byte velocity) {
   if (velocity == 0) {
     handleNoteOff(channel, note, velocity);
     return;
@@ -157,7 +157,7 @@ void Synth::handleNoteOn(byte channel, byte note, byte velocity) {
   activeNotes[numPressedNotes-1] = note;
 }
 
-void Synth::handleNoteOff(byte channel, byte note, byte velocity) {
+void Arp::handleNoteOff(byte channel, byte note, byte velocity) {
   byte noteIndex = -1;
   for (byte i = 0; i < numPressedNotes; i++) {
     if (pressedNotes[i] == note) {
@@ -178,7 +178,7 @@ void Synth::handleNoteOff(byte channel, byte note, byte velocity) {
 
 // Find a step that starts on this pulse
 // (returns -1 if there isn't one)
-int Synth::findStepIndexForPulse(uint16_t pulse) {
+int Arp::findStepIndexForPulse(uint16_t pulse) {
   for (int i = 0; i < totalSequenceSteps; ++i) {
     if (pulse == sequenceStartPositions[i]) {
       return i;
@@ -196,11 +196,11 @@ int Synth::findStepIndexForPulse(uint16_t pulse) {
 
 // keep note between MIDI note ranges of
 // 23 (B0) and 110 (D8)
-bool Synth::noteInBounds(byte note) {
+bool Arp::noteInBounds(byte note) {
   return note >= 23 && note <= 110;
 }
 
-void Synth::handleStep(int stepIndex) {
+void Arp::handleStep(int stepIndex) {
   // 0 is no current note
   if (currNote > 0) {
     sendNoteOff(1, currNote, 64);
@@ -227,7 +227,7 @@ void Synth::handleStep(int stepIndex) {
   sendNoteOn(1, currNote, 100);
 }
 
-void Synth::handleClock() {
+void Arp::handleClock() {
   if (pulseCount >= totalSequenceLength) {
     pulseCount = 0;
   }
@@ -252,12 +252,12 @@ void Synth::handleClock() {
   ++pulseCount;
 }
 
-void Synth::reset() {
+void Arp::reset() {
   pulseCount = 0;
   currNote = 0;
 }
 
-void Synth::handleStartContinue(bool resetSeq) {
+void Arp::handleStartContinue(bool resetSeq) {
   if (resetSeq) {
     reset();
   }
@@ -266,16 +266,16 @@ void Synth::handleStartContinue(bool resetSeq) {
   light->midiBeat(quarterFlipFlop);
 }
 
-void Synth::handleStop() {
+void Arp::handleStop() {
   sendNoteOff(1, currNote, 64);
 }
 
-void Synth::setup() {
+void Arp::setup() {
   MIDI.begin(MIDI_CHANNEL_OMNI);
   MIDI.turnThruOff();
 }
 
-bool Synth::update() {
+bool Arp::update() {
   bool readMidi = false;
 
   if (MIDI.read()) {
@@ -312,6 +312,6 @@ bool Synth::update() {
   return readMidi;
 }
 
-void Synth::playButtonPress() {
+void Arp::playButtonPress() {
   generateSequence();
 }

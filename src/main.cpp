@@ -5,7 +5,7 @@
 #include <LedControl.h>
 #include <Voice.h>
 #include <Light.h>
-#include <Synth.h>
+#include <Arp.h>
 
 // Set this to 1 and upload to check that
 // everything is wired up as expected
@@ -21,10 +21,10 @@ Light light = Light(RGB_R_PIN, RGB_G_PIN, RGB_B_PIN);
 LedControl lc = LedControl(SERIAL_DATA_PIN, SERIAL_CLOCK_PIN, SERIAL_LOAD_PIN, 1);
 // Expression manager
 Expressions expr = Expressions(&lc, &light);
-// MIDI/Synth control
-Synth synth = Synth(&expr, &light, BUZZER_PIN);
+// MIDI/Arp control
+Arp arp = Arp(&expr, &light, BUZZER_PIN);
 // Buzzer control
-Voice voice = Voice(&synth, BUZZER_PIN);
+Voice voice = Voice(&arp, BUZZER_PIN);
 Grandbot gb = Grandbot(&expr, &lc, &voice, &light);
 
 bool lastPlayRead = HIGH;
@@ -51,7 +51,7 @@ void setup() {
   expr.init();
 
   if (midiEnabled) {
-    synth.setup();
+    arp.setup();
   } else {
     Serial.begin(9600);
   }
@@ -66,10 +66,10 @@ void loop() {
   lastPlayRead = playRead;
 
   if (playPress) {
-    synth.playButtonPress();
+    arp.playButtonPress();
   }
 
-  if (synth.update()) {
+  if (arp.update()) {
     midiMode = true;
     lastMidiMessage = now;
   }

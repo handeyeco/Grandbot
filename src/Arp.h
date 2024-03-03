@@ -4,8 +4,8 @@
 #include <pitches.h>
 #include <MIDI.h>
 
-#ifndef SYNTH_INCL_GUARD
-#define SYNTH_INCL_GUARD
+#ifndef ARP_INCL_GUARD
+#define ARP_INCL_GUARD
 
 #define PULSES_PER_SIXTEENTH_NOTE 6
 #define PULSES_PER_QUARTER_NOTE 24
@@ -18,7 +18,7 @@
 #define MAX_STEPS_IN_SEQ 8 * 16
 
 
-class Synth {
+class Arp {
   private:
     LedControl* lc;
     Expressions* expr;
@@ -65,7 +65,7 @@ class Synth {
     uint16_t addStep(byte stepIndex, byte noteInterval, int8_t noteOffset, byte noteLength, uint16_t startPosition);
     void generateSequence();
   public:
-    Synth(Expressions* _expr, Light* _light, int voicePin);
+    Arp(Expressions* _expr, Light* _light, int voicePin);
     void setup();
     bool update();
     void playButtonPress();
