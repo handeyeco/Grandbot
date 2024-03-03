@@ -65,7 +65,7 @@ class Synth {
     uint16_t addStep(byte stepIndex, byte noteInterval, int8_t noteOffset, byte noteLength, uint16_t startPosition);
     void generateSequence();
   public:
-    Synth(LedControl* _lc, Expressions* _expr, Light* _light, int voicePin);
+    Synth(Expressions* _expr, Light* _light, int voicePin);
     void setup();
     bool update();
     void playButtonPress();

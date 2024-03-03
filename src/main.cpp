@@ -22,7 +22,7 @@ LedControl lc = LedControl(SERIAL_DATA_PIN, SERIAL_CLOCK_PIN, SERIAL_LOAD_PIN, 1
 // Expression manager
 Expressions expr = Expressions(&lc, &light);
 // MIDI/Synth control
-Synth synth = Synth(&lc, &expr, &light, BUZZER_PIN);
+Synth synth = Synth(&expr, &light, BUZZER_PIN);
 // Buzzer control
 Voice voice = Voice(&synth, BUZZER_PIN);
 Grandbot gb = Grandbot(&expr, &lc, &voice, &light);

@@ -3,8 +3,7 @@
 // Initialize MIDI library
 MIDI_CREATE_DEFAULT_INSTANCE();
 
-Synth::Synth(LedControl* _lc, Expressions* _expr, Light* _light, int voicePin) {
-  this->lc = _lc;
+Synth::Synth(Expressions* _expr, Light* _light, int voicePin) {
   this->expr = _expr;
   this->light = _light;
   this->voicePin = voicePin;
@@ -259,8 +258,6 @@ void Synth::reset() {
 }
 
 void Synth::handleStartContinue(bool resetSeq) {
-  lc->clearDisplay(0);
-
   if (resetSeq) {
     reset();
   }
