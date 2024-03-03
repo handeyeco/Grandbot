@@ -24,12 +24,11 @@ class Voice {
     unsigned long noteStart = 0;
     boolean playing = false;
     byte melody[30];
-    int rhythm[30];
+    uint16_t rhythm[30];
   public:
     Voice(Arp* arp, int voicePin);
     void emote(int mood, byte esteem);
     void update();
-    void demo();
 };
 
 #endif

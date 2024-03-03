@@ -14,8 +14,6 @@ class Grandbot {
         Voice* voice;
         Light* light;
 
-        int demoSegmentIndex = 0;
-
         void sleep();
         void wakeup();
 
@@ -45,7 +43,6 @@ class Grandbot {
         Grandbot(Expressions* _expr, LedControl* _lc, Voice* _voice, Light* _light);
         void play();
         void update(int lightReading);
-        void demo();
 };
 
 #endif

@@ -76,22 +76,6 @@ Expression *Expressions::getExpression(int mood)
   }
 }
 
-byte segments[8] = {
-    B00000001,
-    B00000010,
-    B00000100,
-    B00001000,
-    B00010000,
-    B00100000,
-    B01000000,
-    B10000000,
-};
-
-byte *Expressions::getDemo(int demoIndex)
-{
-  return &segments[demoIndex];
-}
-
 void Expressions::midiBeat(int even) {
   Expression e = ExpressionSets::midiBeatExpressions[even];
   writeLedControlData(e.getRegular());

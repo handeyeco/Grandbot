@@ -29,10 +29,6 @@ void Grandbot::updateMood() {
   }
 }
 
-void Grandbot::demo() {
-  light->demo();
-}
-
 void Grandbot::sleep() {
   lc->setIntensity(0, 0);
   int lastMood = mood;

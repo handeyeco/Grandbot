@@ -7,10 +7,6 @@
 #include <Light.h>
 #include <Arp.h>
 
-// Set this to 1 and upload to check that
-// everything is wired up as expected
-#define demoMode 0
-
 // MIDI and Serial don't play along with
 // one another, so keep MIDI off by default
 #define midiEnabled 1
@@ -79,11 +75,6 @@ void loop() {
       midiMode = false;
     }
 
-    return;
-  }
-
-  if (demoMode) {
-    gb.demo();
     return;
   }
 
