@@ -228,6 +228,14 @@ void Arp::handleStep(int stepIndex) {
 }
 
 void Arp::handleClock() {
+  // If the button has been pressed and we hit the start of a new bar
+  // regenerate sequence
+  if (regenerateQueued && pulseCount % PULSES_PER_BAR == 0) {
+    regenerateQueued = false;
+    generateSequence();
+    pulseCount = 0;
+  }
+
   if (pulseCount >= totalSequenceLength) {
     pulseCount = 0;
   }
@@ -313,5 +321,5 @@ bool Arp::update() {
 }
 
 void Arp::playButtonPress() {
-  generateSequence();
+  regenerateQueued = true;
 }

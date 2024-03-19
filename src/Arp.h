@@ -24,6 +24,7 @@ class Arp {
     Expressions* expr;
     Light* light;
     int voicePin;
+    bool regenerateQueued = false;
 
     byte pressedNotes[MAX_NOTES];
     byte numPressedNotes = 0;
