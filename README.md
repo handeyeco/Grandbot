@@ -33,3 +33,23 @@ Grandbot development is what I'm using to learn more about electronics and C++. 
 - [Grandbot Update - Play](https://handeyeco.github.io/tech-blog/grandbot-update-play/)
 - [Grandbot Update - Light](https://handeyeco.github.io/tech-blog/grandbot-update-light/)
 - [Concurrent Arduino](https://handeyeco.github.io/tech-blog/concurrent-arduino/)
+
+## Byte to digit
+
+One digit of an expression looks like B00000000. For the first four digits, it maps to:
+
+- B: specifying it's binary
+- 0: the decimal point (DP)
+- 0: top horizontal line
+- 0: top right vertical line
+- 0: bottom right vertical line
+- 0: bottom horizontal line
+- 0: bottom left vertical line
+- 0: top left vertical line
+- 0: center line
+
+The fifth digit is used for the other LEDs:
+
+- B: specifying it's binary
+- 0: the center colon
+- 0: 

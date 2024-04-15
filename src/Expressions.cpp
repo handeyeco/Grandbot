@@ -27,9 +27,15 @@ void Expressions::handleChangeExpressionState(int mood) {
 }
 
 void Expressions::writeLedControlData(byte* data) {
+  if (isShowingControl()) {
+    return;
+  }
+
   for (int i = 0; i < 4; i++) {
     lc->setRow(0, i, data[i]);
   }
+
+  lc->setRow(0, 4, B00000000);
 }
 
 void Expressions::writeExpression() {
@@ -79,6 +85,19 @@ Expression *Expressions::getExpression(int mood)
 void Expressions::midiBeat(int even) {
   Expression e = ExpressionSets::midiBeatExpressions[even];
   writeLedControlData(e.getRegular());
+}
+
+bool Expressions::isShowingControl() {
+  unsigned long now = millis();
+  return now - lastControlChange < 1000;
+}
+
+void Expressions::control(byte (&data)[5]) {
+  lastControlChange = millis();
+
+  for (int i = 0; i < 5; i++) {
+    lc->setRow(0, i, data[i]);
+  }
 }
 
 void Expressions::update(int mood) {

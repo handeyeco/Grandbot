@@ -50,13 +50,27 @@ class Arp {
     // Total sequence length in pulses
     uint16_t totalSequenceLength = 4 * PULSES_PER_QUARTER_NOTE;
 
-    bool quarterFlipFlop = false;
+    // CC controlled params; all need to be 0-127
+    // byte ccChannelIn = 0;
+    // byte ccChannelOut = 0;
+    // byte ccSequenceLength = 0;
+    // byte ccBaseNoteLength = 0;
+    byte ccOctaveOneUpChance = 10;
+    byte ccOctaveOneDownChance = 10;
+    byte ccOctaveTwoUpChance = 10;
+    byte ccOctaveTwoDownChance = 10;
+    byte ccDoubleLengthChance = 10;
+    byte ccRatchetChance = 10;
+    byte ccRestChance = 50;
 
+
+    bool quarterFlipFlop = false;
     unsigned long long pulseCount = 0;
     void reset();
 
     int findStepIndexForPulse(uint16_t pulse);
     bool noteInBounds(byte note);
+    void handleControlChange(byte channel, byte cc, byte value);
     void handleNoteOn(byte channel, byte pitch, byte velocity);
     void handleNoteOff(byte channel, byte pitch, byte velocity);
     void handleClock();

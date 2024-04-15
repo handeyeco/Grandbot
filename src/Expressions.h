@@ -21,6 +21,9 @@ class Expressions {
     unsigned long expressionChangeDelay;
     void handleChangeExpressionState(int mood);
 
+    unsigned long lastControlChange;
+    bool isShowingControl();
+
     void writeLedControlData(byte* data);
     void writeExpression();
 
@@ -31,6 +34,7 @@ class Expressions {
     void update(int mood);
     void setExpression(int mood);
     void midiBeat(int beat);
+    void control(byte (&data)[5]);
 };
 
 #endif

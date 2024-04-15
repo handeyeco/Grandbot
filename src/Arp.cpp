@@ -29,6 +29,10 @@ uint16_t Arp::addStep(
     return startPosition + noteLength;
 }
 
+byte ccRoll() {
+  return random(127);
+}
+
 void Arp::generateSequence() {
   // This is the length in number of pulses
   // (random number of bars between 1-8)
@@ -52,58 +56,62 @@ void Arp::generateSequence() {
     int8_t noteOffset = 0;
 
     byte randomNoteInterval = random(MAX_NOTES);
-    byte diceRoll = random(256);
 
-    // Random octave
-    if (diceRoll < 10) {
-      byte offsetDiceRoll = random(100);
+    // Random octave; since they affect the same value (offset)
+    // there's some interplay between them with a bias
+    // towards single octave intervals
+    if (ccOctaveOneUpChance || ccOctaveOneDownChance || ccOctaveTwoUpChance || ccOctaveTwoDownChance) {
+      byte octOneUpRoll = ccRoll();
+      byte octOneDownRoll = ccRoll();
+      byte octTwoUpRoll = ccRoll();
+      byte octTwoDownRoll = ccRoll();
 
-      // TODO this could be a switch,
-      // it just wasn't working as expected
-      if (offsetDiceRoll < 10) {
-          // two oct down
-          noteOffset = -24;
-      } else if (offsetDiceRoll < 20) {
-          // two oct up
-          noteOffset = 24;
-      } else if (offsetDiceRoll < 50) {
-          // one oct down
-          noteOffset = -12;
-      } else {
+      if (octOneUpRoll < ccOctaveOneUpChance) {
           // one oct up
           noteOffset = 12;
+      } else if (octOneDownRoll < ccOctaveOneDownChance) {
+          // one oct down
+          noteOffset = -12;
+      } else if (octTwoUpRoll < ccOctaveTwoUpChance) {
+          // two oct up
+          noteOffset = 24;
+      } else if (octTwoDownRoll < ccOctaveTwoDownChance) {
+          // two oct down
+          noteOffset = -24;
       }
     }
 
-    // Random ratchet (don't do this for 16ths)
-    else if (diceRoll < 20 && noteLength > PULSES_PER_SIXTEENTH_NOTE) {
-      noteLength = noteLength / 2;
-      newSequenceLength = addStep(
-        stepIndex,
-        randomNoteInterval,
-        noteOffset,
-        noteLength,
-        newSequenceLength
-      );
-      stepIndex++;
+    // Random note length; since they affect the same value (length)
+    // there's some interplay between them with a bias
+    // towards ratchets
+    if ((noteLength > PULSES_PER_SIXTEENTH_NOTE && ccRatchetChance) || ccDoubleLengthChance) {
+      byte ratchetRoll = ccRoll();
+      byte doubleRoll = ccRoll();
+      
+      if (ratchetRoll < ccRatchetChance) {
+        noteLength = noteLength / 2;
+        newSequenceLength = addStep(
+          stepIndex,
+          randomNoteInterval,
+          noteOffset,
+          noteLength,
+          newSequenceLength
+        );
+        stepIndex++;
+      } else if (doubleRoll < ccDoubleLengthChance) {
+        noteLength = noteLength * 2;
+      }
     }
 
-    // Double note length
-    else if (diceRoll < 30) {
-      noteLength = noteLength * 2;
+    if (ccRestChance) {
+      byte restRoll = ccRoll();
+      // Random rest
+      if (restRoll < ccRestChance) {
+        // use 255 to indicate rest
+        // TODO fix this, it's hacky
+        randomNoteInterval = 255;
+      }
     }
-
-    // Random rest
-    else if (diceRoll < 40) {
-      // use 255 to indicate rest
-      // TODO fix this, it's hacky
-      randomNoteInterval = 255;
-    }
-
-    // Make sure we stay within bounds of the total seq length
-    // if (newSequenceLength + noteLength > newTotalSequenceLength) {
-    //   noteLength = newTotalSequenceLength - newSequenceLength;
-    // }
 
     newSequenceLength = addStep(
       stepIndex,
@@ -198,6 +206,13 @@ int Arp::findStepIndexForPulse(uint16_t pulse) {
 // 23 (B0) and 110 (D8)
 bool Arp::noteInBounds(byte note) {
   return note >= 23 && note <= 110;
+}
+
+void Arp::handleControlChange(byte channel, byte cc, byte value) {
+  if (cc == 20) {
+    byte data[5] = {B01001110, B01001110, B01101101, B01111110, B10000000};
+    expr->control(data);
+  }
 }
 
 void Arp::handleStep(int stepIndex) {
@@ -308,6 +323,9 @@ bool Arp::update() {
         break;
       case midi::Stop:
         handleStop();
+        break;
+      case midi::ControlChange:
+        handleControlChange(MIDI.getChannel(), MIDI.getData1(), MIDI.getData2());
         break;
       default:
         // if we don't know what MIDI message this is,
