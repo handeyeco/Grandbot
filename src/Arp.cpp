@@ -7,8 +7,11 @@ byte CHAR_A = B01110111;
 byte CHAR_B = B00011111;
 byte CHAR_D = B00111101;
 byte CHAR_E = B01001111;
+byte CHAR_L = B00001110;
+byte CHAR_N = B00010101;
 byte CHAR_O = B00011101;
 byte CHAR_R = B00000101;
+byte CHAR_S = B01011011;
 
 byte CHAR_0 = B01111110;
 byte CHAR_1 = B00110000;
@@ -51,13 +54,42 @@ byte ccRoll() {
   return random(127);
 }
 
+byte Arp::getNoteLength() {
+    // Random, 16, 8, 4
+    if (ccBaseNoteLength > 96) {
+      // quarter
+      return 4;
+    }
+    else if (ccBaseNoteLength > 64) {
+      // 8th
+      return 2;
+    }
+    else if (ccBaseNoteLength > 32) {
+      // 16th
+      return 1;
+    }
+    else {
+      // random
+      return possibleNoteLengths[random(3)];
+    }
+}
+
+byte Arp::getSequenceLength() {
+  // Random, 1-8
+  if (ccSequenceLength < 15) {
+    return random(1, 9);
+  } else {
+    return map(ccSequenceLength, 15, 127, 1, 8);
+  }
+}
+
 void Arp::generateSequence() {
   // This is the length in number of pulses
   // (random number of bars between 1-8)
-  uint16_t newTotalSequenceLength = random(1, 9) * PULSES_PER_BAR;
+  uint16_t newTotalSequenceLength = getSequenceLength() * PULSES_PER_BAR;
 
   // This is the length of the note in pulses
-  byte randomNoteLength = possibleNoteLengths[random(3)] * PULSES_PER_SIXTEENTH_NOTE;
+  byte baseNoteLength = getNoteLength() * PULSES_PER_SIXTEENTH_NOTE;
 
   // Accumulator for steps in pulses
   uint16_t newSequenceLength = 0;
@@ -69,7 +101,7 @@ void Arp::generateSequence() {
     // Due to adding chaos variation
     // this particular step might not stay the same
     // length as other steps
-    byte noteLength = randomNoteLength;
+    byte noteLength = baseNoteLength;
     // used for octaves
     int8_t noteOffset = 0;
 
@@ -102,11 +134,11 @@ void Arp::generateSequence() {
     // Random note length; since they affect the same value (length)
     // there's some interplay between them with a bias
     // towards ratchets
-    if ((noteLength > PULSES_PER_SIXTEENTH_NOTE && ccRatchetChance) || ccDoubleLengthChance) {
+    if (ccRatchetChance || ccDoubleLengthChance) {
       byte ratchetRoll = ccRoll();
       byte doubleRoll = ccRoll();
       
-      if (ratchetRoll < ccRatchetChance) {
+      if (noteLength > PULSES_PER_SIXTEENTH_NOTE && ratchetRoll < ccRatchetChance) {
         noteLength = noteLength / 2;
         newSequenceLength = addStep(
           stepIndex,
@@ -277,7 +309,52 @@ void Arp::handleControlChange(byte channel, byte cc, byte value) {
     ccRestChance = value;
     ccDisplay[0] = CHAR_R;
     ccDisplay[1] = CHAR_E;
-  } else {
+  }
+  else if (cc == CC_BASE_NOTE_LENGTH) {
+    ccBaseNoteLength = value;
+    ccDisplay[0] = CHAR_N;
+    ccDisplay[1] = CHAR_L;
+
+    String valStr = "  ";
+    // Random, 16, 8, 4
+    if (value > 96) {
+      // quarter
+      valStr = " 4";
+    }
+    else if (value > 64) {
+      // 8th
+      valStr = " 8";
+    }
+    else if (value > 32) {
+      // 16th
+      valStr = "16";
+    }
+    else {
+      // random
+      valStr = " A";
+    }
+
+    valDisplay[0] = valStr[0];
+    valDisplay[1] = valStr[1];
+  }
+  else if (cc == CC_SEQUENCE_LENGTH) {
+    ccSequenceLength = value;
+    ccDisplay[0] = CHAR_S;
+    ccDisplay[1] = CHAR_L;
+
+    // Random, 1-8
+    if (value < 15) {
+      String valStr = " A";
+      valDisplay[0] = valStr[0];
+      valDisplay[1] = valStr[1];
+    } else {
+      byte mapped = map(value, 15, 127, 1, 8);
+      String mappedStr = String(mapped);
+      valDisplay[0] = ' ';
+      valDisplay[1] = mappedStr[0];
+    }
+  }
+  else {
     return;
   }
 

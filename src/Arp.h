@@ -20,8 +20,8 @@
 // MIDI CCs to listen to
 // #define CC_CHANNEL_IN 14
 // #define CC_CHANNEL_OUT 15
-// #define CC_BASE_NOTE_LENGTH 20
-// #define CC_SEQUENCE_LENGTH 21
+#define CC_BASE_NOTE_LENGTH 20
+#define CC_SEQUENCE_LENGTH 21
 #define CC_OCTAVE_ONE_UP 22
 #define CC_OCTAVE_ONE_DOWN 23
 #define CC_OCTAVE_TWO_UP 24
@@ -66,8 +66,8 @@ class Arp {
     // CC controlled params; all need to be 0-127
     // byte ccChannelIn = 0;
     // byte ccChannelOut = 0;
-    // byte ccBaseNoteLength = 0;
-    // byte ccSequenceLength = 0;
+    byte ccBaseNoteLength = 0;
+    byte ccSequenceLength = 0;
     byte ccOctaveOneUpChance = 0;
     byte ccOctaveOneDownChance = 0;
     byte ccOctaveTwoUpChance = 0;
@@ -91,6 +91,8 @@ class Arp {
     void handleStop();
     void handleStep(int stepIndex);
     uint16_t addStep(byte stepIndex, byte noteInterval, int8_t noteOffset, byte noteLength, uint16_t startPosition);
+    byte getNoteLength();
+    byte getSequenceLength();
     void generateSequence();
   public:
     Arp(Expressions* _expr, Light* _light, int voicePin);
