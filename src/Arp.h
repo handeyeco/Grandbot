@@ -17,6 +17,19 @@
 // 8 (bars) * 16th (notes)
 #define MAX_STEPS_IN_SEQ 8 * 16
 
+// MIDI CCs to listen to
+// #define CC_CHANNEL_IN 14
+// #define CC_CHANNEL_OUT 15
+// #define CC_BASE_NOTE_LENGTH 20
+// #define CC_SEQUENCE_LENGTH 21
+#define CC_OCTAVE_ONE_UP 22
+#define CC_OCTAVE_ONE_DOWN 23
+#define CC_OCTAVE_TWO_UP 24
+#define CC_OCTAVE_TWO_DOWN 25
+#define CC_DOUBLE_LENGTH 26
+#define CC_RATCHET 27
+#define CC_REST 28
+
 
 class Arp {
   private:
@@ -53,15 +66,15 @@ class Arp {
     // CC controlled params; all need to be 0-127
     // byte ccChannelIn = 0;
     // byte ccChannelOut = 0;
-    // byte ccSequenceLength = 0;
     // byte ccBaseNoteLength = 0;
-    byte ccOctaveOneUpChance = 10;
-    byte ccOctaveOneDownChance = 10;
-    byte ccOctaveTwoUpChance = 10;
-    byte ccOctaveTwoDownChance = 10;
-    byte ccDoubleLengthChance = 10;
-    byte ccRatchetChance = 10;
-    byte ccRestChance = 50;
+    // byte ccSequenceLength = 0;
+    byte ccOctaveOneUpChance = 0;
+    byte ccOctaveOneDownChance = 0;
+    byte ccOctaveTwoUpChance = 0;
+    byte ccOctaveTwoDownChance = 0;
+    byte ccDoubleLengthChance = 0;
+    byte ccRatchetChance = 0;
+    byte ccRestChance = 0;
 
 
     bool quarterFlipFlop = false;

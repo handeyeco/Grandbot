@@ -3,6 +3,24 @@
 // Initialize MIDI library
 MIDI_CREATE_DEFAULT_INSTANCE();
 
+byte CHAR_A = B01110111;
+byte CHAR_B = B00011111;
+byte CHAR_D = B00111101;
+byte CHAR_E = B01001111;
+byte CHAR_O = B00011101;
+byte CHAR_R = B00000101;
+
+byte CHAR_0 = B01111110;
+byte CHAR_1 = B00110000;
+byte CHAR_2 = B01101101;
+byte CHAR_3 = B01111001;
+byte CHAR_4 = B00110011;
+byte CHAR_5 = B01011011;
+byte CHAR_6 = B01011111;
+byte CHAR_7 = B01110000;
+byte CHAR_8 = B01111111;
+byte CHAR_9 = B01111011;
+
 Arp::Arp(Expressions* _expr, Light* _light, int voicePin) {
   this->expr = _expr;
   this->light = _light;
@@ -208,11 +226,62 @@ bool Arp::noteInBounds(byte note) {
   return note >= 23 && note <= 110;
 }
 
-void Arp::handleControlChange(byte channel, byte cc, byte value) {
-  if (cc == 20) {
-    byte data[5] = {B01001110, B01001110, B01101101, B01111110, B10000000};
-    expr->control(data);
+String convertCCToString(byte value) {
+  String padding = "0";
+  byte mappedValue = map(value, 0, 127, 0, 99);
+  String valueStr = String(mappedValue);
+  int len = valueStr.length();
+  if (len < 2) {
+    padding.concat(valueStr);
+    return padding;
   }
+  return valueStr;
+}
+
+void Arp::handleControlChange(byte channel, byte cc, byte value) {
+  String valueStr = convertCCToString(value);
+  byte ccDisplay[2];
+  char valDisplay[2] = {valueStr[0], valueStr[1]};
+
+  if (cc == CC_OCTAVE_ONE_UP) {
+    ccOctaveOneUpChance = value;
+    ccDisplay[0] = CHAR_O;
+    ccDisplay[1] = B01000000;
+  }
+  else if (cc == CC_OCTAVE_ONE_DOWN) {
+    ccOctaveOneDownChance = value;
+    ccDisplay[0] = CHAR_O;
+    ccDisplay[1] = B00001000;
+  }
+  else if (cc == CC_OCTAVE_TWO_UP) {
+    ccOctaveTwoUpChance = value;
+    ccDisplay[0] = CHAR_O;
+    ccDisplay[1] = B01000001;
+  }
+  else if (cc == CC_OCTAVE_TWO_DOWN) {
+    ccOctaveTwoDownChance = value;
+    ccDisplay[0] = CHAR_O;
+    ccDisplay[1] = B00001001;
+  }
+  else if (cc == CC_DOUBLE_LENGTH) {
+    ccDoubleLengthChance = value;
+    ccDisplay[0] = CHAR_D;
+    ccDisplay[1] = CHAR_B;
+  }
+  else if (cc == CC_RATCHET) {
+    ccRatchetChance = value;
+    ccDisplay[0] = CHAR_R;
+    ccDisplay[1] = CHAR_A;
+  }
+  else if (cc == CC_REST) {
+    ccRestChance = value;
+    ccDisplay[0] = CHAR_R;
+    ccDisplay[1] = CHAR_E;
+  } else {
+    return;
+  }
+
+  expr->control(ccDisplay, valDisplay);
 }
 
 void Arp::handleStep(int stepIndex) {

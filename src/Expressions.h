@@ -6,6 +6,7 @@
 #ifndef EXPRESSIONS_INCL_GUARD
 #define EXPRESSIONS_INCL_GUARD
 
+
 class Expressions {
   private:
     LedControl* lc;
@@ -34,7 +35,7 @@ class Expressions {
     void update(int mood);
     void setExpression(int mood);
     void midiBeat(int beat);
-    void control(byte (&data)[5]);
+    void control(byte (&ccDisplay)[2], char (&valDisplay)[2]);
 };
 
 #endif

@@ -92,12 +92,18 @@ bool Expressions::isShowingControl() {
   return now - lastControlChange < 1000;
 }
 
-void Expressions::control(byte (&data)[5]) {
+void Expressions::control(byte (&ccDisplay)[2], char (&valDisplay)[2]) {
   lastControlChange = millis();
 
-  for (int i = 0; i < 5; i++) {
-    lc->setRow(0, i, data[i]);
+  for (int i = 0; i < 2; i++) {
+    lc->setRow(0, i, ccDisplay[i]);
   }
+
+  for (int i = 0; i < 2; i++) {
+    lc->setChar(0, i+2, valDisplay[i], false);
+  }
+
+  lc->setRow(0, 4, B10000000);
 }
 
 void Expressions::update(int mood) {
