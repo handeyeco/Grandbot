@@ -227,13 +227,13 @@ bool Arp::noteInBounds(byte note) {
 }
 
 String convertCCToString(byte value) {
-  String padding = "0";
   byte mappedValue = map(value, 0, 127, 0, 99);
   String valueStr = String(mappedValue);
   int len = valueStr.length();
   if (len < 2) {
-    padding.concat(valueStr);
-    return padding;
+    String padded = " ";
+    padded.concat(valueStr);
+    return padded;
   }
   return valueStr;
 }
