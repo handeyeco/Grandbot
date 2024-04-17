@@ -29,6 +29,7 @@
 #define CC_DOUBLE_LENGTH 26
 #define CC_RATCHET 27
 #define CC_REST 28
+#define CC_USE_SPEAKER 31
 
 
 class Arp {
@@ -78,7 +79,7 @@ class Arp {
     byte ccDoubleLengthChance = 0;
     byte ccRatchetChance = 0;
     byte ccRestChance = 0;
-
+    byte ccUseSpeaker = 0;
 
     bool quarterFlipFlop = false;
     unsigned long long pulseCount = 0;
@@ -99,6 +100,7 @@ class Arp {
     byte getSequenceLength();
     void generateSequence();
     String padded(String input);
+    bool convertCCToBool(byte value);
     String convertCCToString(byte value);
     bool correctInChannel(byte channel);
   public:

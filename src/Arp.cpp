@@ -11,6 +11,7 @@ byte CHAR_I = B00110000;
 byte CHAR_L = B00001110;
 byte CHAR_N = B00010101;
 byte CHAR_O = B00011101;
+byte CHAR_P = B01100111;
 byte CHAR_R = B00000101;
 byte CHAR_S = B01011011;
 byte CHAR_T = B00001111;
@@ -182,11 +183,15 @@ void Arp::generateSequence() {
 void Arp::sendNoteOn(byte channel, byte note, byte velocity) {
   byte movedChannel = midiChannelOut == 255 ? channel : midiChannelOut;
   MIDI.sendNoteOn(note, velocity, movedChannel);
+  if (convertCCToBool(ccUseSpeaker)) {
+    tone(voicePin, getPitchByNote(note));
+  }
 }
 
 void Arp::sendNoteOff(byte channel, byte note, byte velocity) {
   byte movedChannel = midiChannelOut == 255 ? channel : midiChannelOut;
   MIDI.sendNoteOff(note, velocity, movedChannel);
+  noTone(voicePin);
 }
 
 void Arp::handleNoteOn(byte channel, byte note, byte velocity) {
@@ -280,6 +285,11 @@ String Arp::padded(String input) {
   return input;
 }
 
+
+bool Arp::convertCCToBool(byte value) {
+  return value > 64;
+}
+
 String Arp::convertCCToString(byte value) {
   byte mappedValue = map(value, 0, 127, 0, 99);
   String valueStr = String(mappedValue);
@@ -358,6 +368,21 @@ void Arp::handleControlChange(byte channel, byte cc, byte value) {
     ccDisplay[0] = CHAR_R;
     ccDisplay[1] = CHAR_E;
   }
+  else if (cc == CC_USE_SPEAKER) {
+    ccUseSpeaker = value;
+    ccDisplay[0] = CHAR_S;
+    ccDisplay[1] = CHAR_P;
+
+    String valStr = "  ";
+    if (convertCCToBool(value)) {
+      valStr = "on";
+    } else {
+      valStr = "of";
+    }
+
+    valDisplay[0] = valStr[0];
+    valDisplay[1] = valStr[1];
+  }
   else if (cc == CC_BASE_NOTE_LENGTH) {
     ccBaseNoteLength = value;
     ccDisplay[0] = CHAR_N;
@@ -369,7 +394,7 @@ void Arp::handleControlChange(byte channel, byte cc, byte value) {
       // quarter
       valStr = " 4";
     }
-    else if (value > 64) {
+    else if (convertCCToBool(value)) {
       // 8th
       valStr = " 8";
     }
@@ -379,7 +404,7 @@ void Arp::handleControlChange(byte channel, byte cc, byte value) {
     }
     else {
       // random
-      valStr = " A";
+      valStr = "rA";
     }
 
     valDisplay[0] = valStr[0];
@@ -392,7 +417,7 @@ void Arp::handleControlChange(byte channel, byte cc, byte value) {
 
     // Random, 1-8
     if (value < 15) {
-      String valStr = " A";
+      String valStr = "rA";
       valDisplay[0] = valStr[0];
       valDisplay[1] = valStr[1];
     } else {
