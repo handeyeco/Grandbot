@@ -3,30 +3,6 @@
 // Initialize MIDI library
 MIDI_CREATE_DEFAULT_INSTANCE();
 
-byte CHAR_A = B01110111;
-byte CHAR_B = B00011111;
-byte CHAR_D = B00111101;
-byte CHAR_E = B01001111;
-byte CHAR_I = B00110000;
-byte CHAR_L = B00001110;
-byte CHAR_N = B00010101;
-byte CHAR_O = B00011101;
-byte CHAR_P = B01100111;
-byte CHAR_R = B00000101;
-byte CHAR_S = B01011011;
-byte CHAR_T = B00001111;
-
-byte CHAR_0 = B01111110;
-byte CHAR_1 = B00110000;
-byte CHAR_2 = B01101101;
-byte CHAR_3 = B01111001;
-byte CHAR_4 = B00110011;
-byte CHAR_5 = B01011011;
-byte CHAR_6 = B01011111;
-byte CHAR_7 = B01110000;
-byte CHAR_8 = B01111111;
-byte CHAR_9 = B01111011;
-
 Arp::Arp(Expressions* _expr, Light* _light, int voicePin) {
   this->expr = _expr;
   this->light = _light;
