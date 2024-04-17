@@ -28,10 +28,12 @@ class Expressions {
     void writeLedControlData(byte* data);
     void writeExpression();
 
+    bool isUnsupportedChar(char c);
+    byte convertCharToByte(char c);
+
     Expression* getExpression(int state);
   public:
     Expressions(LedControl* _lc, Light* _light);
-    byte convertCharToByte(char c);
     void init();
     void update(int mood);
     void setExpression(int mood);

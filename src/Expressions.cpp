@@ -100,7 +100,13 @@ void Expressions::control(byte (&ccDisplay)[2], char (&valDisplay)[2]) {
   }
 
   for (int i = 0; i < 2; i++) {
-    lc->setChar(0, i+2, valDisplay[i], false);
+    char c = valDisplay[i];
+    if (isUnsupportedChar(c)) {
+      byte converted = convertCharToByte(c);
+      lc->setRow(0, i+2, converted);
+    } else {
+      lc->setChar(0, i+2, c, false);
+    }
   }
 
   lc->setRow(0, 4, B10000000);
@@ -121,6 +127,10 @@ void Expressions::update(int mood) {
         writeExpression();
       }
   }
+}
+
+bool Expressions::isUnsupportedChar(char c) {
+  return c == 'r' || c == 'R';
 }
 
 byte Expressions::convertCharToByte(char c) {
