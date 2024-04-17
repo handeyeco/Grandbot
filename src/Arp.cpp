@@ -7,11 +7,13 @@ byte CHAR_A = B01110111;
 byte CHAR_B = B00011111;
 byte CHAR_D = B00111101;
 byte CHAR_E = B01001111;
+byte CHAR_I = B00110000;
 byte CHAR_L = B00001110;
 byte CHAR_N = B00010101;
 byte CHAR_O = B00011101;
 byte CHAR_R = B00000101;
 byte CHAR_S = B01011011;
+byte CHAR_T = B00001111;
 
 byte CHAR_0 = B01111110;
 byte CHAR_1 = B00110000;
@@ -178,14 +180,20 @@ void Arp::generateSequence() {
 }
 
 void Arp::sendNoteOn(byte channel, byte note, byte velocity) {
-  MIDI.sendNoteOn(note, velocity, channel);
+  byte movedChannel = midiChannelOut == 254 ? channel : midiChannelOut;
+  MIDI.sendNoteOn(note, velocity, movedChannel);
 }
 
 void Arp::sendNoteOff(byte channel, byte note, byte velocity) {
-  MIDI.sendNoteOff(note, velocity, channel);
+  byte movedChannel = midiChannelOut == 254 ? channel : midiChannelOut;
+  MIDI.sendNoteOff(note, velocity, movedChannel);
 }
 
 void Arp::handleNoteOn(byte channel, byte note, byte velocity) {
+  if (!correctInChannel(channel)) {
+    return;
+  }
+
   if (velocity == 0) {
     handleNoteOff(channel, note, velocity);
     return;
@@ -216,6 +224,10 @@ void Arp::handleNoteOn(byte channel, byte note, byte velocity) {
 }
 
 void Arp::handleNoteOff(byte channel, byte note, byte velocity) {
+  if (!correctInChannel(channel)) {
+    return;
+  }
+
   byte noteIndex = -1;
   for (byte i = 0; i < numPressedNotes; i++) {
     if (pressedNotes[i] == note) {
@@ -258,16 +270,52 @@ bool Arp::noteInBounds(byte note) {
   return note >= 23 && note <= 110;
 }
 
-String convertCCToString(byte value) {
-  byte mappedValue = map(value, 0, 127, 0, 99);
-  String valueStr = String(mappedValue);
-  int len = valueStr.length();
+String Arp::padded(String input) {
+  int len = input.length();
   if (len < 2) {
     String padded = " ";
-    padded.concat(valueStr);
+    padded.concat(input);
     return padded;
   }
-  return valueStr;
+  return input;
+}
+
+String Arp::convertCCToString(byte value) {
+  byte mappedValue = map(value, 0, 127, 0, 99);
+  String valueStr = String(mappedValue);
+  return padded(valueStr);
+}
+
+bool Arp::correctInChannel(byte channel) {
+  // 254 is the magic number to represent "all channels are okay"
+  if (midiChannelIn == 254 || channel == midiChannelIn) {
+    return true;
+  }
+
+  return false;
+};
+
+void Arp::handleMidiChannelChange(byte channel, byte cc, byte value) {
+  byte ccDisplay[2];
+  byte mapped = map(value, 0, 127, 1, 16);
+  String valueStr = String(mapped);
+  String paddedStr = padded(valueStr);
+  char valDisplay[2] = {paddedStr[0], paddedStr[1]};
+
+  // no matter what channel we get this message on
+  // we'll change the incoming MIDI channel
+  // @HACK will likely lead to weird things
+  if (cc == CC_CHANNEL_IN) {
+    midiChannelIn = mapped;
+    ccDisplay[0] = CHAR_I;
+    ccDisplay[1] = CHAR_N;
+    expr->control(ccDisplay, valDisplay);
+  } else if (cc == CC_CHANNEL_OUT && correctInChannel(channel)) {
+    midiChannelOut = mapped;
+    ccDisplay[0] = CHAR_O;
+    ccDisplay[1] = CHAR_T;
+    expr->control(ccDisplay, valDisplay);
+  }
 }
 
 void Arp::handleControlChange(byte channel, byte cc, byte value) {
@@ -470,9 +518,15 @@ bool Arp::update() {
       case midi::Stop:
         handleStop();
         break;
-      case midi::ControlChange:
-        handleControlChange(MIDI.getChannel(), MIDI.getData1(), MIDI.getData2());
-        break;
+      case midi::ControlChange: {
+        byte channel = MIDI.getChannel();
+        byte cc = MIDI.getData1();
+        if (cc == CC_CHANNEL_IN || cc == CC_CHANNEL_OUT) {
+          handleMidiChannelChange(channel, cc, MIDI.getData2());
+        } else if (correctInChannel(channel)) {
+          handleControlChange(channel, cc, MIDI.getData2());
+        }
+      } break;
       default:
         // if we don't know what MIDI message this is,
         // just pretend like we didn't receive one

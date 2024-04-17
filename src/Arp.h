@@ -18,8 +18,8 @@
 #define MAX_STEPS_IN_SEQ 8 * 16
 
 // MIDI CCs to listen to
-// #define CC_CHANNEL_IN 14
-// #define CC_CHANNEL_OUT 15
+#define CC_CHANNEL_IN 14
+#define CC_CHANNEL_OUT 15
 #define CC_BASE_NOTE_LENGTH 20
 #define CC_SEQUENCE_LENGTH 21
 #define CC_OCTAVE_ONE_UP 22
@@ -63,9 +63,12 @@ class Arp {
     // Total sequence length in pulses
     uint16_t totalSequenceLength = 4 * PULSES_PER_QUARTER_NOTE;
 
+    // MIDI channels; 0-15
+    // 254 = do whatever the original MIDI message wanted
+    byte midiChannelIn = 254;
+    byte midiChannelOut = 254;
+
     // CC controlled params; all need to be 0-127
-    // byte ccChannelIn = 0;
-    // byte ccChannelOut = 0;
     byte ccBaseNoteLength = 0;
     byte ccSequenceLength = 0;
     byte ccOctaveOneUpChance = 0;
@@ -84,6 +87,7 @@ class Arp {
     int findStepIndexForPulse(uint16_t pulse);
     bool noteInBounds(byte note);
     void handleControlChange(byte channel, byte cc, byte value);
+    void handleMidiChannelChange(byte channel, byte cc, byte value);
     void handleNoteOn(byte channel, byte pitch, byte velocity);
     void handleNoteOff(byte channel, byte pitch, byte velocity);
     void handleClock();
@@ -94,6 +98,9 @@ class Arp {
     byte getNoteLength();
     byte getSequenceLength();
     void generateSequence();
+    String padded(String input);
+    String convertCCToString(byte value);
+    bool correctInChannel(byte channel);
   public:
     Arp(Expressions* _expr, Light* _light, int voicePin);
     void setup();
