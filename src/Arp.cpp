@@ -180,12 +180,12 @@ void Arp::generateSequence() {
 }
 
 void Arp::sendNoteOn(byte channel, byte note, byte velocity) {
-  byte movedChannel = midiChannelOut == 254 ? channel : midiChannelOut;
+  byte movedChannel = midiChannelOut == 255 ? channel : midiChannelOut;
   MIDI.sendNoteOn(note, velocity, movedChannel);
 }
 
 void Arp::sendNoteOff(byte channel, byte note, byte velocity) {
-  byte movedChannel = midiChannelOut == 254 ? channel : midiChannelOut;
+  byte movedChannel = midiChannelOut == 255 ? channel : midiChannelOut;
   MIDI.sendNoteOff(note, velocity, movedChannel);
 }
 
@@ -287,8 +287,8 @@ String Arp::convertCCToString(byte value) {
 }
 
 bool Arp::correctInChannel(byte channel) {
-  // 254 is the magic number to represent "all channels are okay"
-  if (midiChannelIn == 254 || channel == midiChannelIn) {
+  // 255 is the magic number to represent "all channels are okay"
+  if (midiChannelIn == 255 || channel == midiChannelIn) {
     return true;
   }
 

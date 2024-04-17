@@ -64,9 +64,9 @@ class Arp {
     uint16_t totalSequenceLength = 4 * PULSES_PER_QUARTER_NOTE;
 
     // MIDI channels; 0-15
-    // 254 = do whatever the original MIDI message wanted
-    byte midiChannelIn = 254;
-    byte midiChannelOut = 254;
+    // 255 = do whatever the original MIDI message wanted
+    byte midiChannelIn = 255;
+    byte midiChannelOut = 255;
 
     // CC controlled params; all need to be 0-127
     byte ccBaseNoteLength = 0;
