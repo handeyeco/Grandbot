@@ -304,6 +304,62 @@ void Arp::handleMidiChannelChange(byte channel, byte cc, byte value) {
   }
 }
 
+void Arp::handleControlCommand(byte channel, byte cc, byte value) {
+  byte ccDisplay[2];
+  char valDisplay[2];
+  bool isOn = convertCCToBool(value);
+
+  // no matter what channel we get this message on
+  // we'll trigger a panic
+  // @HACK will likely lead to weird things
+  if (cc == CC_PANIC) {
+    bool wasOff = !convertCCToBool(ccPanic);
+    ccPanic = value;
+    if (wasOff && isOn) {
+      noTone(voicePin);
+
+      // I don't know why I did it this way
+      ccDisplay[0] = CHAR_A;
+      ccDisplay[1] = CHAR_H;
+      valDisplay[0] = 'h';
+      valDisplay[1] = 'h';
+      expr->control(ccDisplay, valDisplay);
+
+      for (byte ch = 0; ch < 16; ch++) {
+        for (byte note = 0; note < 128; note++) {
+          MIDI.sendNoteOff(note, 64, ch+1);
+        }
+      }
+    }
+  }
+
+  if (!correctInChannel(channel)) return;
+
+  if (cc == CC_GENERATE_SEQUENCE) {
+    bool wasOff = !convertCCToBool(ccGenerate);
+    ccGenerate = value;
+    if (wasOff && isOn) {
+      regenerateQueued = true;
+    }
+  }
+  else if (cc == CC_USE_SPEAKER) {
+    ccUseSpeaker = value;
+    ccDisplay[0] = CHAR_S;
+    ccDisplay[1] = CHAR_P;
+
+    String valStr = "  ";
+    if (convertCCToBool(value)) {
+      valStr = "on";
+    } else {
+      valStr = "of";
+    }
+
+    valDisplay[0] = valStr[0];
+    valDisplay[1] = valStr[1];
+    expr->control(ccDisplay, valDisplay);
+  }
+}
+
 void Arp::handleControlChange(byte channel, byte cc, byte value) {
   String valueStr = convertCCToString(value);
   byte ccDisplay[2];
@@ -343,21 +399,6 @@ void Arp::handleControlChange(byte channel, byte cc, byte value) {
     ccRestChance = value;
     ccDisplay[0] = CHAR_R;
     ccDisplay[1] = CHAR_E;
-  }
-  else if (cc == CC_USE_SPEAKER) {
-    ccUseSpeaker = value;
-    ccDisplay[0] = CHAR_S;
-    ccDisplay[1] = CHAR_P;
-
-    String valStr = "  ";
-    if (convertCCToBool(value)) {
-      valStr = "on";
-    } else {
-      valStr = "of";
-    }
-
-    valDisplay[0] = valStr[0];
-    valDisplay[1] = valStr[1];
   }
   else if (cc == CC_BASE_NOTE_LENGTH) {
     ccBaseNoteLength = value;
@@ -522,10 +563,18 @@ bool Arp::update() {
       case midi::ControlChange: {
         byte channel = MIDI.getChannel();
         byte cc = MIDI.getData1();
-        if (cc == CC_CHANNEL_IN || cc == CC_CHANNEL_OUT) {
-          handleMidiChannelChange(channel, cc, MIDI.getData2());
-        } else if (correctInChannel(channel)) {
-          handleControlChange(channel, cc, MIDI.getData2());
+        byte value = MIDI.getData2();
+        // MIDI setup
+        if (cc <= 15) {
+          handleMidiChannelChange(channel, cc, value);
+        }
+        // Special controls
+        if (cc >= 117) {
+          handleControlCommand(channel, cc, value);
+        }
+        // Sequence params
+        else if (correctInChannel(channel)) {
+          handleControlChange(channel, cc, value);
         }
       } break;
       default:

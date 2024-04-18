@@ -20,6 +20,7 @@
 // MIDI CCs to listen to
 #define CC_CHANNEL_IN 14
 #define CC_CHANNEL_OUT 15
+
 #define CC_BASE_NOTE_LENGTH 20
 #define CC_SEQUENCE_LENGTH 21
 #define CC_OCTAVE_ONE_UP 22
@@ -29,8 +30,10 @@
 #define CC_DOUBLE_LENGTH 26
 #define CC_RATCHET 27
 #define CC_REST 28
-#define CC_USE_SPEAKER 31
 
+#define CC_PANIC 117
+#define CC_GENERATE_SEQUENCE 118
+#define CC_USE_SPEAKER 119
 
 class Arp {
   private:
@@ -80,6 +83,8 @@ class Arp {
     byte ccRatchetChance = 0;
     byte ccRestChance = 0;
     byte ccUseSpeaker = 0;
+    byte ccPanic = 0;
+    byte ccGenerate = 0;
 
     bool quarterFlipFlop = false;
     unsigned long long pulseCount = 0;
@@ -87,6 +92,7 @@ class Arp {
 
     int findStepIndexForPulse(uint16_t pulse);
     bool noteInBounds(byte note);
+    void handleControlCommand(byte channel, byte cc, byte value);
     void handleControlChange(byte channel, byte cc, byte value);
     void handleMidiChannelChange(byte channel, byte cc, byte value);
     void handleNoteOn(byte channel, byte pitch, byte velocity);
