@@ -20,7 +20,7 @@ Expressions expr = Expressions(&lc, &light);
 // MIDI/Arp control
 Arp arp = Arp(&expr, &light, BUZZER_PIN);
 // Buzzer control
-Voice voice = Voice(&arp, BUZZER_PIN);
+Voice voice = Voice(BUZZER_PIN);
 Grandbot gb = Grandbot(&expr, &lc, &voice, &light);
 
 bool lastPlayRead = HIGH;

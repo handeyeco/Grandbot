@@ -1,13 +1,11 @@
 #include <Arduino.h>
 #include <pitches.h>
-#include <Arp.h>
 
 #ifndef VOICE_INCL_GUARD
 #define VOICE_INCL_GUARD
 
 class Voice {
   private:
-    Arp* arp;
     int m_voicePin;
     static const byte singingNotes[];
     int setTriad(int startIndex, int root, boolean major);
@@ -26,7 +24,7 @@ class Voice {
     byte melody[30];
     uint16_t rhythm[30];
   public:
-    Voice(Arp* arp, int voicePin);
+    Voice(int voicePin);
     void emote(int mood, byte esteem);
     void update();
 };

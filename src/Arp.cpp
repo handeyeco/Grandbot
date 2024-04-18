@@ -76,7 +76,7 @@ void Arp::generateSequence() {
   // Accumulator for discrete steps
   byte stepIndex = 0;
 
-  while (newSequenceLength < newTotalSequenceLength) {
+  while (newSequenceLength < newTotalSequenceLength && stepIndex < MAX_STEPS_IN_SEQ) {
     // Due to adding chaos variation
     // this particular step might not stay the same
     // length as other steps
@@ -117,7 +117,7 @@ void Arp::generateSequence() {
       byte ratchetRoll = ccRoll();
       byte doubleRoll = ccRoll();
       
-      if (noteLength > PULSES_PER_SIXTEENTH_NOTE && ratchetRoll < ccRatchetChance) {
+      if (ratchetRoll < ccRatchetChance) {
         noteLength = noteLength / 2;
         newSequenceLength = addStep(
           stepIndex,
