@@ -404,7 +404,7 @@ void Arp::handleControlChange(byte channel, byte cc, byte value) {
   }
   else if (cc == CC_FIFTH_UP) {
     ccFifthChance = value;
-    ccDisplay[0] = CHAR_5;
+    ccDisplay[0] = CHAR_F;
     ccDisplay[1] = CHAR_T;
   }
   else if (cc == CC_RANDOM_INTERVAL) {
@@ -448,7 +448,7 @@ void Arp::handleControlChange(byte channel, byte cc, byte value) {
       // quarter
       valStr = " 4";
     }
-    else if (convertCCToBool(value)) {
+    else if (value > 64) {
       // 8th
       valStr = " 8";
     }

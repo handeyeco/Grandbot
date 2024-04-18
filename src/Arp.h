@@ -21,6 +21,7 @@
 #define CC_CHANNEL_IN 14
 #define CC_CHANNEL_OUT 15
 
+// Regular sequence params
 #define CC_BASE_NOTE_LENGTH 20
 #define CC_SEQUENCE_LENGTH 21
 #define CC_OCTAVE_ONE_UP 22
@@ -31,10 +32,13 @@
 #define CC_RATCHET 27
 #define CC_REST 28
 #define CC_HALF_LENGTH 29
-#define CC_RANDOM_LENGTH 30
-#define CC_FIFTH_UP 31
-#define CC_RANDOM_INTERVAL 85
 
+// The more chaotic ones
+#define CC_FIFTH_UP 85
+#define CC_RANDOM_INTERVAL 86
+#define CC_RANDOM_LENGTH 87
+
+// Special controls
 #define CC_PANIC 117
 #define CC_GENERATE_SEQUENCE 118
 #define CC_USE_SPEAKER 119
