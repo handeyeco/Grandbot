@@ -88,6 +88,7 @@ void Expressions::midiBeat(int even) {
 }
 
 bool Expressions::isShowingControl() {
+  if (lastControlChange == 0) return false;
   unsigned long now = millis();
   return now - lastControlChange < 1000;
 }

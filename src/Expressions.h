@@ -22,7 +22,7 @@ class Expressions {
     unsigned long expressionChangeDelay;
     void handleChangeExpressionState(int mood);
 
-    unsigned long lastControlChange;
+    unsigned long lastControlChange = 0;
     bool isShowingControl();
 
     void writeLedControlData(byte* data);
