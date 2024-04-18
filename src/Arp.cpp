@@ -110,11 +110,23 @@ void Arp::generateSequence() {
       }
     }
 
-    // Random note length; since they affect the same value (length)
+    // Random note length; this is different than
+    // random base note length (affects all notes)
+    // this is random for a single step
+    if (ccRandomLengthChance) {
+      byte diceRoll = ccRoll();
+
+      if (diceRoll < ccRandomLengthChance) {
+        noteLength = possibleNoteLengths[random(3)] * PULSES_PER_SIXTEENTH_NOTE;
+      }
+    }
+
+    // Note length math; since they affect the same value (length)
     // there's some interplay between them with a bias
     // towards ratchets
-    if (ccRatchetChance || ccDoubleLengthChance) {
+    if (ccRatchetChance || ccHalfLengthChance || ccDoubleLengthChance) {
       byte ratchetRoll = ccRoll();
+      byte halfRoll = ccRoll();
       byte doubleRoll = ccRoll();
       
       if (ratchetRoll < ccRatchetChance) {
@@ -127,7 +139,11 @@ void Arp::generateSequence() {
           newSequenceLength
         );
         stepIndex++;
-      } else if (doubleRoll < ccDoubleLengthChance) {
+      }
+      else if (halfRoll < ccHalfLengthChance) {
+        noteLength = noteLength / 2;
+      }
+      else if (doubleRoll < ccDoubleLengthChance) {
         noteLength = noteLength * 2;
       }
     }
@@ -385,10 +401,20 @@ void Arp::handleControlChange(byte channel, byte cc, byte value) {
     ccDisplay[0] = CHAR_O;
     ccDisplay[1] = B00001001;
   }
+  else if (cc == CC_RANDOM_LENGTH) {
+    ccRandomLengthChance = value;
+    ccDisplay[0] = CHAR_R;
+    ccDisplay[1] = CHAR_L;
+  }
+  else if (cc == CC_HALF_LENGTH) {
+    ccHalfLengthChance = value;
+    ccDisplay[0] = CHAR_H;
+    ccDisplay[1] = CHAR_L;
+  }
   else if (cc == CC_DOUBLE_LENGTH) {
     ccDoubleLengthChance = value;
     ccDisplay[0] = CHAR_D;
-    ccDisplay[1] = CHAR_B;
+    ccDisplay[1] = CHAR_L;
   }
   else if (cc == CC_RATCHET) {
     ccRatchetChance = value;
