@@ -32,6 +32,8 @@
 #define CC_REST 28
 #define CC_HALF_LENGTH 29
 #define CC_RANDOM_LENGTH 30
+#define CC_FIFTH_UP 31
+#define CC_RANDOM_INTERVAL 85
 
 #define CC_PANIC 117
 #define CC_GENERATE_SEQUENCE 118
@@ -81,6 +83,8 @@ class Arp {
     byte ccOctaveOneDownChance = 0;
     byte ccOctaveTwoUpChance = 0;
     byte ccOctaveTwoDownChance = 0;
+    byte ccFifthChance = 0;
+    byte ccRandomIntervalChance = 0;
     byte ccRandomLengthChance = 0;
     byte ccHalfLengthChance = 0;
     byte ccDoubleLengthChance = 0;

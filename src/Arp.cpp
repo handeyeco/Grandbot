@@ -89,24 +89,32 @@ void Arp::generateSequence() {
     // Random octave; since they affect the same value (offset)
     // there's some interplay between them with a bias
     // towards single octave intervals
-    if (ccOctaveOneUpChance || ccOctaveOneDownChance || ccOctaveTwoUpChance || ccOctaveTwoDownChance) {
-      byte octOneUpRoll = ccRoll();
-      byte octOneDownRoll = ccRoll();
-      byte octTwoUpRoll = ccRoll();
-      byte octTwoDownRoll = ccRoll();
-
-      if (octOneUpRoll < ccOctaveOneUpChance) {
+    if (
+      ccOctaveOneUpChance ||
+      ccOctaveOneDownChance ||
+      ccOctaveTwoUpChance ||
+      ccOctaveTwoDownChance ||
+      ccFifthChance ||
+      ccRandomIntervalChance
+    ) {
+      if (ccRoll() < ccOctaveOneUpChance) {
           // one oct up
           noteOffset = 12;
-      } else if (octOneDownRoll < ccOctaveOneDownChance) {
+      } else if (ccRoll() < ccOctaveOneDownChance) {
           // one oct down
           noteOffset = -12;
-      } else if (octTwoUpRoll < ccOctaveTwoUpChance) {
+      } else if (ccRoll() < ccOctaveTwoUpChance) {
           // two oct up
           noteOffset = 24;
-      } else if (octTwoDownRoll < ccOctaveTwoDownChance) {
+      } else if (ccRoll() < ccOctaveTwoDownChance) {
           // two oct down
           noteOffset = -24;
+      } else if (ccRoll() < ccFifthChance) {
+          // fifth up
+          noteOffset = 7;
+      } else if (ccRoll() < ccRandomIntervalChance) {
+          // chaos, two octaves exclusive
+          noteOffset = random(-11, 12);
       }
     }
 
@@ -114,9 +122,7 @@ void Arp::generateSequence() {
     // random base note length (affects all notes)
     // this is random for a single step
     if (ccRandomLengthChance) {
-      byte diceRoll = ccRoll();
-
-      if (diceRoll < ccRandomLengthChance) {
+      if (ccRoll() < ccRandomLengthChance) {
         noteLength = possibleNoteLengths[random(3)] * PULSES_PER_SIXTEENTH_NOTE;
       }
     }
@@ -125,11 +131,7 @@ void Arp::generateSequence() {
     // there's some interplay between them with a bias
     // towards ratchets
     if (ccRatchetChance || ccHalfLengthChance || ccDoubleLengthChance) {
-      byte ratchetRoll = ccRoll();
-      byte halfRoll = ccRoll();
-      byte doubleRoll = ccRoll();
-      
-      if (ratchetRoll < ccRatchetChance) {
+      if (ccRoll() < ccRatchetChance) {
         noteLength = noteLength / 2;
         newSequenceLength = addStep(
           stepIndex,
@@ -140,18 +142,17 @@ void Arp::generateSequence() {
         );
         stepIndex++;
       }
-      else if (halfRoll < ccHalfLengthChance) {
+      else if (ccRoll() < ccHalfLengthChance) {
         noteLength = noteLength / 2;
       }
-      else if (doubleRoll < ccDoubleLengthChance) {
+      else if (ccRoll() < ccDoubleLengthChance) {
         noteLength = noteLength * 2;
       }
     }
 
     if (ccRestChance) {
-      byte restRoll = ccRoll();
       // Random rest
-      if (restRoll < ccRestChance) {
+      if (ccRoll() < ccRestChance) {
         // use 255 to indicate rest
         // TODO fix this, it's hacky
         randomNoteInterval = 255;
@@ -400,6 +401,16 @@ void Arp::handleControlChange(byte channel, byte cc, byte value) {
     ccOctaveTwoDownChance = value;
     ccDisplay[0] = CHAR_O;
     ccDisplay[1] = B00001001;
+  }
+  else if (cc == CC_FIFTH_UP) {
+    ccFifthChance = value;
+    ccDisplay[0] = CHAR_5;
+    ccDisplay[1] = CHAR_T;
+  }
+  else if (cc == CC_RANDOM_INTERVAL) {
+    ccRandomIntervalChance = value;
+    ccDisplay[0] = CHAR_R;
+    ccDisplay[1] = CHAR_N;
   }
   else if (cc == CC_RANDOM_LENGTH) {
     ccRandomLengthChance = value;
