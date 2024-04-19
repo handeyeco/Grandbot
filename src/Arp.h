@@ -7,6 +7,9 @@
 #ifndef ARP_INCL_GUARD
 #define ARP_INCL_GUARD
 
+// For debugging, set to false
+#define INITIALIZE_ON_START true
+
 #define PULSES_PER_SIXTEENTH_NOTE 6
 #define PULSES_PER_QUARTER_NOTE 24
 #define PULSES_PER_BAR 96
@@ -87,23 +90,25 @@ class Arp {
     // CC controlled params; all need to be 0-127
     byte ccBaseNoteLength = 0;
     byte ccSequenceLength = 0;
-    byte ccOctaveOneUpChance = 0;
-    byte ccOctaveOneDownChance = 0;
-    byte ccOctaveTwoUpChance = 0;
-    byte ccOctaveTwoDownChance = 0;
+    byte ccOctaveOneUpChance = 10;
+    byte ccOctaveOneDownChance = 10;
+    byte ccOctaveTwoUpChance = 5;
+    byte ccOctaveTwoDownChance = 5;
+    byte ccHalfLengthChance = 0;
+    byte ccDoubleLengthChance = 5;
+    byte ccRatchetChance = 10;
+    byte ccRestChance = 5;
+
+    // The chaotic ones
     byte ccFifthChance = 0;
     byte ccRandomIntervalChance = 0;
     byte ccRandomLengthChance = 0;
-    byte ccHalfLengthChance = 0;
-    byte ccDoubleLengthChance = 0;
-    byte ccRatchetChance = 0;
-    byte ccRestChance = 0;
 
     // Utilities
     byte ccUseSpeaker = 0;
     byte ccPanic = 0;
     byte ccGenerate = 0;
-    byte ccSlipChance = 0;
+    byte ccSlipChance = 10;
     byte ccSlip = 0;
 
     bool quarterFlipFlop = false;

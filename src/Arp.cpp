@@ -7,6 +7,10 @@ Arp::Arp(Expressions* _expr, Light* _light, int voicePin) {
   this->expr = _expr;
   this->light = _light;
   this->voicePin = voicePin;
+
+  if (INITIALIZE_ON_START) {
+    generateSequence();
+  }
 }
 
 const byte possibleNoteLengths[] = {
