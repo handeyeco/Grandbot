@@ -29,7 +29,7 @@ uint16_t Arp::addStep(
     return startPosition + noteLength;
 }
 
-byte ccRoll() {
+byte Arp::ccRoll() {
   return random(127);
 }
 
@@ -384,22 +384,22 @@ void Arp::handleControlChange(byte channel, byte cc, byte value) {
 
   if (cc == CC_OCTAVE_ONE_UP) {
     ccOctaveOneUpChance = value;
-    ccDisplay[0] = CHAR_O;
+    ccDisplay[0] = B01100011;
     ccDisplay[1] = B01000000;
   }
   else if (cc == CC_OCTAVE_ONE_DOWN) {
     ccOctaveOneDownChance = value;
-    ccDisplay[0] = CHAR_O;
+    ccDisplay[0] = B00011101;
     ccDisplay[1] = B00001000;
   }
   else if (cc == CC_OCTAVE_TWO_UP) {
     ccOctaveTwoUpChance = value;
-    ccDisplay[0] = CHAR_O;
+    ccDisplay[0] = B01100011;
     ccDisplay[1] = B01000001;
   }
   else if (cc == CC_OCTAVE_TWO_DOWN) {
     ccOctaveTwoDownChance = value;
-    ccDisplay[0] = CHAR_O;
+    ccDisplay[0] = B00011101;
     ccDisplay[1] = B00001001;
   }
   else if (cc == CC_FIFTH_UP) {

@@ -29,9 +29,9 @@
 #define CC_OCTAVE_TWO_UP 24
 #define CC_OCTAVE_TWO_DOWN 25
 #define CC_DOUBLE_LENGTH 26
-#define CC_RATCHET 27
-#define CC_REST 28
-#define CC_HALF_LENGTH 29
+#define CC_HALF_LENGTH 27
+#define CC_RATCHET 28
+#define CC_REST 29
 
 // The more chaotic ones
 #define CC_FIFTH_UP 85
@@ -75,6 +75,7 @@ class Arp {
     // Total sequence length in pulses
     uint16_t totalSequenceLength = 4 * PULSES_PER_QUARTER_NOTE;
 
+    byte ccRoll();
     // MIDI channels; 0-15
     // 255 = do whatever the original MIDI message wanted
     byte midiChannelIn = 255;
