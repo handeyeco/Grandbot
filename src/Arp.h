@@ -37,11 +37,13 @@
 #define CC_FIFTH_UP 85
 #define CC_RANDOM_INTERVAL 86
 #define CC_RANDOM_LENGTH 87
+#define CC_SLIP_CHANCE 88
 
 // Special controls
 #define CC_PANIC 117
 #define CC_GENERATE_SEQUENCE 118
 #define CC_USE_SPEAKER 119
+#define CC_SLIP 120
 
 class Arp {
   private:
@@ -50,6 +52,7 @@ class Arp {
     Light* light;
     int voicePin;
     bool regenerateQueued = false;
+    bool slipQueued = false;
 
     byte pressedNotes[MAX_NOTES];
     byte numPressedNotes = 0;
@@ -95,9 +98,13 @@ class Arp {
     byte ccDoubleLengthChance = 0;
     byte ccRatchetChance = 0;
     byte ccRestChance = 0;
+
+    // Utilities
     byte ccUseSpeaker = 0;
     byte ccPanic = 0;
     byte ccGenerate = 0;
+    byte ccSlipChance = 0;
+    byte ccSlip = 0;
 
     bool quarterFlipFlop = false;
     unsigned long long pulseCount = 0;
@@ -118,6 +125,7 @@ class Arp {
     byte getNoteLength();
     byte getSequenceLength();
     void generateSequence();
+    void slipSequence();
     String padded(String input);
     bool convertCCToBool(byte value);
     String convertCCToString(byte value);

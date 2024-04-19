@@ -62,6 +62,21 @@ byte Arp::getSequenceLength() {
   }
 }
 
+void Arp::slipSequence() {
+  if (ccSlipChance == 0) return;
+
+  for (byte i = 0; i < totalSequenceSteps - 1; i++) {
+    if (ccRoll() < ccSlipChance) {
+      byte tmpInterval = sequenceIntervals[i+1];
+      int8_t tmpOffset = sequenceOffset[i+1];
+      sequenceIntervals[i+1] = sequenceIntervals[i];
+      sequenceOffset[i+1] = sequenceOffset[i];
+      sequenceIntervals[i] = tmpInterval;
+      sequenceOffset[i] = tmpOffset;
+    }
+  }
+}
+
 void Arp::generateSequence() {
   // This is the length in number of pulses
   // (random number of bars between 1-8)
@@ -359,6 +374,13 @@ void Arp::handleControlCommand(byte channel, byte cc, byte value) {
       regenerateQueued = true;
     }
   }
+  else if (cc == CC_SLIP) {
+    bool wasOff = !convertCCToBool(ccGenerate);
+    ccGenerate = value;
+    if (wasOff && isOn) {
+      slipQueued = true;
+    }
+  }
   else if (cc == CC_USE_SPEAKER) {
     ccUseSpeaker = value;
     ccDisplay[0] = CHAR_S;
@@ -436,6 +458,11 @@ void Arp::handleControlChange(byte channel, byte cc, byte value) {
     ccRestChance = value;
     ccDisplay[0] = CHAR_R;
     ccDisplay[1] = CHAR_E;
+  }
+  else if (cc == CC_SLIP_CHANCE) {
+    ccSlipChance = value;
+    ccDisplay[0] = CHAR_S;
+    ccDisplay[1] = CHAR_C;
   }
   else if (cc == CC_BASE_NOTE_LENGTH) {
     ccBaseNoteLength = value;
@@ -516,16 +543,25 @@ void Arp::handleStep(int stepIndex) {
 }
 
 void Arp::handleClock() {
-  // If the button has been pressed and we hit the start of a new bar
-  // regenerate sequence
-  if (regenerateQueued && pulseCount % PULSES_PER_BAR == 0) {
-    regenerateQueued = false;
-    generateSequence();
-    pulseCount = 0;
+  // If we hit the start of a new bar
+  if (pulseCount % PULSES_PER_BAR == 0) {
+    // If the button has been pressed, regenerate sequence
+    if (regenerateQueued && pulseCount % PULSES_PER_BAR == 0) {
+      regenerateQueued = false;
+      generateSequence();
+      pulseCount = 0;
+    }
   }
 
+  // End of the sequence
   if (pulseCount >= totalSequenceLength) {
     pulseCount = 0;
+
+    // If we triggered a slip, update the sequence
+    if (slipQueued && pulseCount % PULSES_PER_BAR == 0) {
+      slipQueued = false;
+      slipSequence();
+    }
   }
 
   if (totalSequenceLength > 0) {
