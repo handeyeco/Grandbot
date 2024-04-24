@@ -646,7 +646,7 @@ bool Arp::update() {
           handleMidiChannelChange(channel, cc, value);
         }
         // Special controls
-        if (cc >= 117) {
+        if (cc >= 102) {
           handleControlCommand(channel, cc, value);
         }
         // Sequence params

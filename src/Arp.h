@@ -46,10 +46,10 @@
 
 // Free range 89-90
 #define CC_SLIP_CHANCE 89
-#define CC_SLIP 90
 
 // Free range 102-119
 // Special controls
+#define CC_SLIP 116
 #define CC_PANIC 117
 #define CC_GENERATE_SEQUENCE 118
 #define CC_USE_SPEAKER 119
