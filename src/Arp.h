@@ -20,10 +20,12 @@
 // 8 (bars) * 16th (notes)
 #define MAX_STEPS_IN_SEQ 8 * 16
 
+// Free range 14-15
 // MIDI CCs to listen to
 #define CC_CHANNEL_IN 14
 #define CC_CHANNEL_OUT 15
 
+// Free range 20-31
 // Regular sequence params
 #define CC_BASE_NOTE_LENGTH 20
 #define CC_SEQUENCE_LENGTH 21
@@ -36,17 +38,21 @@
 #define CC_RATCHET 28
 #define CC_REST 29
 
+// Free range 85-87
 // The more chaotic ones
 #define CC_FIFTH_UP 85
 #define CC_RANDOM_INTERVAL 86
 #define CC_RANDOM_LENGTH 87
-#define CC_SLIP_CHANCE 88
 
+// Free range 89-90
+#define CC_SLIP_CHANCE 89
+#define CC_SLIP 90
+
+// Free range 102-119
 // Special controls
 #define CC_PANIC 117
 #define CC_GENERATE_SEQUENCE 118
 #define CC_USE_SPEAKER 119
-#define CC_SLIP 120
 
 class Arp {
   private:
