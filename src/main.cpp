@@ -16,3 +16,19 @@ void loop() {
     gb.update(buttonPressed);
   }
 }
+
+// NO ARP OPTION
+// =============
+// #include <Arduino.h>
+// #include <Grandbot.h>
+
+// Grandbot gb = Grandbot();
+
+// void setup() {
+//   gb.setup();
+// }
+
+// void loop() {
+//   bool buttonPressed = gb.readButton();
+//   gb.update(buttonPressed);
+// }
