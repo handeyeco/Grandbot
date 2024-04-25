@@ -6,13 +6,8 @@
 #include <Light.h>
 #include <Arp.h>
 
-// RGB LED control
-Light light = Light();
-// 4D7S display control
-LedControl lc = LedControl(SERIAL_DATA_PIN, SERIAL_CLOCK_PIN, SERIAL_LOAD_PIN, 1);
-// Expression manager
-Expressions expr = Expressions(&lc, &light);
-Grandbot gb = Grandbot(&expr, &lc, &light);
+// Main Grandbot class
+Grandbot gb = Grandbot();
 // MIDI/Arp control
 Arp arp = Arp(&gb);
 

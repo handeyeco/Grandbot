@@ -1,18 +1,16 @@
 #include <Grandbot.h>
  
-Grandbot::Grandbot(Expressions* _expr, LedControl* _lc, Light* _light): voice() {
-  this->expr = _expr;
-  this->lc = _lc;
-  this->light = _light;
-}
+Grandbot::Grandbot()
+  : voice(), light(), lc(SERIAL_DATA_PIN, SERIAL_CLOCK_PIN, SERIAL_LOAD_PIN, 1), expr(&lc, &light)
+{}
 
 
 Expressions* Grandbot::getExpressionPointer(){
-  return expr;
+  return &expr;
 }
 
 Light* Grandbot::getLightPointer(){
-  return light;
+  return &light;
 }
 
 /**
@@ -32,11 +30,11 @@ void Grandbot::updateMood() {
   }
   mood = nextMood;
 
-  expr->setExpression(mood);
-  light->setColor(mood);
+  expr.setExpression(mood);
+  light.setColor(mood);
 
   if (last != nextMood) {
-    light->setMood(nextMood);
+    light.setMood(nextMood);
     // make a mood sound when changing between moods,
     // it's a call for attention
     voice.emote(mood, esteem);
@@ -48,12 +46,12 @@ void Grandbot::updateMood() {
  * no mood, expression, or LED changes
 */
 void Grandbot::sleep() {
-  lc->setIntensity(0, 0);
+  lc.setIntensity(0, 0);
   int lastMood = mood;
   mood = 0;
-  expr->setExpression(mood);
-  light->setMood(0);
-  light->setColor(mood);
+  expr.setExpression(mood);
+  light.setMood(0);
+  light.setColor(mood);
 
   // So we don't play a sound
   // if we reset at night
@@ -69,7 +67,7 @@ void Grandbot::wakeup() {
   // So he doesn't wake up angry
   lastPlayTime = millis();
 
-  lc->setIntensity(0, 14);
+  lc.setIntensity(0, 14);
   updateMood();
 }
 
@@ -101,15 +99,15 @@ void Grandbot::setup() {
   randomSeed(analogRead(RANDOM_PIN));
 
   // Wake up Max7219
-  lc->shutdown(0, false);
+  lc.shutdown(0, false);
   // Set the brightness
-  lc->setIntensity(0, 14);
+  lc.setIntensity(0, 14);
   // Only scan 4 digits
-  lc->setScanLimit(0, 4);
+  lc.setScanLimit(0, 4);
   // Clear the display
-  lc->clearDisplay(0);
+  lc.clearDisplay(0);
 
-  expr->init();
+  expr.init();
 }
 
 /**
@@ -141,12 +139,12 @@ void Grandbot::update(int lightReading) {
         updateMood();
       }
 
-      expr->update(mood);
+      expr.update(mood);
     }
   } else {
     sleep();
   }
 
-  light->update();
+  light.update();
   voice.update();
 }

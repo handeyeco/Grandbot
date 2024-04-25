@@ -11,13 +11,13 @@
 class Grandbot {
     private:
         // The Expressions manager
-        Expressions* expr;
+        Expressions expr;
         // The LedControl library
-        LedControl* lc;
+        LedControl lc;
         // The voice manager
         Voice voice;
         // The RGB LED manager
-        Light* light;
+        Light light;
 
         void sleep();
         void wakeup();
@@ -53,7 +53,7 @@ class Grandbot {
         // How long Grandbot has to be ignored before his esteem drops
         static const unsigned long ignoreThresh = 7200000LL;
     public:
-        Grandbot(Expressions* _expr, LedControl* _lc, Light* _light);
+        Grandbot();
         void play();
         void setup();
         void update(int lightReading);
