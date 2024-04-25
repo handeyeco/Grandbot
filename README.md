@@ -57,6 +57,7 @@ Additionally various parameters can be modified using MIDI CC:
   - Going from around 0 to around 127 triggers it
   - Happens at the end of the next bar
 - Panic tries to turn off all notes (117)
+  - Going from around 0 to around 127 triggers it
 - Use internal speaker to play arp (119)
   - Around 0: off - Around 127: on
 
