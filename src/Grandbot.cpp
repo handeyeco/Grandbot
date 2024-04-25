@@ -138,4 +138,7 @@ void Grandbot::update(int lightReading) {
   } else {
     sleep();
   }
+
+  light->update();
+  voice->update();
 }

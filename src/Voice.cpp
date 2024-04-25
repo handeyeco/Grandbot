@@ -30,10 +30,7 @@ const byte Voice::singingNotes[27] = {
     110, // D8
 };
 
-Voice::Voice(int voicePin)
-{
-  m_voicePin = voicePin;
-}
+Voice::Voice(){}
 
 /**
  * Sets the melody/rhythm to a Major 7th sequence
@@ -217,14 +214,14 @@ void Voice::update()
     {
       byte note = melody[currNoteIndex];
       uint16_t pitch = getPitchByNote(note);
-      tone(m_voicePin, pitch);
+      tone(BUZZER_PIN, pitch);
       noteStart = now;
       return;
     }
     else
     {
       // end of sequence, turn off buzzer
-      noTone(m_voicePin);
+      noTone(BUZZER_PIN);
       playing = false;
     }
   }

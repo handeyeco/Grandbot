@@ -1,4 +1,5 @@
 #include <Arduino.h>
+#include <pin_defs.h>
 #include <Expressions.h>
 #include <Light.h>
 #include <pitches.h>
@@ -64,8 +65,6 @@ class Arp {
     Expressions* expr;
     // RGB LED manager
     Light* light;
-    // Buzzer pin
-    int voicePin;
 
     // Track whether we're in "MIDI mode"
     // ie we've received a MIDI message recently
@@ -169,7 +168,7 @@ class Arp {
     void sendNoteOn(byte channel, byte pitch, byte velocity);
     void sendNoteOff(byte channel, byte pitch, byte velocity);
   public:
-    Arp(Expressions* _expr, Light* _light, int voicePin);
+    Arp(Expressions* _expr, Light* _light);
     void setup();
     bool update();
     void playButtonPress();

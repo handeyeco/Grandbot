@@ -3,10 +3,9 @@
 // Initialize MIDI library
 MIDI_CREATE_DEFAULT_INSTANCE();
 
-Arp::Arp(Expressions* _expr, Light* _light, int voicePin) {
+Arp::Arp(Expressions* _expr, Light* _light) {
   this->expr = _expr;
   this->light = _light;
-  this->voicePin = voicePin;
 
   if (INITIALIZE_ON_START) {
     generateSequence();
@@ -127,7 +126,7 @@ void Arp::generateSequence() {
   // Accumulator for discrete steps
   byte stepIndex = 0;
 
-  // Try to fill the seqence length (pulses)
+  // Try to fill the sequence length (pulses)
   // while keeping within max number of discrete steps.
   // For long sequences of 16th notes with a lot of ratchets or half steps
   // this could result in number of steps not filling the sequence
@@ -251,7 +250,7 @@ void Arp::sendNoteOn(byte channel, byte note, byte velocity) {
 
   // if the speaker is set to be on, play note on buzzer
   if (convertCCToBool(ccUseSpeaker)) {
-    tone(voicePin, getPitchByNote(note));
+    tone(BUZZER_PIN, getPitchByNote(note));
   }
 }
 
@@ -268,7 +267,7 @@ void Arp::sendNoteOff(byte channel, byte note, byte velocity) {
   // otherwise use the channel set in midiChannelOut
   byte movedChannel = midiChannelOut == 255 ? channel : midiChannelOut;
   MIDI.sendNoteOff(note, velocity, movedChannel);
-  noTone(voicePin);
+  noTone(BUZZER_PIN);
 }
 
 /**
@@ -498,7 +497,7 @@ void Arp::handleCommandChange(byte channel, byte cc, byte value) {
     bool wasOff = !convertCCToBool(ccPanic);
     ccPanic = value;
     if (wasOff && isOn) {
-      noTone(voicePin);
+      noTone(BUZZER_PIN);
 
       // I don't know why I did it this way
       ccDisplay[0] = CHAR_A;

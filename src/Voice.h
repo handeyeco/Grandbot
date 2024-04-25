@@ -1,4 +1,5 @@
 #include <Arduino.h>
+#include <pin_defs.h>
 #include <pitches.h>
 
 #ifndef VOICE_INCL_GUARD
@@ -6,8 +7,6 @@
 
 class Voice {
   private:
-    // Buzzer pin
-    int m_voicePin;
     // A selection of notes to make melodies out of
     // (represented as MIDI notes)
     static const byte singingNotes[];
@@ -34,7 +33,7 @@ class Voice {
 
     void play(int playLength);
   public:
-    Voice(int voicePin);
+    Voice();
     void emote(int mood, byte esteem);
     void update();
 };
