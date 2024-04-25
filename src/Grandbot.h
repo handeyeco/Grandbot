@@ -45,6 +45,8 @@ class Grandbot {
         void updateMood();
         // Last time someone pushed Grandbot's button
         unsigned long lastPlayTime = 0;
+        // Last value found during a button read
+        bool lastButtonRead = HIGH;
 
         // #TODO I think these could be ints
         // How long (ms) between interactions before an interaction is considered unique
@@ -56,7 +58,8 @@ class Grandbot {
         Grandbot();
         void play();
         void setup();
-        void update(int lightReading);
+        bool readButton();
+        void update(bool buttonPressed);
         Expressions* getExpressionPointer();
         Light* getLightPointer();
 };

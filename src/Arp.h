@@ -171,8 +171,7 @@ class Arp {
   public:
     Arp(Grandbot* gb);
     void setup();
-    bool update();
-    void playButtonPress();
+    bool update(bool buttonPressed);
 };
 
 #endif

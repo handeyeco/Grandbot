@@ -812,19 +812,16 @@ void Arp::setup() {
 }
 
 /**
- * Handle pressing button
-*/
-void Arp::playButtonPress() {
-  regenerateQueued = true;
-}
-
-/**
  * Update to be called during the Arduino update cycle.
  * Reads MIDI messages and tries to handle them.
  *
  * @returns {bool} whether a MIDI message was read
 */
-bool Arp::update() {
+bool Arp::update(bool buttonPressed) {
+  if (buttonPressed) {
+    regenerateQueued = true;
+  }
+
   bool readMidi = false;
 
   if (MIDI.read()) {

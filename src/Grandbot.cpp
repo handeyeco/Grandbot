@@ -111,15 +111,31 @@ void Grandbot::setup() {
 }
 
 /**
+ * Reads the button a returns if it's been pressed
+ * since last read
+ * 
+ * @returns {bool} whether button has been pressed
+*/
+bool Grandbot::readButton() {
+  bool read = digitalRead(PLAY_BUTTON_PIN);
+  bool pressed = read == LOW && lastButtonRead == HIGH;
+  lastButtonRead = read;
+  return pressed;
+}
+
+/**
  * Update to be called during the Arduino update cycle.
  * Triggers sleep/wake and handles esteem drift timing
- *
- * @param {int} lightReading - the last reading from the light sensor
 */
-void Grandbot::update(int lightReading) {
+void Grandbot::update(bool buttonPressed) {
+  if (buttonPressed) {
+    play();
+  }
+  
   unsigned long now = millis();
-  bool awake = lightReading > wakeThresh;
-  bool asleep = lightReading < sleepThresh;
+  int lightRead = analogRead(LIGHT_SENSOR_PIN);
+  bool awake = lightRead > wakeThresh;
+  bool asleep = lightRead < sleepThresh;
 
   if (mood == 0) {
     // Wakeup
