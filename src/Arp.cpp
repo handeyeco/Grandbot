@@ -5,7 +5,7 @@ MIDI_CREATE_DEFAULT_INSTANCE();
 
 Arp::Arp(Grandbot* gb) {
   this->expr = gb->getExpressionPointer();
-  this->light = gb->getLightPointer();;
+  this->light = gb->getLightPointer();
 
   if (INITIALIZE_ON_START) {
     generateSequence();

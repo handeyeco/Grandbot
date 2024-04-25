@@ -10,14 +10,14 @@
 
 class Grandbot {
     private:
-        // The Expressions manager
-        Expressions expr;
-        // The LedControl library
-        LedControl lc;
         // The voice manager
         Voice voice;
         // The RGB LED manager
         Light light;
+        // The LedControl library
+        LedControl lc;
+        // The Expressions manager
+        Expressions expr;
 
         void sleep();
         void wakeup();

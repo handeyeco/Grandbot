@@ -2,9 +2,7 @@
 #include <Grandbot.h>
 #include <Arp.h>
 
-// Main Grandbot class
 Grandbot gb = Grandbot();
-// MIDI/Arp control
 Arp arp = Arp(&gb);
 
 void setup() {
