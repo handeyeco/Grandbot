@@ -19,9 +19,9 @@ byte fullBlank[4] = {
 };
 
 byte error[4] = {
-    B01001111,
-    B00000101,
-    B00000101,
+    CHAR_E,
+    CHAR_R,
+    CHAR_R,
     blank};
 
 byte sleeping[4] = {
@@ -209,6 +209,7 @@ Expression ExpressionSets::unhappyExpressions[] = {
     Expression(closeLilEyesLow, closeLowBlinking)};
 int ExpressionSets::unhappyLength = sizeof(ExpressionSets::unhappyExpressions) / sizeof(unhappyExpressions[0]);
 
+// ARP STUFF #TODO move this
 Expression ExpressionSets::midiBeatExpressions[] = {
     Expression(bigEyeSmileLeft, smileBlinkLeft),
     Expression(bigEyeSmileRight, smileBlinkRight)};

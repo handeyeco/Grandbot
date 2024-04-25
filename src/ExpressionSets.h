@@ -36,6 +36,10 @@
 
 #define CHAR_BLANK B00000000
 
+/**
+ * A collection of different Expression structs,
+ * sorted by their emotion state
+*/
 struct ExpressionSets {
   public:
     static Expression errorExpressions[];
