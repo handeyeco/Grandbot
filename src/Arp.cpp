@@ -877,5 +877,16 @@ bool Arp::update() {
     }
   }
 
-  return readMidi;
+  unsigned long now = millis();
+  if (readMidi) {
+    midiMode = true;
+    lastMidiMessage = now;
+  }
+  else if (midiMode) {
+    if (now - lastMidiMessage > 1000) {
+      midiMode = false;
+    }
+  }
+
+  return midiMode;
 }

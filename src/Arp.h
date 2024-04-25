@@ -8,7 +8,7 @@
 #define ARP_INCL_GUARD
 
 // For debugging, set to false
-#define INITIALIZE_ON_START true
+#define INITIALIZE_ON_START false
 
 #define PULSES_PER_SIXTEENTH_NOTE 6
 #define PULSES_PER_QUARTER_NOTE 24
@@ -66,6 +66,11 @@ class Arp {
     Light* light;
     // Buzzer pin
     int voicePin;
+
+    // Track whether we're in "MIDI mode"
+    // ie we've received a MIDI message recently
+    bool midiMode = false;
+    unsigned long lastMidiMessage;
 
     // Whether we should trigger a sequence regeneration
     bool regenerateQueued = false;

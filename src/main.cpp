@@ -25,9 +25,6 @@ Grandbot gb = Grandbot(&expr, &lc, &voice, &light);
 
 bool lastPlayRead = HIGH;
 
-bool midiMode = false;
-unsigned long lastMidiMessage;
-
 void setupLedControl() {
   // Wake up Max7219
   lc.shutdown(0, false);
@@ -54,8 +51,6 @@ void setup() {
 }
 
 void loop() {
-  unsigned long now = millis();
-
   int lightRead = analogRead(LIGHT_SENSOR_PIN);
   bool playRead = digitalRead(PLAY_BUTTON_PIN);
   bool playPress = playRead == LOW && lastPlayRead == HIGH;
@@ -66,15 +61,6 @@ void loop() {
   }
 
   if (arp.update()) {
-    midiMode = true;
-    lastMidiMessage = now;
-  }
-
-  if (midiMode) {
-    if (now - lastMidiMessage > 1 * 1000) {
-      midiMode = false;
-    }
-
     return;
   }
 
