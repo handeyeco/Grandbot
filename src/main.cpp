@@ -14,9 +14,7 @@ LedControl lc = LedControl(SERIAL_DATA_PIN, SERIAL_CLOCK_PIN, SERIAL_LOAD_PIN, 1
 Expressions expr = Expressions(&lc, &light);
 // MIDI/Arp control
 Arp arp = Arp(&expr, &light);
-// Buzzer control
-Voice voice = Voice();
-Grandbot gb = Grandbot(&expr, &lc, &voice, &light);
+Grandbot gb = Grandbot(&expr, &lc, &light);
 
 bool lastPlayRead = HIGH;
 

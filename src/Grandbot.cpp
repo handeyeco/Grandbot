@@ -1,9 +1,8 @@
 #include <Grandbot.h>
  
-Grandbot::Grandbot(Expressions* _expr, LedControl* _lc, Voice* _voice, Light* _light) {
+Grandbot::Grandbot(Expressions* _expr, LedControl* _lc, Light* _light): voice() {
   this->expr = _expr;
   this->lc = _lc;
-  this->voice = _voice;
   this->light = _light;
 }
 
@@ -31,7 +30,7 @@ void Grandbot::updateMood() {
     light->setMood(nextMood);
     // make a mood sound when changing between moods,
     // it's a call for attention
-    voice->emote(mood, esteem);
+    voice.emote(mood, esteem);
   }
 }
 
@@ -50,7 +49,7 @@ void Grandbot::sleep() {
   // So we don't play a sound
   // if we reset at night
   if (lastMood >= 0) {
-    voice->emote(mood, esteem);
+    voice.emote(mood, esteem);
   }
 }
 
@@ -82,7 +81,7 @@ void Grandbot::play() {
   }
 
   updateMood();
-  voice->emote(mood, esteem);
+  voice.emote(mood, esteem);
 }
 
 /**
@@ -140,5 +139,5 @@ void Grandbot::update(int lightReading) {
   }
 
   light->update();
-  voice->update();
+  voice.update();
 }
