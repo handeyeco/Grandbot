@@ -10,39 +10,70 @@ Light::Light(byte rPin, byte gPin, byte bPin) {
   pinMode(bluePin, OUTPUT);
 }
 
+/**
+ * Write color to LED
+ *
+ * @param {byte} rVal - red color value
+ * @param {byte} gVal - green color value
+ * @param {byte} bVal - blue color value
+*/
 void Light::write(byte rVal, byte gVal, byte bVal) {
   analogWrite(redPin, rVal);
   analogWrite(greenPin, gVal);
   analogWrite(bluePin, bVal);
 }
 
+/**
+ * Set color to animate to
+ *
+ * @param {int} mood - enum for emotional state as defined in Grandbot.h
+*/
 void Light::setColor(int mood) {
   prevR = nextR;
   prevG = nextG;
   prevB = nextB;
 
+  // turn off for sleep
   if (mood == 0) {
     nextR = 0;
     nextG = 0;
     nextB = 0;
-  } else if (mood == 3) {
+  }
+  // only show red when unhappen
+  else if (mood == 3) {
     nextR = 255;
     nextG = 0;
     nextB = 0;
-  } else {
+  }
+  // otherwise a random color
+  else {
     nextR = random(0, 256);
     nextG = random(0, 256);
     nextB = random(0, 256);
   }
 
+  // trigger animation
   animating = true;
   startTween = millis();
 }
 
+/**
+ * Store a local copy of mood
+ * #TODO remove redundancy 
+ *
+ * @param {int} mood - enum for emotional state as defined in Grandbot.h
+*/
 void Light::setMood(int mood) {
   this->mood = mood;
 }
 
+/**
+ * Light show (for Arp)
+ * flips between cyan and magenta without animation
+ * #TODO move this
+ *
+ * @param {bool} even - whether we're on an odd/even quarter note
+*/
 void Light::midiBeat(bool even) {
   byte r = even ? 0 : 255;
   byte g = even ? 255 : 0;
@@ -50,6 +81,10 @@ void Light::midiBeat(bool even) {
   write(r, g, b);
 }
 
+/**
+ * Update to be called during the Arduino update cycle.
+ * Handles animating the LED.
+*/
 void Light::update() {
   if (!animating) return;
 

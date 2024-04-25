@@ -25,7 +25,7 @@ class Expressions {
     Expression* expression;
 
     // Is it actively blinking
-    boolean isBlinking = false;
+    bool isBlinking = false;
     // When we last changed blink states
     unsigned long lastBlinkChange;
     // Time between blink state changes

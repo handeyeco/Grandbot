@@ -20,9 +20,13 @@
 // 8 (bars) * 16th (notes)
 #define MAX_STEPS_IN_SEQ 8 * 16
 
-// Free range 14-15
+// =====================
 // MIDI CCs to listen to
-#define CC_CHANNEL_IN 14
+// =====================
+
+// Free range 14-15
+// MIDI I/O settings
+#define CC_CHANNEL_IN 14 // WARNING we listen to this CC regardless of channel
 #define CC_CHANNEL_OUT 15
 
 // Free range 20-31
@@ -50,31 +54,45 @@
 // Free range 102-119
 // Special controls
 #define CC_SLIP 116
-#define CC_PANIC 117
+#define CC_PANIC 117 // WARNING we listen to this CC regardless of channel
 #define CC_GENERATE_SEQUENCE 118
 #define CC_USE_SPEAKER 119
 
 class Arp {
   private:
-    LedControl* lc;
+    // 4D7S display manager
     Expressions* expr;
+    // RGB LED manager
     Light* light;
+    // Buzzer pin
     int voicePin;
+
+    // Whether we should trigger a sequence regeneration
     bool regenerateQueued = false;
+    // Whether we should trigger a sequence "slip"
     bool slipQueued = false;
 
+    // MIDI notes that are currently pressed
     byte pressedNotes[MAX_NOTES];
+    // Number of notes that are currently pressed
     byte numPressedNotes = 0;
+    // MIDI notes that are currently active
     byte activeNotes[MAX_NOTES] = {62, 65, 69, 65};
+    // Number of notes that are currently active
     byte numActiveNotes = 4;
 
+    // Note currently being played
     byte currNote = 0;
 
+    // #TODO this is poorly named, it's not really an "interval"
+    // it's an index for accessing a note from `activeNotes`
+    // so it's a sequence of array indexes modulo'd by `numActiveNotes`
     byte sequenceIntervals[MAX_STEPS_IN_SEQ] = {0, 1, 2, 3};
 
     // Offset the note at this step (like for octaves)
     // 0=no offset; 12=+1 oct; -24=-2oct
     int8_t sequenceOffset[MAX_STEPS_IN_SEQ] = {0, 0, 0, 0};
+    // Time (in clock pulses) that each step in the sequence starts
     uint16_t sequenceStartPositions[MAX_STEPS_IN_SEQ] = {
       PULSES_PER_QUARTER_NOTE * 0,
       PULSES_PER_QUARTER_NOTE * 1,
@@ -87,7 +105,11 @@ class Arp {
     // Total sequence length in pulses
     uint16_t totalSequenceLength = 4 * PULSES_PER_QUARTER_NOTE;
 
-    byte ccRoll();
+    // Basically: is this an odd or even quarter note?
+    bool quarterFlipFlop = false;
+    // How many clock pulses through the sequence are we
+    unsigned long long pulseCount = 0;
+
     // MIDI channels; 0-15
     // 255 = do whatever the original MIDI message wanted
     byte midiChannelIn = 255;
@@ -117,13 +139,11 @@ class Arp {
     byte ccSlipChance = 10;
     byte ccSlip = 0;
 
-    bool quarterFlipFlop = false;
-    unsigned long long pulseCount = 0;
     void reset();
-
+    byte ccRoll();
     int findStepIndexForPulse(uint16_t pulse);
     bool noteInBounds(byte note);
-    void handleControlCommand(byte channel, byte cc, byte value);
+    void handleCommandChange(byte channel, byte cc, byte value);
     void handleControlChange(byte channel, byte cc, byte value);
     void handleMidiChannelChange(byte channel, byte cc, byte value);
     void handleNoteOn(byte channel, byte pitch, byte velocity);
@@ -141,13 +161,13 @@ class Arp {
     bool convertCCToBool(byte value);
     String convertCCToString(byte value);
     bool correctInChannel(byte channel);
+    void sendNoteOn(byte channel, byte pitch, byte velocity);
+    void sendNoteOff(byte channel, byte pitch, byte velocity);
   public:
     Arp(Expressions* _expr, Light* _light, int voicePin);
     void setup();
     bool update();
     void playButtonPress();
-    void sendNoteOn(byte channel, byte pitch, byte velocity);
-    void sendNoteOff(byte channel, byte pitch, byte velocity);
 };
 
 #endif

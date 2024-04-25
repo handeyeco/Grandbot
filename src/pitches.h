@@ -8,6 +8,7 @@
 // so use this to convert MIDI note to index
 static const byte noteOffset = 23;
 
+// An array of pitches from B0 to D8
 static const uint16_t noteToPitchMap[88] = {
     31, // B0 - 23
     33,
@@ -99,6 +100,13 @@ static const uint16_t noteToPitchMap[88] = {
     4699, // D8 - 110
 };
 
+/**
+ * Convert a MIDI note (23-110) to a pitch (31Hz-4699Hz aka B0-D8)
+ * used to convert MIDI to buzzer sounds
+ *
+ * @param {byte} note - the MIDI note in question
+ * @returns {uint16_t} the pitch in Hz
+*/
 static uint16_t getPitchByNote(byte note) {
     // outside of note range
     if (note < 23 || note > 110) {

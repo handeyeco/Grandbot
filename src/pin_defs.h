@@ -1,6 +1,6 @@
 // MAX7219 communication pins
 #define SERIAL_DATA_PIN 11
-#define SERIAL_CLOCK_PIN 13 // TODO: needs to be changed since it's the interal LED
+#define SERIAL_CLOCK_PIN 13 // #TODO: needs to be changed since it's the interal LED
 #define SERIAL_LOAD_PIN 10
 
 // Buzzer output

@@ -7,6 +7,10 @@ Grandbot::Grandbot(Expressions* _expr, LedControl* _lc, Voice* _voice, Light* _l
   this->light = _light;
 }
 
+/**
+ * Determine mood based on esteem (a finer resolution mood);
+ * triggers a new expression and new LED color
+*/
 void Grandbot::updateMood() {
   int last = mood;
 
@@ -25,10 +29,16 @@ void Grandbot::updateMood() {
 
   if (last != nextMood) {
     light->setMood(nextMood);
+    // make a mood sound when changing between moods,
+    // it's a call for attention
     voice->emote(mood, esteem);
   }
 }
 
+/**
+ * Sleep is a low activity state;
+ * no mood, expression, or LED changes
+*/
 void Grandbot::sleep() {
   lc->setIntensity(0, 0);
   int lastMood = mood;
@@ -44,6 +54,9 @@ void Grandbot::sleep() {
   }
 }
 
+/**
+ * Return back to an active state
+*/
 void Grandbot::wakeup() {
   // So he doesn't wake up angry
   lastPlayTime = millis();
@@ -52,6 +65,10 @@ void Grandbot::wakeup() {
   updateMood();
 }
 
+/**
+ * When Grandbot is interacted with,
+ * it boosts his esteem and he makes sound
+*/
 void Grandbot::play() {
   if (mood < 1) {
     return;
@@ -68,10 +85,16 @@ void Grandbot::play() {
   voice->emote(mood, esteem);
 }
 
+/**
+ * Update to be called during the Arduino update cycle.
+ * Triggers sleep/wake and handles esteem drift timing
+ *
+ * @param {int} lightReading - the last reading from the light sensor
+*/
 void Grandbot::update(int lightReading) {
   unsigned long now = millis();
-  boolean awake = lightReading > wakeThresh;
-  boolean asleep = lightReading < sleepThresh;
+  bool awake = lightReading > wakeThresh;
+  bool asleep = lightReading < sleepThresh;
 
   if (mood == 0) {
     // Wakeup
