@@ -25,29 +25,9 @@ Grandbot gb = Grandbot(&expr, &lc, &voice, &light);
 
 bool lastPlayRead = HIGH;
 
-void setupLedControl() {
-  // Wake up Max7219
-  lc.shutdown(0, false);
-  // Set the brightness
-  lc.setIntensity(0, 14);
-  // Only scan 4 digits
-  lc.setScanLimit(0, 4);
-  // Clear the display
-  lc.clearDisplay(0);
-}
-
 void setup() {
-  pinMode(PLAY_BUTTON_PIN, INPUT_PULLUP);
-  randomSeed(analogRead(RANDOM_PIN));
-
-  setupLedControl();
-  expr.init();
-
-  if (midiEnabled) {
-    arp.setup();
-  } else {
-    Serial.begin(9600);
-  }
+  gb.setup();
+  arp.setup();
 }
 
 void loop() {

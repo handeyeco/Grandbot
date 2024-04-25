@@ -86,6 +86,25 @@ void Grandbot::play() {
 }
 
 /**
+ * Setup to be called during the Arduino setup stage.
+*/
+void Grandbot::setup() {
+  pinMode(PLAY_BUTTON_PIN, INPUT_PULLUP);
+  randomSeed(analogRead(RANDOM_PIN));
+
+  // Wake up Max7219
+  lc->shutdown(0, false);
+  // Set the brightness
+  lc->setIntensity(0, 14);
+  // Only scan 4 digits
+  lc->setScanLimit(0, 4);
+  // Clear the display
+  lc->clearDisplay(0);
+
+  expr->init();
+}
+
+/**
  * Update to be called during the Arduino update cycle.
  * Triggers sleep/wake and handles esteem drift timing
  *

@@ -1,3 +1,4 @@
+#include <pin_defs.h>
 #include <LedControl.h>
 #include <Voice.h>
 #include <Light.h>
@@ -54,6 +55,7 @@ class Grandbot {
     public:
         Grandbot(Expressions* _expr, LedControl* _lc, Voice* _voice, Light* _light);
         void play();
+        void setup();
         void update(int lightReading);
 };
 
