@@ -6,6 +6,15 @@ Grandbot::Grandbot(Expressions* _expr, LedControl* _lc, Light* _light): voice() 
   this->light = _light;
 }
 
+
+Expressions* Grandbot::getExpressionPointer(){
+  return expr;
+}
+
+Light* Grandbot::getLightPointer(){
+  return light;
+}
+
 /**
  * Determine mood based on esteem (a finer resolution mood);
  * triggers a new expression and new LED color

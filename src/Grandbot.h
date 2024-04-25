@@ -57,6 +57,8 @@ class Grandbot {
         void play();
         void setup();
         void update(int lightReading);
+        Expressions* getExpressionPointer();
+        Light* getLightPointer();
 };
 
 #endif

@@ -3,9 +3,9 @@
 // Initialize MIDI library
 MIDI_CREATE_DEFAULT_INSTANCE();
 
-Arp::Arp(Expressions* _expr, Light* _light) {
-  this->expr = _expr;
-  this->light = _light;
+Arp::Arp(Grandbot* gb) {
+  this->expr = gb->getExpressionPointer();
+  this->light = gb->getLightPointer();;
 
   if (INITIALIZE_ON_START) {
     generateSequence();

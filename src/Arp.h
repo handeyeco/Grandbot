@@ -4,6 +4,7 @@
 #include <Light.h>
 #include <pitches.h>
 #include <MIDI.h>
+#include <Grandbot.h>
 
 #ifndef ARP_INCL_GUARD
 #define ARP_INCL_GUARD
@@ -168,7 +169,7 @@ class Arp {
     void sendNoteOn(byte channel, byte pitch, byte velocity);
     void sendNoteOff(byte channel, byte pitch, byte velocity);
   public:
-    Arp(Expressions* _expr, Light* _light);
+    Arp(Grandbot* gb);
     void setup();
     bool update();
     void playButtonPress();
