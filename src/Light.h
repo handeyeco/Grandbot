@@ -1,14 +1,11 @@
 #include <Arduino.h>
+#include <pin_defs.h>
 
 #ifndef LIGHT_INCL_GUARD
 #define LIGHT_INCL_GUARD
 
 class Light {
   private:
-    byte redPin;
-    byte greenPin;
-    byte bluePin;
-
     // copy of the mood
     // #TODO remove redundancy
     int mood;
@@ -32,7 +29,7 @@ class Light {
 
     void write(byte rVal, byte gVal, byte bVal);
   public:
-    Light(byte rPin, byte gPin, byte bPin);
+    Light();
     void update();
     void setColor(int mood);
     void setMood(int mood);

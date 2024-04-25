@@ -1,13 +1,9 @@
 #include <Light.h>
 
-Light::Light(byte rPin, byte gPin, byte bPin) {
-  redPin = rPin;
-  greenPin = gPin;
-  bluePin = bPin;
-
-  pinMode(redPin, OUTPUT);
-  pinMode(greenPin, OUTPUT);
-  pinMode(bluePin, OUTPUT);
+Light::Light() {
+  pinMode(RGB_R_PIN, OUTPUT);
+  pinMode(RGB_G_PIN, OUTPUT);
+  pinMode(RGB_B_PIN, OUTPUT);
 }
 
 /**
@@ -18,9 +14,9 @@ Light::Light(byte rPin, byte gPin, byte bPin) {
  * @param {byte} bVal - blue color value
 */
 void Light::write(byte rVal, byte gVal, byte bVal) {
-  analogWrite(redPin, rVal);
-  analogWrite(greenPin, gVal);
-  analogWrite(bluePin, bVal);
+  analogWrite(RGB_R_PIN, rVal);
+  analogWrite(RGB_G_PIN, gVal);
+  analogWrite(RGB_B_PIN, bVal);
 }
 
 /**
