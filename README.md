@@ -4,9 +4,7 @@ Grandbot is a robot grand-child for my parents. He's my my take on [Mohit Bhoite
 
 ## Features
 
-Grandbot is an ongoing project, but right now:
-
-- Grandbot is a generative, pattern-based arpeggiator
+- Grandbot is a generative, pattern-based MIDI arpeggiator
 - He has different moods based on his self-esteem. These moods affect everything from his expressions, the color of his light, and the sounds he plays.
   - To increase his self-esteem, it's important to give him plenty of attention. He currently can be interacted with using a "play" button; if you play with him, he feels better about himself and he gets happier.
   - He doesn't like to be ignored though. If you don't play with him regularly, he starts to feel unimportant. If his self-esteem drops too low, he gets depressed.
@@ -26,40 +24,50 @@ The simplest use:
 - Start the MIDI clock and play some notes
 - Press the button to generate a new sequence
 
-Additionally various parameters can be modified using MIDI CC:
-- MIDI Channel in (14): select the MIDI channel to listen to
-  - By default, Grandbot listens to all channels
-- MIDI Channel out (15): select the MIDI channel to send to
-  - By default, Grandbot sends to the same channel it received
-- Base note length (20): base note length before length variation is added
-  - By default, this is randomly set for each new sequence
-- Sequence length (21): total sequence length
-  - By default, this is randomly set for each new sequence
-- Transposition randomness
-  - One octave up chance (22)
-  - One octave down chance (23)
-  - Two octaves up chance (24)
-  - Two octaves down chance (25)
-  - Fifth up chance (85)
-  - Random transposition chance (86)
-- Length randomness
-  - Double length chance (26)
-  - Half length chance (27)
-  - Ratchet (double note) chance (28)
-  - Random length chance (87)
-- Rest chance (29)
-- Slipping is a gentle transformation that randomly swaps notes in a sequence
-  - Slip note chance (89)
-  - Trigger slip (116)
-    - Going from around 0 to around 127 triggers it
-    - Happens after the sequence has finished
-- Generate sequence (118)
-  - Going from around 0 to around 127 triggers it
-  - Happens at the end of the next bar
-- Panic tries to turn off all notes (117)
-  - Going from around 0 to around 127 triggers it
-- Use internal speaker to play arp (119)
-  - Around 0: off - Around 127: on
+There's endless potential just doing that. If you'd like more control, there are additional parameters that can be changed using MIDI CC:
+
+| Description | MIDI CC | Display | Button |
+| - | - | - | - |
+| **» Sequence Parameters** |
+| Base note length | 20 | nL |
+| Sequence length | 21 | SL |
+| **» Transposition Chance** |
+| One octave up chance | 22 | o- |
+| One octave down chance | 23 | o- |
+| Two octaves up chance | 24 | o= |
+| Two octaves down chance | 25 | o= |
+| Fifth up chance | 85 | Ft |
+| Random transposition chance | 86 | rn |
+| Rest chance | 29 | rE |
+| **» Note Length Chance** |
+| Double length chance | 26 | dL |
+| Half length chance | 27 | HL |
+| Ratchet (double note) chance | 28 | rA |
+| Random length chance | 87 | rL |
+| **» Generate / Slip** |
+| Queue sequence generation | 118 | | * |
+| Slip chance | 89 | SC |
+| Queue sequence slip | 116 | | * |
+| **» Utilities** |
+| Select MIDI channel in | 14 | In |
+| Select MIDI channel out | 15 | ot |
+| Panic / all notes off | 117 | AH | * |
+| Toggle internal speaker for arp | 119 | SP |
+
+**Additional Notes**
+- Things marked as buttons have to go low (CC 0) before going high (CC 127) to trigger
+- Defaults
+  - MIDI in: listen to all channels
+  - MIDI out: send on channel 1
+  - Base note length: random
+  - Base sequence length: random
+  - Speaker: off
+  - Chances have sensible defaults depending on what they do
+- Generate / Slip
+  - Generate uses chance to generate a new sequence
+  - Generate triggers at the end of the bar
+  - Slip randomly swaps notes in a sequence based on slip chance
+  - Slip triggers at the end of the sequence 
 
 > [!TIP]
 > Changing variation chances only affects new sequences, not the current sequence. Press the button after making changes to hear the effects.
