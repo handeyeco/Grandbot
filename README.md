@@ -1,6 +1,11 @@
+![Grandbot smiling](grandbot.JPG)
+
 # Grandbot
 
 Grandbot is a robot grand-child for my parents. He's my my take on [Mohit Bhoite's Chintoo](https://twitter.com/MohitBhoite/status/1241752124087660546).
+
+- [Demo](https://www.youtube.com/watch?v=sPIsFCZO8Fg)
+- [Build video](https://www.youtube.com/watch?v=zd_m1_4YeL4)
 
 ## Features
 

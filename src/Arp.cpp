@@ -791,6 +791,8 @@ void Arp::handleStartContinue(bool resetSeq) {
     reset();
   }
 
+  running = true;
+
   // trigger dance / light show again
   expr->midiBeat(quarterFlipFlop);
   light->midiBeat(quarterFlipFlop);
@@ -800,6 +802,7 @@ void Arp::handleStartContinue(bool resetSeq) {
  * Handle stop MIDI signal
 */
 void Arp::handleStop() {
+  running = false;
   sendNoteOff(1, currNote, 64);
 }
 
@@ -828,7 +831,11 @@ bool Arp::update(bool buttonPressed) {
     readMidi = true;
     switch(MIDI.getType()) {
       case midi::Clock:
-        handleClock();
+        if (running) {
+          handleClock();
+        } else {
+          readMidi = false;
+        }
         break;
       case midi::NoteOn:
         handleNoteOn(MIDI.getChannel(), MIDI.getData1(), MIDI.getData2());
@@ -838,11 +845,9 @@ bool Arp::update(bool buttonPressed) {
         break;
       case midi::Start:
         handleStartContinue(true);
-        handleClock();
         break;
       case midi::Continue:
         handleStartContinue(false);
-        handleClock();
         break;
       case midi::Stop:
         handleStop();

@@ -70,6 +70,9 @@ class Arp {
     // Track whether we're in "MIDI mode"
     // ie we've received a MIDI message recently
     bool midiMode = false;
+    // Track Start/Stop/Continue messages
+    // #TODO could this replace midiMode?
+    bool running = false;
     unsigned long lastMidiMessage;
 
     // Whether we should trigger a sequence regeneration
