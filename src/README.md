@@ -3,7 +3,7 @@ Uses:
 - [Arduino MIDI Library](https://github.com/FortySevenEffects/arduino_midi_library)
 - [LedControl](https://github.com/wayoda/LedControl)
 
-Built with [PlatformIO](https://platformio.org/) using a cheap Arduino Nano clone.
+Built with [PlatformIO](https://platformio.org/) using an Arduino Nano Every. Should also work with a regular Arduino Nano.
 
 Main files:
 - `main`: the main Arduino `setup`/`loop` setup

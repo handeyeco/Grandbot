@@ -19,7 +19,7 @@ Grandbot is a robot grand-child for my parents. He's my my take on [Mohit Bhoite
 
 ## Arp
 
-I had extra memory on the Nano, so I decided to program Grandbot to play synths with me. He's now a chaotic, generative, pattern-based arpeggiator.
+I had extra memory, so I decided to program Grandbot to play synths with me. He's now a chaotic, generative, pattern-based arpeggiator.
 
 This requires the additional MIDI board for Grandbot.
 
@@ -121,3 +121,10 @@ The sixth digit:
 - B: specifying it's binary
 - 0: the top dot
 - the reset are unused
+
+## Nano vs Nano Every
+
+This was originally built on a cheap Arduino Nano clone.
+
+However I wanted to be able to support 8 bars of 32nd notes in the arpeggiator (the minimum base note length is 16th, but ratchets break that into 32nds) and the Arduino Nano didn't have enough memory. The [Arduino Nano Every](https://store.arduino.cc/products/arduino-nano-every) does! **It's a different board with a similar name.**
+

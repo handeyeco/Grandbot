@@ -18,9 +18,19 @@
 
 // How many notes can be pressed or active
 #define MAX_NOTES 16
-// Max number of discrete steps in a sequence
+
+/*
+ * MAX_STEPS_IN_SEQ
+ * Max number of discrete steps in a sequence.
+ * Has a big impact on RAM. Ideally we'd like to be able
+ * to store 8 bars of 32nd notes (100% ratcheting on 16th),
+ * but the original Nano can't hold all of that.
+ * Luckily the Nano Every can!
+*/
 // 8 (bars) * 16th (notes)
-#define MAX_STEPS_IN_SEQ 8 * 16
+// #define MAX_STEPS_IN_SEQ 8 * 16 // uncomment for #NANO
+// 8 (bars) * 32nd (notes)
+#define MAX_STEPS_IN_SEQ 8 * 16 * 2 // uncomment for #NANO_EVERY
 
 // =====================
 // MIDI CCs to listen to
