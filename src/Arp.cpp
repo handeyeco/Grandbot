@@ -1,7 +1,8 @@
 #include <Arp.h>
 
 // Initialize MIDI library
-MIDI_CREATE_DEFAULT_INSTANCE();
+// MIDI_CREATE_DEFAULT_INSTANCE(); // uncomment for #NANO
+MIDI_CREATE_INSTANCE(HardwareSerial, Serial1, MIDI); // uncomment for #NANO_EVERY
 
 Arp::Arp(Grandbot* gb) {
   this->expr = gb->getExpressionPointer();
