@@ -24,6 +24,7 @@ I had extra memory, so I decided to program Grandbot to play synths with me. He'
 This requires the additional MIDI board for Grandbot.
 
 The simplest use:
+
 - Plug something that can send MIDI notes and a MIDI clock to Grandbot's MIDI input
 - Plus Grandbot's MIDI out into a synth
 - Start the MIDI clock and play some notes
@@ -31,35 +32,36 @@ The simplest use:
 
 There's endless potential just doing that. If you'd like more control, there are additional parameters that can be changed using MIDI CC:
 
-| Description | MIDI CC | Display | Button |
-| - | - | - | - |
-| **» Sequence Parameters** |
-| Base note length | 20 | nL |
-| Sequence length | 21 | SL |
-| **» Transposition Chance** |
-| One octave up chance | 22 | o- |
-| One octave down chance | 23 | o- |
-| Two octaves up chance | 24 | o= |
-| Two octaves down chance | 25 | o= |
-| Fifth up chance | 85 | Ft |
-| Random transposition chance | 86 | rn |
-| Rest chance | 29 | rE |
-| **» Note Length Chance** |
-| Double length chance | 26 | dL |
-| Half length chance | 27 | HL |
-| Ratchet (double note) chance | 28 | rA |
-| Random length chance | 87 | rL |
-| **» Generate / Slip** |
-| Queue sequence generation | 118 | | * |
-| Slip chance | 89 | SC |
-| Queue sequence slip | 116 | | * |
-| **» Utilities** |
-| Select MIDI channel in | 14 | In |
-| Select MIDI channel out | 15 | ot |
-| Panic / all notes off | 117 | AH | * |
-| Toggle internal speaker for arp | 119 | SP |
+| Description                     | MIDI CC | Display | Button |
+| ------------------------------- | ------- | ------- | ------ |
+| **» Sequence Parameters**       |
+| Base note length                | 20      | nL      |
+| Sequence length                 | 21      | SL      |
+| **» Transposition Chance**      |
+| One octave up chance            | 22      | o-      |
+| One octave down chance          | 23      | o-      |
+| Two octaves up chance           | 24      | o=      |
+| Two octaves down chance         | 25      | o=      |
+| Fifth up chance                 | 85      | Ft      |
+| Random transposition chance     | 86      | rn      |
+| Rest chance                     | 29      | rE      |
+| **» Note Length Chance**        |
+| Double length chance            | 26      | dL      |
+| Half length chance              | 27      | HL      |
+| Ratchet (double note) chance    | 28      | rA      |
+| Random length chance            | 87      | rL      |
+| **» Generate / Slip**           |
+| Queue sequence generation       | 118     |         | \*     |
+| Slip chance                     | 89      | SC      |
+| Queue sequence slip             | 116     |         | \*     |
+| **» Utilities**                 |
+| Select MIDI channel in          | 14      | In      |
+| Select MIDI channel out         | 15      | ot      |
+| Panic / all notes off           | 117     | AH      | \*     |
+| Toggle internal speaker for arp | 119     | SP      |
 
 **Additional Notes**
+
 - Things marked as buttons have to go low (CC 0) before going high (CC 127) to trigger
 - Defaults
   - MIDI in: listen to all channels
@@ -72,15 +74,16 @@ There's endless potential just doing that. If you'd like more control, there are
   - Generate uses chance to generate a new sequence
   - Generate triggers at the end of the bar
   - Slip randomly swaps notes in a sequence based on slip chance
-  - Slip triggers at the end of the sequence 
+  - Slip triggers at the end of the sequence
 
 > [!TIP]
 > Changing variation chances only affects new sequences, not the current sequence. Press the button after making changes to hear the effects.
 
-> [!WARNING] 
+> [!WARNING]
 > Pretty much all of these are only affected if the commands happen on the selected MIDI in channel (by default Grandbot listens to all channels). However CC 14 (MIDI in selector) and CC 117 (Panic) listen for changes on all channels all the time.
 
 ## Tools
+
 - [Tool to control the arp via MIDI CC](https://handeyeco.github.io/grandbot-web-controller/) ([Source](https://github.com/handeyeco/grandbot-web-controller))
 - [Tool to convert display settings to bytes](https://handeyeco.github.io/grandbot-designer/) ([Source](https://github.com/handeyeco/grandbot-designer))
 
@@ -95,6 +98,7 @@ Grandbot development is what I'm using to learn more about electronics and C++. 
 - [Grandbot Update - Play](https://handeyeco.github.io/tech-blog/grandbot-update-play/)
 - [Grandbot Update - Light](https://handeyeco.github.io/tech-blog/grandbot-update-light/)
 - [Concurrent Arduino](https://handeyeco.github.io/tech-blog/concurrent-arduino/)
+- [Grandbot Update - Arp](https://handeyeco.github.io/tech-blog/grandbot-update-arp/)
 
 ## Byte to digit
 
@@ -127,4 +131,3 @@ The sixth digit:
 This was originally built on a cheap Arduino Nano clone.
 
 However I wanted to be able to support 8 bars of 32nd notes in the arpeggiator (the minimum base note length is 16th, but ratchets break that into 32nds) and the Arduino Nano didn't have enough memory. The [Arduino Nano Every](https://store.arduino.cc/products/arduino-nano-every) does! **It's a different board with a similar name.**
-
