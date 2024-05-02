@@ -91,14 +91,15 @@ There's endless potential just doing that. If you'd like more control, there are
 
 Grandbot development is what I'm using to learn more about electronics and C++. I write about what I've been learning on my blog. Here are the Grandbot posts:
 
+- [Grandbot: Sleep](https://handeyeco.github.io/tech-blog/grandbot-update-sleep/)
+- [Grandbot: Voice](https://handeyeco.github.io/tech-blog/grandbot-update-voice/)
+- [Grandbot: Play](https://handeyeco.github.io/tech-blog/grandbot-update-play/)
+- [Grandbot: Light](https://handeyeco.github.io/tech-blog/grandbot-update-light/)
+- [Concurrent Arduino](https://handeyeco.github.io/tech-blog/concurrent-arduino/)
+- [Grandbot: MIDI & Misc](https://handeyeco.github.io/tech-blog/grandbot-update-midi/)
+- [Grandbot: Arp](https://handeyeco.github.io/tech-blog/grandbot-update-arp/)
 - [4 Digit, 7 Segment Emoji](https://handeyeco.github.io/tech-blog/seven-segment-emoji/)
 - [Max7219 Emoji](https://handeyeco.github.io/tech-blog/max7219-emoji/)
-- [Grandbot Update - Sleep](https://handeyeco.github.io/tech-blog/grandbot-update-sleep/)
-- [Grandbot Update - Voice](https://handeyeco.github.io/tech-blog/grandbot-update-voice/)
-- [Grandbot Update - Play](https://handeyeco.github.io/tech-blog/grandbot-update-play/)
-- [Grandbot Update - Light](https://handeyeco.github.io/tech-blog/grandbot-update-light/)
-- [Concurrent Arduino](https://handeyeco.github.io/tech-blog/concurrent-arduino/)
-- [Grandbot Update - Arp](https://handeyeco.github.io/tech-blog/grandbot-update-arp/)
 
 ## Byte to digit
 
