@@ -95,9 +95,9 @@ Grandbot development is what I'm using to learn more about electronics and C++. 
 - [Grandbot: Voice](https://handeyeco.github.io/tech-blog/grandbot-update-voice/)
 - [Grandbot: Play](https://handeyeco.github.io/tech-blog/grandbot-update-play/)
 - [Grandbot: Light](https://handeyeco.github.io/tech-blog/grandbot-update-light/)
-- [Concurrent Arduino](https://handeyeco.github.io/tech-blog/concurrent-arduino/)
 - [Grandbot: MIDI & Misc](https://handeyeco.github.io/tech-blog/grandbot-update-midi/)
 - [Grandbot: Arp](https://handeyeco.github.io/tech-blog/grandbot-update-arp/)
+- [Concurrent Arduino](https://handeyeco.github.io/tech-blog/concurrent-arduino/)
 - [4 Digit, 7 Segment Emoji](https://handeyeco.github.io/tech-blog/seven-segment-emoji/)
 - [Max7219 Emoji](https://handeyeco.github.io/tech-blog/max7219-emoji/)
 
