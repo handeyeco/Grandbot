@@ -856,6 +856,8 @@ bool Arp::update(bool buttonPressed) {
   }
 
   // Handle swung notes (they don't always land on a clock pulse)
+  // #TODO what happens if we stop/continue in the middle of a swung note?
+  // the originalSwungNoteTime will be off
   if (swungStepIndex > -1) {
     if (now - originalSwungNoteTime > swingDelay) {
         handleStep(swungStepIndex);

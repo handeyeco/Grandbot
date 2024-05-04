@@ -92,7 +92,7 @@ class Arp {
     // Whether we should trigger a sequence "slip"
     bool slipQueued = false;
 
-    // Last time we saw a clock (to determine BPM)
+    // Last time we saw a clock (to calculate swing delay time)
     unsigned long lastClockPulse = 0;
     // When a note that will swing should have played without swing
     unsigned long originalSwungNoteTime = 0;
