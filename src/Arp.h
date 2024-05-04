@@ -13,6 +13,7 @@
 #define INITIALIZE_ON_START false
 
 #define PULSES_PER_SIXTEENTH_NOTE 6
+#define PULSES_PER_EIGHTH_NOTE 12
 #define PULSES_PER_QUARTER_NOTE 24
 #define PULSES_PER_BAR 96
 
@@ -65,6 +66,7 @@
 
 // Free range 102-119
 // Special controls
+#define CC_SWING 115
 #define CC_SLIP 116
 #define CC_PANIC 117 // WARNING we listen to this CC regardless of channel
 #define CC_GENERATE_SEQUENCE 118
@@ -90,6 +92,15 @@ class Arp {
     // Whether we should trigger a sequence "slip"
     bool slipQueued = false;
 
+    // Last time we saw a clock (to calculate swing delay time)
+    unsigned long lastClockPulse = 0;
+    // When a note that will swing should have played without swing
+    unsigned long originalSwungNoteTime = 0;
+    // How long to wait before playing the swung note
+    unsigned long swingDelay = 0;
+    // Which step was getting swung
+    int swungStepIndex = -1;
+
     // MIDI notes that are currently pressed
     byte pressedNotes[MAX_NOTES];
     // Number of notes that are currently pressed
@@ -112,16 +123,16 @@ class Arp {
     int8_t sequenceOffset[MAX_STEPS_IN_SEQ] = {0, 0, 0, 0};
     // Time (in clock pulses) that each step in the sequence starts
     uint16_t sequenceStartPositions[MAX_STEPS_IN_SEQ] = {
-      PULSES_PER_QUARTER_NOTE * 0,
-      PULSES_PER_QUARTER_NOTE * 1,
-      PULSES_PER_QUARTER_NOTE * 2,
-      PULSES_PER_QUARTER_NOTE * 3
+      PULSES_PER_SIXTEENTH_NOTE * 0,
+      PULSES_PER_SIXTEENTH_NOTE * 1,
+      PULSES_PER_SIXTEENTH_NOTE * 2,
+      PULSES_PER_SIXTEENTH_NOTE * 3
     };
 
     // Total sequence length in discrete steps
     byte totalSequenceSteps = 4;
     // Total sequence length in pulses
-    uint16_t totalSequenceLength = 4 * PULSES_PER_QUARTER_NOTE;
+    uint16_t totalSequenceLength = 4 * PULSES_PER_SIXTEENTH_NOTE;
 
     // Basically: is this an odd or even quarter note?
     bool quarterFlipFlop = false;
@@ -151,6 +162,7 @@ class Arp {
     byte ccRandomLengthChance = 0;
 
     // Utilities
+    byte ccSwing = 0;
     byte ccUseSpeaker = 0;
     byte ccPanic = 0;
     byte ccGenerate = 0;
@@ -166,7 +178,7 @@ class Arp {
     void handleMidiChannelChange(byte channel, byte cc, byte value);
     void handleNoteOn(byte channel, byte pitch, byte velocity);
     void handleNoteOff(byte channel, byte pitch, byte velocity);
-    void handleClock();
+    void handleClock(unsigned long now);
     void handleStartContinue(bool reset);
     void handleStop();
     void handleStep(int stepIndex);

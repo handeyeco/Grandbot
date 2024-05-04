@@ -56,6 +56,7 @@ There's endless potential just doing that. If you'd like more control, there are
 | Slip chance                     | 89      | SC      |
 | Queue sequence slip             | 116     |         | \*     |
 | **» Utilities**                 |
+| Swing (50-67%)                  | 115     | SG      |
 | Select MIDI channel in          | 14      | In      |
 | Select MIDI channel out         | 15      | ot      |
 | Panic / all notes off           | 117     | AH      | \*     |
