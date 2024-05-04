@@ -772,7 +772,7 @@ void Arp::handleClock() {
     int stepIndex = findStepIndexForPulse(pulseCount);
     if (stepIndex > -1) {
       // This is all to handle swing if we need to.
-      // First we check if we check if we're on even (2 of 2) 16ths
+      // First we check if we're on even (2 of 2) 16ths
       if (ccSwing > 0 && (pulseCount + PULSES_PER_SIXTEENTH_NOTE) % PULSES_PER_EIGHTH_NOTE == 0) {
         // Swing is between 0 and 2 clock pulses in length, so we need to know how long that is
         unsigned long twoClockPulses = (now - lastClockPulse * 2);
