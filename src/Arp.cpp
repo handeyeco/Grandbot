@@ -550,6 +550,17 @@ void Arp::handleCommandChange(byte channel, byte cc, byte value) {
     valDisplay[1] = valStr[1];
     expr->control(ccDisplay, valDisplay);
   }
+  // Note swing
+  else if (cc == CC_SWING) {
+    ccSwing = value;
+    ccDisplay[0] = CHAR_S;
+    ccDisplay[1] = CHAR_G;
+    byte mapped = map(value, 0, 127, 50, 67);
+    String valueStr = String(mapped);
+    valDisplay[0] = valueStr[0];
+    valDisplay[1] = valueStr[1];
+    expr->control(ccDisplay, valDisplay);
+  }
 }
 
 /**
@@ -733,6 +744,8 @@ void Arp::handleStep(int stepIndex) {
  * Handle a new MIDI clock pulse
 */
 void Arp::handleClock() {
+  unsigned long now = millis();
+
   // If we hit the start of a new bar
   // and the button has been pressed, regenerate sequence
   if (pulseCount % PULSES_PER_BAR == 0 && regenerateQueued) {
@@ -758,7 +771,18 @@ void Arp::handleClock() {
     // each clock cycle
     int stepIndex = findStepIndexForPulse(pulseCount);
     if (stepIndex > -1) {
-      handleStep(stepIndex);
+      // This is all to handle swing if we need to.
+      // First we check if we check if we're on even (2 of 2) 16ths
+      if (ccSwing > 0 && (pulseCount + PULSES_PER_SIXTEENTH_NOTE) % PULSES_PER_EIGHTH_NOTE == 0) {
+        // Swing is between 0 and 2 clock pulses in length, so we need to know how long that is
+        unsigned long twoClockPulses = (now - lastClockPulse * 2);
+        swingDelay = map(ccSwing, 0, 127, 0, twoClockPulses);
+        // Stash what the note was and when it should have played
+        swungStepIndex = stepIndex;
+        originalSwungNoteTime = now;
+      } else {
+        handleStep(stepIndex);
+      }
     }
 
     if (pulseCount % PULSES_PER_QUARTER_NOTE == 0) {
@@ -772,6 +796,7 @@ void Arp::handleClock() {
   }
 
   ++pulseCount;
+  lastClockPulse = now;
 }
 
 /**
@@ -780,6 +805,7 @@ void Arp::handleClock() {
 void Arp::reset() {
   pulseCount = 0;
   currNote = 0;
+  swungStepIndex = -1;
 }
 
 /**
@@ -824,6 +850,15 @@ void Arp::setup() {
 bool Arp::update(bool buttonPressed) {
   if (buttonPressed) {
     regenerateQueued = true;
+  }
+
+  // Handle swung notes (they don't always land on a clock pulse)
+  if (swungStepIndex > -1) {
+    unsigned long now = millis();
+    if (now - originalSwungNoteTime > swingDelay) {
+        handleStep(swungStepIndex);
+        swungStepIndex = -1;
+    }
   }
 
   bool readMidi = false;
