@@ -776,7 +776,7 @@ void Arp::handleClock(unsigned long now) {
       // First we check if we're on even (2 of 2) 16ths
       if (ccSwing > 0 && (pulseCount + PULSES_PER_SIXTEENTH_NOTE) % PULSES_PER_EIGHTH_NOTE == 0) {
         // Swing is between 0 and 2 clock pulses in length, so we need to know how long that is
-        unsigned long twoClockPulses = (now - lastClockPulse * 2);
+        unsigned long twoClockPulses = (now - lastClockPulse) * 2;
         swingDelay = map(ccSwing, 0, 127, 0, twoClockPulses);
         // Stash what the note was and when it should have played
         swungStepIndex = stepIndex;
