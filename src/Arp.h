@@ -178,7 +178,7 @@ class Arp {
     void handleMidiChannelChange(byte channel, byte cc, byte value);
     void handleNoteOn(byte channel, byte pitch, byte velocity);
     void handleNoteOff(byte channel, byte pitch, byte velocity);
-    void handleClock();
+    void handleClock(unsigned long now);
     void handleStartContinue(bool reset);
     void handleStop();
     void handleStep(int stepIndex);

@@ -555,6 +555,9 @@ void Arp::handleCommandChange(byte channel, byte cc, byte value) {
     ccSwing = value;
     ccDisplay[0] = CHAR_S;
     ccDisplay[1] = CHAR_G;
+    // Swing is between 50%-67%
+    // 50%, 16th is halfway between 8ths
+    // 67%, 16th is 2/3 between 8ths
     byte mapped = map(value, 0, 127, 50, 67);
     String valueStr = String(mapped);
     valDisplay[0] = valueStr[0];
@@ -743,9 +746,7 @@ void Arp::handleStep(int stepIndex) {
 /**
  * Handle a new MIDI clock pulse
 */
-void Arp::handleClock() {
-  unsigned long now = millis();
-
+void Arp::handleClock(unsigned long now) {
   // If we hit the start of a new bar
   // and the button has been pressed, regenerate sequence
   if (pulseCount % PULSES_PER_BAR == 0 && regenerateQueued) {
@@ -848,13 +849,14 @@ void Arp::setup() {
  * @returns {bool} whether a MIDI message was read
 */
 bool Arp::update(bool buttonPressed) {
+  unsigned long now = millis();
+
   if (buttonPressed) {
     regenerateQueued = true;
   }
 
   // Handle swung notes (they don't always land on a clock pulse)
   if (swungStepIndex > -1) {
-    unsigned long now = millis();
     if (now - originalSwungNoteTime > swingDelay) {
         handleStep(swungStepIndex);
         swungStepIndex = -1;
@@ -868,7 +870,7 @@ bool Arp::update(bool buttonPressed) {
     switch(MIDI.getType()) {
       case midi::Clock:
         if (running) {
-          handleClock();
+          handleClock(now);
         } else {
           readMidi = false;
         }
@@ -914,7 +916,6 @@ bool Arp::update(bool buttonPressed) {
     }
   }
 
-  unsigned long now = millis();
   if (readMidi) {
     midiMode = true;
     lastMidiMessage = now;
