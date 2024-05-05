@@ -54,6 +54,7 @@
 #define CC_HALF_LENGTH 27
 #define CC_RATCHET 28
 #define CC_REST 29
+#define CC_RUN 30
 
 // Free range 85-87
 // The more chaotic ones
@@ -156,6 +157,7 @@ class Arp {
     byte ccDoubleLengthChance = 5;
     byte ccRatchetChance = 10;
     byte ccRestChance = 5;
+    byte ccRunChance = 0;
 
     // The chaotic ones
     byte ccFifthChance = 0;

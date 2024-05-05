@@ -190,7 +190,7 @@ void Arp::generateSequence() {
     // Note length variation; since they affect the same value (length)
     // there's some interplay between them with a bias
     // towards ratchets
-    if (ccRatchetChance || ccHalfLengthChance || ccDoubleLengthChance) {
+    if (ccRatchetChance || ccHalfLengthChance || ccDoubleLengthChance || ccRunChance) {
       if (ccRoll() < ccRatchetChance) {
         noteLength = noteLength / 2;
         newSequenceLength = addStep(
@@ -201,6 +201,18 @@ void Arp::generateSequence() {
           newSequenceLength
         );
         stepIndex++;
+      }
+      else if ((stepIndex + 4 < MAX_STEPS_IN_SEQ) && (ccRoll() < ccRunChance)) {
+        for (int i = 0; i < 4; i++) {
+          newSequenceLength = addStep(
+            stepIndex,
+            i % MAX_NOTES,
+            noteOffset,
+            PULSES_PER_SIXTEENTH_NOTE / 2,
+            newSequenceLength
+          );
+          stepIndex++;
+        }
       }
       else if (ccRoll() < ccHalfLengthChance) {
         noteLength = noteLength / 2;
@@ -681,6 +693,12 @@ void Arp::handleControlChange(byte channel, byte cc, byte value) {
     ccRestChance = value;
     ccDisplay[0] = CHAR_R;
     ccDisplay[1] = CHAR_E;
+  }
+  // Chance a step will be a run
+  else if (cc == CC_RUN) {
+    ccRunChance = value;
+    ccDisplay[0] = CHAR_R;
+    ccDisplay[1] = CHAR_U;
   }
   // Chance a step will slip (be swapped with an adjacent step)
   else if (cc == CC_SLIP_CHANCE) {
