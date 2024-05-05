@@ -191,6 +191,7 @@ class Arp {
     bool convertCCToBool(byte value);
     String convertCCToString(byte value);
     bool correctInChannel(byte channel);
+    int insertSorted(byte arr[], int arrLen, byte value, int capacity);
     void sendNoteOn(byte channel, byte pitch, byte velocity);
     void sendNoteOff(byte channel, byte pitch, byte velocity);
   public:

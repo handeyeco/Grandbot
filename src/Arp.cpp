@@ -271,6 +271,29 @@ void Arp::sendNoteOff(byte channel, byte note, byte velocity) {
   noTone(BUZZER_PIN);
 }
 
+int Arp::insertSorted(byte arr[], int arrLen, byte value, int capacity) { 
+    // cap at capacity
+    if (arrLen >= capacity) {
+      return arrLen;
+    }
+
+    // deduplicate
+    for (int i = 0; i < arrLen; i++) {
+      if (arr[i] == value) {
+        return arrLen;
+      }
+    }
+  
+    int j; 
+    for (j = arrLen - 1; (j >= 0 && arr[j] > value); j--) {
+      arr[j + 1] = arr[j]; 
+    }
+  
+    arr[j + 1] = value; 
+  
+    return (arrLen + 1); 
+} 
+
 /**
  * Handle a MIDI note on message
  *
@@ -301,20 +324,8 @@ void Arp::handleNoteOn(byte channel, byte note, byte velocity) {
     return;
   }
 
-  for (byte i = 0; i < numActiveNotes; i++) {
-    // exit if the note is already active
-    if (activeNotes[i] == note) {
-      return;
-    }
-  }
-
-  // append note to end of pressed note array
-  ++numPressedNotes;
-  pressedNotes[numPressedNotes-1] = note;
-
-  // append note to end of active note array
-  ++numActiveNotes;
-  activeNotes[numPressedNotes-1] = note;
+  numPressedNotes = insertSorted(pressedNotes, numPressedNotes, note, MAX_NOTES);
+  numActiveNotes = insertSorted(activeNotes, numActiveNotes, note, MAX_NOTES);
 }
 
 /**
