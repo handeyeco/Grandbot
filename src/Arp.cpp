@@ -271,7 +271,7 @@ void Arp::sendNoteOff(byte channel, byte note, byte velocity) {
   noTone(BUZZER_PIN);
 }
 
-int Arp::insertSorted(byte arr[], int arrLen, byte value, int capacity) { 
+int Arp::insert(byte arr[], int arrLen, byte value, int capacity) { 
     // cap at capacity
     if (arrLen >= capacity) {
       return arrLen;
@@ -284,15 +284,20 @@ int Arp::insertSorted(byte arr[], int arrLen, byte value, int capacity) {
       }
     }
   
-    int j; 
-    for (j = arrLen - 1; (j >= 0 && arr[j] > value); j--) {
-      arr[j + 1] = arr[j]; 
-    }
-  
-    arr[j + 1] = value; 
-  
-    return (arrLen + 1); 
+    arr[arrLen] = value;
+    return arrLen + 1; 
 } 
+
+
+void Arp::sort(byte arr[], int arrLen) {
+  for (int i = 1; i < arrLen; i++) {
+    for (int j = i; j > 0 && arr[j-1] > arr[j]; j--) {
+      byte tmp = arr[j-1];
+      arr[j-1] = arr[j];
+      arr[j] = tmp;
+    }
+  }
+}
 
 /**
  * Handle a MIDI note on message
@@ -324,8 +329,13 @@ void Arp::handleNoteOn(byte channel, byte note, byte velocity) {
     return;
   }
 
-  numPressedNotes = insertSorted(pressedNotes, numPressedNotes, note, MAX_NOTES);
-  numActiveNotes = insertSorted(activeNotes, numActiveNotes, note, MAX_NOTES);
+  numPressedNotes = insert(pressedNotes, numPressedNotes, note, MAX_NOTES);
+  numActiveNotes = insert(activeNotes, numActiveNotes, note, MAX_NOTES);
+
+  if (convertCCToBool(ccSort)) {
+    sort(pressedNotes, numPressedNotes);
+    sort(activeNotes, numActiveNotes);
+  }
 }
 
 /**
@@ -549,6 +559,23 @@ void Arp::handleCommandChange(byte channel, byte cc, byte value) {
     ccUseSpeaker = value;
     ccDisplay[0] = CHAR_S;
     ccDisplay[1] = CHAR_P;
+
+    String valStr = "  ";
+    if (convertCCToBool(value)) {
+      valStr = "on";
+    } else {
+      valStr = "of";
+    }
+
+    valDisplay[0] = valStr[0];
+    valDisplay[1] = valStr[1];
+    expr->control(ccDisplay, valDisplay);
+  }
+  // Toggle note sorting
+  else if (cc == CC_SORT) {
+    ccSort = value;
+    ccDisplay[0] = CHAR_S;
+    ccDisplay[1] = CHAR_O;
 
     String valStr = "  ";
     if (convertCCToBool(value)) {

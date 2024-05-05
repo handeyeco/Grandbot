@@ -66,6 +66,7 @@
 
 // Free range 102-119
 // Special controls
+#define CC_SORT 114
 #define CC_SWING 115
 #define CC_SLIP 116
 #define CC_PANIC 117 // WARNING we listen to this CC regardless of channel
@@ -162,6 +163,7 @@ class Arp {
     byte ccRandomLengthChance = 0;
 
     // Utilities
+    byte ccSort = 0;
     byte ccSwing = 0;
     byte ccUseSpeaker = 0;
     byte ccPanic = 0;
@@ -191,7 +193,8 @@ class Arp {
     bool convertCCToBool(byte value);
     String convertCCToString(byte value);
     bool correctInChannel(byte channel);
-    int insertSorted(byte arr[], int arrLen, byte value, int capacity);
+    int insert(byte arr[], int arrLen, byte value, int capacity);
+    void sort(byte arr[], int arrLen);
     void sendNoteOn(byte channel, byte pitch, byte velocity);
     void sendNoteOff(byte channel, byte pitch, byte velocity);
   public:
