@@ -585,6 +585,7 @@ void Arp::handleCommandChange(byte channel, byte cc, byte value) {
   }
   // Toggle note sorting
   else if (cc == CC_SORT) {
+    bool turnedOn = convertCCToBool(value) && !convertCCToBool(ccSort);
     ccSort = value;
     ccDisplay[0] = CHAR_S;
     ccDisplay[1] = CHAR_O;
@@ -599,6 +600,12 @@ void Arp::handleCommandChange(byte channel, byte cc, byte value) {
     valDisplay[0] = valStr[0];
     valDisplay[1] = valStr[1];
     expr->control(ccDisplay, valDisplay);
+
+    // sort when going from unsorted to sorted
+    if (turnedOn) {
+      sort(pressedNotes, numPressedNotes);
+      sort(activeNotes, numActiveNotes);
+    }
   }
   // Note swing
   else if (cc == CC_SWING) {
