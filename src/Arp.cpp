@@ -190,7 +190,7 @@ void Arp::generateSequence() {
     // Note length variation; since they affect the same value (length)
     // there's some interplay between them with a bias
     // towards ratchets
-    if (ccRatchetChance || ccHalfLengthChance || ccDoubleLengthChance) {
+    if (ccRatchetChance || ccHalfLengthChance || ccDoubleLengthChance || ccRunChance) {
       if (ccRoll() < ccRatchetChance) {
         noteLength = noteLength / 2;
         newSequenceLength = addStep(
@@ -201,6 +201,18 @@ void Arp::generateSequence() {
           newSequenceLength
         );
         stepIndex++;
+      }
+      else if ((stepIndex + 4 < MAX_STEPS_IN_SEQ) && (ccRoll() < ccRunChance)) {
+        for (int i = 0; i < 4; i++) {
+          newSequenceLength = addStep(
+            stepIndex,
+            i % MAX_NOTES,
+            noteOffset,
+            PULSES_PER_SIXTEENTH_NOTE / 2,
+            newSequenceLength
+          );
+          stepIndex++;
+        }
       }
       else if (ccRoll() < ccHalfLengthChance) {
         noteLength = noteLength / 2;
@@ -271,6 +283,34 @@ void Arp::sendNoteOff(byte channel, byte note, byte velocity) {
   noTone(BUZZER_PIN);
 }
 
+int Arp::insert(byte arr[], int arrLen, byte value, int capacity) { 
+    // cap at capacity
+    if (arrLen >= capacity) {
+      return arrLen;
+    }
+
+    // deduplicate
+    for (int i = 0; i < arrLen; i++) {
+      if (arr[i] == value) {
+        return arrLen;
+      }
+    }
+  
+    arr[arrLen] = value;
+    return arrLen + 1; 
+} 
+
+
+void Arp::sort(byte arr[], int arrLen) {
+  for (int i = 1; i < arrLen; i++) {
+    for (int j = i; j > 0 && arr[j-1] > arr[j]; j--) {
+      byte tmp = arr[j-1];
+      arr[j-1] = arr[j];
+      arr[j] = tmp;
+    }
+  }
+}
+
 /**
  * Handle a MIDI note on message
  *
@@ -301,20 +341,13 @@ void Arp::handleNoteOn(byte channel, byte note, byte velocity) {
     return;
   }
 
-  for (byte i = 0; i < numActiveNotes; i++) {
-    // exit if the note is already active
-    if (activeNotes[i] == note) {
-      return;
-    }
+  numPressedNotes = insert(pressedNotes, numPressedNotes, note, MAX_NOTES);
+  numActiveNotes = insert(activeNotes, numActiveNotes, note, MAX_NOTES);
+
+  if (convertCCToBool(ccSort)) {
+    sort(pressedNotes, numPressedNotes);
+    sort(activeNotes, numActiveNotes);
   }
-
-  // append note to end of pressed note array
-  ++numPressedNotes;
-  pressedNotes[numPressedNotes-1] = note;
-
-  // append note to end of active note array
-  ++numActiveNotes;
-  activeNotes[numPressedNotes-1] = note;
 }
 
 /**
@@ -550,6 +583,30 @@ void Arp::handleCommandChange(byte channel, byte cc, byte value) {
     valDisplay[1] = valStr[1];
     expr->control(ccDisplay, valDisplay);
   }
+  // Toggle note sorting
+  else if (cc == CC_SORT) {
+    bool turnedOn = convertCCToBool(value) && !convertCCToBool(ccSort);
+    ccSort = value;
+    ccDisplay[0] = CHAR_S;
+    ccDisplay[1] = CHAR_O;
+
+    String valStr = "  ";
+    if (convertCCToBool(value)) {
+      valStr = "on";
+    } else {
+      valStr = "of";
+    }
+
+    valDisplay[0] = valStr[0];
+    valDisplay[1] = valStr[1];
+    expr->control(ccDisplay, valDisplay);
+
+    // sort when going from unsorted to sorted
+    if (turnedOn) {
+      sort(pressedNotes, numPressedNotes);
+      sort(activeNotes, numActiveNotes);
+    }
+  }
   // Note swing
   else if (cc == CC_SWING) {
     ccSwing = value;
@@ -643,6 +700,12 @@ void Arp::handleControlChange(byte channel, byte cc, byte value) {
     ccRestChance = value;
     ccDisplay[0] = CHAR_R;
     ccDisplay[1] = CHAR_E;
+  }
+  // Chance a step will be a run
+  else if (cc == CC_RUN) {
+    ccRunChance = value;
+    ccDisplay[0] = CHAR_R;
+    ccDisplay[1] = CHAR_U;
   }
   // Chance a step will slip (be swapped with an adjacent step)
   else if (cc == CC_SLIP_CHANCE) {

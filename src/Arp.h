@@ -54,6 +54,7 @@
 #define CC_HALF_LENGTH 27
 #define CC_RATCHET 28
 #define CC_REST 29
+#define CC_RUN 30
 
 // Free range 85-87
 // The more chaotic ones
@@ -66,6 +67,7 @@
 
 // Free range 102-119
 // Special controls
+#define CC_SORT 114
 #define CC_SWING 115
 #define CC_SLIP 116
 #define CC_PANIC 117 // WARNING we listen to this CC regardless of channel
@@ -155,6 +157,7 @@ class Arp {
     byte ccDoubleLengthChance = 5;
     byte ccRatchetChance = 10;
     byte ccRestChance = 5;
+    byte ccRunChance = 0;
 
     // The chaotic ones
     byte ccFifthChance = 0;
@@ -162,6 +165,7 @@ class Arp {
     byte ccRandomLengthChance = 0;
 
     // Utilities
+    byte ccSort = 0;
     byte ccSwing = 0;
     byte ccUseSpeaker = 0;
     byte ccPanic = 0;
@@ -191,6 +195,8 @@ class Arp {
     bool convertCCToBool(byte value);
     String convertCCToString(byte value);
     bool correctInChannel(byte channel);
+    int insert(byte arr[], int arrLen, byte value, int capacity);
+    void sort(byte arr[], int arrLen);
     void sendNoteOn(byte channel, byte pitch, byte velocity);
     void sendNoteOff(byte channel, byte pitch, byte velocity);
   public:
