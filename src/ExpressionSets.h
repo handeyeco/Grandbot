@@ -35,6 +35,7 @@
 #define CHAR_9 B01111011
 
 #define CHAR_BLANK B00000000
+#define CHAR_DASH B00000001
 
 /**
  * A collection of different Expression structs,
