@@ -14,9 +14,14 @@ Arp::Arp(Grandbot* gb) {
 }
 
 const byte possibleNoteLengths[] = {
+  // used in random note selection
   1, // 16th
   2, // 8th
   4, // quarter
+  // not used in random note selection
+  8, // half
+  16, // whole
+  32 // double whole note
 };
 
 /**
@@ -55,24 +60,36 @@ byte Arp::ccRoll() {
 /**
  * Maps ccBaseNoteLength (0-127) to note lengths
  *
- * @returns {byte} 1 (16th), 2 (8th), 4 (Quarter)
+ * @returns {byte} number of 16ths for note
 */
 byte Arp::getNoteLength() {
-    // Random, 16, 8, 4
-    if (ccBaseNoteLength > 96) {
+    if (ccBaseNoteLength > 108) {
+      // double whole
+      return 32;
+    }
+    else if (ccBaseNoteLength > 90) {
+      // whole
+      return 16;
+    }
+    else if (ccBaseNoteLength > 72) {
+      // half
+      return 8;
+    }
+    else if (ccBaseNoteLength > 54) {
       // quarter
       return 4;
     }
-    else if (ccBaseNoteLength > 64) {
+    else if (ccBaseNoteLength > 36) {
       // 8th
       return 2;
     }
-    else if (ccBaseNoteLength > 32) {
+    else if (ccBaseNoteLength > 18) {
       // 16th
       return 1;
     }
     else {
-      // random
+      // random; only choose between
+      // 16th, 8th, and quarter
       return possibleNoteLengths[random(3)];
     }
 }
@@ -183,6 +200,7 @@ void Arp::generateSequence() {
     // this is random for a single step
     if (ccRandomLengthChance) {
       if (ccRoll() < ccRandomLengthChance) {
+        // only chose between 16th, 8th, and quarter during random selection
         noteLength = possibleNoteLengths[random(3)] * PULSES_PER_SIXTEENTH_NOTE;
       }
     }
@@ -720,16 +738,27 @@ void Arp::handleControlChange(byte channel, byte cc, byte value) {
     ccDisplay[1] = CHAR_L;
 
     String valStr = "  ";
-    // Random, 16, 8, 4
-    if (value > 96) {
+    if (ccBaseNoteLength > 108) {
+      // double whole
+      valStr = "2-";
+    }
+    else if (ccBaseNoteLength > 90) {
+      // whole
+      valStr = "1-";
+    }
+    else if (ccBaseNoteLength > 72) {
+      // half
+      valStr = "HA";
+    }
+    else if (ccBaseNoteLength > 54) {
       // quarter
       valStr = " 4";
     }
-    else if (value > 64) {
+    else if (ccBaseNoteLength > 36) {
       // 8th
       valStr = " 8";
     }
-    else if (value > 32) {
+    else if (ccBaseNoteLength > 18) {
       // 16th
       valStr = "16";
     }

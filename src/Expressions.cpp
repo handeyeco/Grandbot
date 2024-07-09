@@ -298,6 +298,8 @@ byte Expressions::convertCharToByte(char c) {
       return CHAR_8;
     case '9':
       return CHAR_9;
+    case '-':
+      return CHAR_DASH;
     default:
       return CHAR_BLANK;
     }
