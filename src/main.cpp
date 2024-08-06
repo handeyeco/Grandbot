@@ -3,7 +3,6 @@
 #include <Grandbot.h>
 #include <Arp.h>
 
-ButtonManager buttons = ButtonManager();
 Grandbot gb = Grandbot();
 Arp arp = Arp(&gb);
 
@@ -15,10 +14,9 @@ void setup() {
 }
 
 void loop() {
-  buttons.read();
-  bool playButtonPressed = buttons.play.pressed;
-  if (!arp.update(playButtonPressed)) {
-    gb.update(playButtonPressed);
+  gb.getButtonManagerPointer()->read();
+  if (!arp.update()) {
+    gb.update();
   }
 }
 

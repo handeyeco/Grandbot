@@ -5,6 +5,7 @@
 #include <pitches.h>
 #include <MIDI.h>
 #include <Grandbot.h>
+#include <ButtonManager.h>
 
 #ifndef ARP_INCL_GUARD
 #define ARP_INCL_GUARD
@@ -76,6 +77,7 @@
 
 class Arp {
   private:
+    ButtonManager* buttons;
     // 4D7S display manager
     Expressions* expr;
     // RGB LED manager
@@ -202,7 +204,7 @@ class Arp {
   public:
     Arp(Grandbot* gb);
     void setup();
-    bool update(bool buttonPressed);
+    bool update();
 };
 
 #endif

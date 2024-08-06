@@ -4,7 +4,7 @@ ButtonManager::ButtonManager() :
   play(PLAY_BUTTON_PIN),
   up(UP_BUTTON_PIN),
   right(RIGHT_BUTTON_PIN),
-  down(RIGHT_BUTTON_PIN),
+  down(DOWN_BUTTON_PIN),
   left(LEFT_BUTTON_PIN),
   forward(FORWARD_BUTTON_PIN),
   backward(BACKWARD_BUTTON_PIN),

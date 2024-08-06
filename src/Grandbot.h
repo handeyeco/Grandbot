@@ -4,12 +4,14 @@
 #include <Light.h>
 #include <Expression.h>
 #include <Expressions.h>
+#include <ButtonManager.h>
 
 #ifndef GRANDBOT_INCL_GUARD
 #define GRANDBOT_INCL_GUARD
 
 class Grandbot {
     private:
+        ButtonManager buttons;
         // The voice manager
         Voice voice;
         // The RGB LED manager
@@ -56,7 +58,8 @@ class Grandbot {
         Grandbot();
         void play();
         void setup();
-        void update(bool buttonPressed);
+        void update();
+        ButtonManager* getButtonManagerPointer();
         Expressions* getExpressionPointer();
         Light* getLightPointer();
 };

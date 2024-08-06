@@ -1,15 +1,18 @@
 #include <Grandbot.h>
  
 Grandbot::Grandbot()
-  : voice(), light(), lc(SERIAL_DATA_PIN, SERIAL_CLOCK_PIN, SERIAL_LOAD_PIN, 1), expr(&lc, &light)
+  : buttons(), voice(), light(), lc(SERIAL_DATA_PIN, SERIAL_CLOCK_PIN, SERIAL_LOAD_PIN, 1), expr(&lc, &light)
 {}
 
+  ButtonManager* Grandbot::getButtonManagerPointer() {
+    return &buttons;
+  }
 
-Expressions* Grandbot::getExpressionPointer(){
+Expressions* Grandbot::getExpressionPointer() {
   return &expr;
 }
 
-Light* Grandbot::getLightPointer(){
+Light* Grandbot::getLightPointer() {
   return &light;
 }
 
@@ -113,8 +116,8 @@ void Grandbot::setup() {
  * Update to be called during the Arduino update cycle.
  * Triggers sleep/wake and handles esteem drift timing
 */
-void Grandbot::update(bool buttonPressed) {
-  if (buttonPressed) {
+void Grandbot::update() {
+  if (buttons.play.pressed) {
     play();
   }
   

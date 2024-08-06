@@ -5,6 +5,7 @@
 MIDI_CREATE_INSTANCE(HardwareSerial, Serial1, MIDI); // uncomment for #NANO_EVERY
 
 Arp::Arp(Grandbot* gb) {
+  this->buttons = gb->getButtonManagerPointer();
   this->expr = gb->getExpressionPointer();
   this->light = gb->getLightPointer();
 
@@ -940,10 +941,10 @@ void Arp::setup() {
  *
  * @returns {bool} whether a MIDI message was read
 */
-bool Arp::update(bool buttonPressed) {
+bool Arp::update() {
   unsigned long now = millis();
 
-  if (buttonPressed) {
+  if (buttons->play.pressed) {
     regenerateQueued = true;
   }
 
