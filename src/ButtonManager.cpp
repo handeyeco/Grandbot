@@ -14,7 +14,21 @@ ButtonManager::ButtonManager() :
  * Read and update button state
 */
 void ButtonManager::read() {
+  anyPressed = false;
+  anyReleased = false;
+  anyHeld = false;
+
   for (byte i = 0; i < 7; i++) {
     allButtons[i]->read();
+
+    if (allButtons[i]->pressed) {
+      anyPressed = true;
+    } else if (allButtons[i]->released) {
+      anyReleased = true;
+    }
+
+    if (allButtons[i]->held) {
+      anyHeld = true;
+    }
   }
 }

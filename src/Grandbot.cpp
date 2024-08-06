@@ -117,7 +117,7 @@ void Grandbot::setup() {
  * Triggers sleep/wake and handles esteem drift timing
 */
 void Grandbot::update() {
-  if (buttons.play.pressed) {
+  if (buttons.anyReleased) {
     play();
   }
   

@@ -14,8 +14,14 @@ struct Button {
   public:
     Button(int pin);
     void read();
+    
+    // did it just get pressed
     bool pressed;
+    // did it just get released
     bool released;
+    // are we between a press and a release
+    bool held;
+
 };
 
 #endif

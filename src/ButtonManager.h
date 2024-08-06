@@ -16,6 +16,10 @@ struct ButtonManager {
     ButtonManager();
     void read();
 
+    bool anyPressed;
+    bool anyReleased;
+    bool anyHeld;
+
     // Vanilla Grandbot button
     Button play;
 

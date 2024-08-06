@@ -15,8 +15,10 @@ void Button::read() {
 
   if (isPressed && !prevPressed) {
     pressed = true;
+    held = true;
   } else if (!isPressed && prevPressed) {
     released = true;
+    held = false;
   }
 
   prevPressed = isPressed;
