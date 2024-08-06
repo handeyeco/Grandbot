@@ -95,7 +95,6 @@ void Grandbot::play() {
  * Setup to be called during the Arduino setup stage.
 */
 void Grandbot::setup() {
-  pinMode(PLAY_BUTTON_PIN, INPUT_PULLUP);
   randomSeed(analogRead(RANDOM_PIN));
 
   // Wake up Max7219
@@ -108,19 +107,6 @@ void Grandbot::setup() {
   lc.clearDisplay(0);
 
   expr.init();
-}
-
-/**
- * Reads the button a returns if it's been pressed
- * since last read
- * 
- * @returns {bool} whether button has been pressed
-*/
-bool Grandbot::readButton() {
-  bool read = digitalRead(PLAY_BUTTON_PIN);
-  bool pressed = read == LOW && lastButtonRead == HIGH;
-  lastButtonRead = read;
-  return pressed;
 }
 
 /**

@@ -1,7 +1,9 @@
 #include <Arduino.h>
+#include <ButtonManager.h>
 #include <Grandbot.h>
 #include <Arp.h>
 
+ButtonManager buttons = ButtonManager();
 Grandbot gb = Grandbot();
 Arp arp = Arp(&gb);
 
@@ -13,9 +15,10 @@ void setup() {
 }
 
 void loop() {
-  bool buttonPressed = gb.readButton();
-  if (!arp.update(buttonPressed)) {
-    gb.update(buttonPressed);
+  buttons.read();
+  bool playButtonPressed = buttons.play.pressed;
+  if (!arp.update(playButtonPressed)) {
+    gb.update(playButtonPressed);
   }
 }
 

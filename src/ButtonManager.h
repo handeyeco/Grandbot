@@ -1,0 +1,31 @@
+#include <Arduino.h>
+#include <Button.h>
+#include <pin_defs.h>
+
+#ifndef BUTTON_MANAGER_INCL_GUARD
+#define BUTTON_MANAGER_INCL_GUARD
+
+
+/**
+ * State manager for all buttons
+*/
+struct ButtonManager {
+  private:
+    Button* allButtons[7];
+  public:
+    ButtonManager();
+    void read();
+
+    // Vanilla Grandbot button
+    Button play;
+
+    // Grandbot controller buttons
+    Button up;
+    Button right;
+    Button down;
+    Button left;
+    Button forward;
+    Button backward;
+};
+
+#endif
