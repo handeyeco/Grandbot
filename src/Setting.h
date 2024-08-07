@@ -1,5 +1,4 @@
 #include <Arduino.h>
-#include <LedControl.h>
 
 #ifndef SETTING_INCL_GUARD
 #define SETTING_INCL_GUARD
@@ -13,15 +12,17 @@ struct Setting {
     // start / reset value
     byte defaultValue = 0;
     // display name
-    byte (&ccDisplay)[2];
+    byte (&nameDisplay)[2];
     // value transform (map value to display)
     void (&valueTransform)(byte value, byte output[2]);
   public:
+    Setting();
     Setting(
       byte defaultValue,
       byte midiCC,
-      byte (&ccDisplay)[2],
+      byte (&nameDisplay)[2],
       void (&valueTransform)(byte value, byte output[2]));
+
     void getDisplay(byte output[4]);
 
     // if this responds to MIDI CC,

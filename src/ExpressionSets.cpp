@@ -213,3 +213,124 @@ int ExpressionSets::unhappyLength = sizeof(ExpressionSets::unhappyExpressions) /
 Expression ExpressionSets::midiBeatExpressions[] = {
     Expression(bigEyeSmileLeft, smileBlinkLeft),
     Expression(bigEyeSmileRight, smileBlinkRight)};
+
+/**
+ * My own char to byte conversion; it's overkill,
+ * but I'm thinking of just removing LedControl
+ * since it's missing chars and hasn't been maintained
+ * 
+ * @param {char} c - the char to convert
+ * @returns {byte} the 4D7S representation of the char
+*/
+byte ExpressionSets::convertCharToByte(char c) {
+  switch (c) {
+    case 'A':
+    case 'a':
+      return CHAR_A;
+    case 'B':
+    case 'b':
+      return CHAR_B;
+    case 'C':
+    case 'c':
+      return CHAR_C;
+    case 'D':
+    case 'd':
+      return CHAR_D;
+    case 'E':
+    case 'e':
+      return CHAR_E;
+    case 'F':
+    case 'f':
+      return CHAR_F;
+    case 'G':
+    case 'g':
+      return CHAR_G;
+    case 'H':
+    case 'h':
+      return CHAR_H;
+    case 'I':
+    case 'i':
+      return CHAR_I;
+    case 'J':
+    case 'j':
+      return CHAR_J;
+    case 'L':
+    case 'l':
+      return CHAR_L;
+    case 'N':
+    case 'n':
+      return CHAR_N;
+    case 'O':
+    case 'o':
+      return CHAR_O;
+    case 'P':
+    case 'p':
+      return CHAR_P;
+    case 'R':
+    case 'r':
+      return CHAR_R;
+    case 'S':
+    case 's':
+      return CHAR_S;
+    case 'T':
+    case 't':
+      return CHAR_T;
+    case 'U':
+    case 'u':
+      return CHAR_U;
+    case 'Y':
+    case 'y':
+      return CHAR_Y;
+    case '0':
+      return CHAR_0;
+    case '1':
+      return CHAR_1;
+    case '2':
+      return CHAR_2;
+    case '3':
+      return CHAR_3;
+    case '4':
+      return CHAR_4;
+    case '5':
+      return CHAR_5;
+    case '6':
+      return CHAR_6;
+    case '7':
+      return CHAR_7;
+    case '8':
+      return CHAR_8;
+    case '9':
+      return CHAR_9;
+    case '-':
+      return CHAR_DASH;
+    default:
+      return CHAR_BLANK;
+    }
+}
+
+byte ExpressionSets::convertNumberToByte(byte num) {
+  switch (num) {
+    case 0:
+      return CHAR_0;
+    case 1:
+      return CHAR_1;
+    case 2:
+      return CHAR_2;
+    case 3:
+      return CHAR_3;
+    case 4:
+      return CHAR_4;
+    case 5:
+      return CHAR_5;
+    case 6:
+      return CHAR_6;
+    case 7:
+      return CHAR_7;
+    case 8:
+      return CHAR_8;
+    case 9:
+      return CHAR_9;
+    default:
+      return CHAR_BLANK;
+    }
+}

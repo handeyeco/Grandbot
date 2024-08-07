@@ -4,14 +4,10 @@
 #include <Arp.h>
 #include <Expressions.h>
 #include <Setting.h>
+#include <SettingManager.h>
 
 Grandbot gb = Grandbot();
 Arp arp = Arp(&gb);
-
-void defaultValueTransform(byte value, byte output[2]) {
-  output[0] = CHAR_F;
-  output[1] = CHAR_F;
-}
 
 void setup() {
   gb.setup();
@@ -19,17 +15,10 @@ void setup() {
 
   Serial.begin(9600);
 
-  byte ccDisplay[2] = {CHAR_O, CHAR_O};
-  Setting s = Setting(0, 255, ccDisplay, defaultValueTransform);
-
-  byte fullDisplay[4] = {};
-  s.getDisplay(fullDisplay);
-  for (int i = 0; i < 4; i++) {
-    Serial.println(fullDisplay[i]);
-  }
+  SettingManager sm = SettingManager();
 
   Expressions* expr = gb.getExpressionPointer();
-  expr->setting(s);
+  expr->setting(*sm.ccOctaveOneUpChance);
 }
 
 void loop() {

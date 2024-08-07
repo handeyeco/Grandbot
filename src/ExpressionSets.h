@@ -54,6 +54,9 @@ struct ExpressionSets {
     static Expression unhappyExpressions[];
     static int unhappyLength;
     static Expression midiBeatExpressions[];
+
+    static byte convertCharToByte(char c);
+    static byte convertNumberToByte(byte num);
 };
 
 #endif

@@ -48,7 +48,6 @@ class Expressions {
     unsigned long lastControlChange = 0;
     bool isShowingControl();
     bool isUnsupportedChar(char c);
-    byte convertCharToByte(char c);
   public:
     Expressions(LedControl* _lc, Light* _light);
     void init();
