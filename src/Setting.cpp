@@ -1,23 +1,21 @@
 #include <Setting.h>
 
-byte defaultDisplay[2] = {};
-void defaultValueTransform(byte value, byte output[2]) {}
-
-Setting::Setting() :
-  nameDisplay(defaultDisplay),
-  valueTransform(defaultValueTransform) {}
-
 Setting::Setting(
   byte _defaultValue,
   byte _midiCC,
-  byte (&_nameDisplay)[2],
-  void (&_valueTransform)(byte value, byte output[2])) : 
+  byte firstDisplayChar,
+  byte secondDisplayChar,
+  void (&_valueTransform)(byte value, byte output[2]),
+  byte (&_stepTransform)(byte value, bool stepUp)) :
+    value(_defaultValue), 
     defaultValue(_defaultValue),
     midiCC(_midiCC),
-    nameDisplay(_nameDisplay),
-    valueTransform(_valueTransform)
+    valueTransform(_valueTransform),
+    stepTransform(_stepTransform)
 {
-  value = _defaultValue;
+  // holy fuck I hate C++ why can't I pass a fucking array
+  nameDisplay[0] = firstDisplayChar;
+  nameDisplay[1] = secondDisplayChar;
 }
 
 void Setting::getDisplay(byte output[4]) {
@@ -29,3 +27,17 @@ void Setting::getDisplay(byte output[4]) {
   output[2] = valueBytes[0];
   output[3] = valueBytes[1];
 }
+
+byte Setting::getValue() {
+  return value;
+}
+
+void Setting::setValue(byte nextValue) {
+  value = nextValue;
+}
+
+void Setting::step(bool stepUp) {
+  if ((stepUp && value >= 127) || (!stepUp && value <= 0)) return;
+
+  setValue(stepTransform(value, stepUp));
+};

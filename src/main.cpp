@@ -15,17 +15,17 @@ void setup() {
 
   Serial.begin(9600);
 
-  SettingManager sm = SettingManager();
+  // SettingManager sm = SettingManager();
 
-  Expressions* expr = gb.getExpressionPointer();
-  expr->setting(*sm.ccOctaveOneUpChance);
+  // Expressions* expr = gb.getExpressionPointer();
+  // expr->setting(*sm.ccOctaveOneUpChance);
 }
 
 void loop() {
-  // gb.getButtonManagerPointer()->read();
-  // if (!arp.update()) {
-  //   gb.update();
-  // }
+  gb.getButtonManagerPointer()->read();
+  if (!arp.update()) {
+    gb.update();
+  }
 }
 
 // NO ARP OPTION

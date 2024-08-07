@@ -6,6 +6,7 @@
 #include <MIDI.h>
 #include <Grandbot.h>
 #include <ButtonManager.h>
+#include <SettingManager.h>
 
 #ifndef ARP_INCL_GUARD
 #define ARP_INCL_GUARD
@@ -47,7 +48,6 @@
 // Regular sequence params
 #define CC_BASE_NOTE_LENGTH 20
 #define CC_SEQUENCE_LENGTH 21
-#define CC_OCTAVE_ONE_UP 22
 #define CC_OCTAVE_ONE_DOWN 23
 #define CC_OCTAVE_TWO_UP 24
 #define CC_OCTAVE_TWO_DOWN 25
@@ -77,6 +77,7 @@
 
 class Arp {
   private:
+    SettingManager* settings;
     ButtonManager* buttons;
     // 4D7S display manager
     Expressions* expr;
@@ -151,7 +152,6 @@ class Arp {
     // CC controlled params; all need to be 0-127
     byte ccBaseNoteLength = 0;
     byte ccSequenceLength = 0;
-    byte ccOctaveOneUpChance = 10;
     byte ccOctaveOneDownChance = 10;
     byte ccOctaveTwoUpChance = 5;
     byte ccOctaveTwoDownChance = 5;

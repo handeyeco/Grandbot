@@ -8,6 +8,7 @@ Arp::Arp(Grandbot* gb) {
   this->buttons = gb->getButtonManagerPointer();
   this->expr = gb->getExpressionPointer();
   this->light = gb->getLightPointer();
+  this->settings = new SettingManager(expr);
 
   if (INITIALIZE_ON_START) {
     generateSequence();
@@ -168,14 +169,14 @@ void Arp::generateSequence() {
     // there's some interplay between them with a bias
     // towards single octave intervals
     if (
-      ccOctaveOneUpChance ||
+      settings->ccOctaveOneUpChance->getValue() ||
       ccOctaveOneDownChance ||
       ccOctaveTwoUpChance ||
       ccOctaveTwoDownChance ||
       ccFifthChance ||
       ccRandomIntervalChance
     ) {
-      if (ccRoll() < ccOctaveOneUpChance) {
+      if (ccRoll() < settings->ccOctaveOneUpChance->getValue()) {
           // one oct up
           noteOffset = 12;
       } else if (ccRoll() < ccOctaveOneDownChance) {
@@ -650,18 +651,17 @@ void Arp::handleCommandChange(byte channel, byte cc, byte value) {
  * @param {byte} value - MIDI value received
 */
 void Arp::handleControlChange(byte channel, byte cc, byte value) {
+  if (settings->usesCC(cc)) {
+    settings->handleCC(cc, value);
+    return;
+  }
+
   String valueStr = convertCCToString(value);
   byte ccDisplay[2];
   char valDisplay[2] = {valueStr[0], valueStr[1]};
 
-  // Chance a step will be transposed an octave up
-  if (cc == CC_OCTAVE_ONE_UP) {
-    ccOctaveOneUpChance = value;
-    ccDisplay[0] = B01100011;
-    ccDisplay[1] = B01000000;
-  }
   // Chance a step will be transposed an octave down
-  else if (cc == CC_OCTAVE_ONE_DOWN) {
+  if (cc == CC_OCTAVE_ONE_DOWN) {
     ccOctaveOneDownChance = value;
     ccDisplay[0] = B00011101;
     ccDisplay[1] = B00001000;
@@ -944,8 +944,18 @@ void Arp::setup() {
 bool Arp::update() {
   unsigned long now = millis();
 
-  if (buttons->play.pressed) {
+  if (buttons->play.released) {
     regenerateQueued = true;
+  }
+
+  if (buttons->up.released) {
+    settings->ccOctaveOneUpChance->step(true);
+    expr->setting(*settings->ccOctaveOneUpChance);
+  }
+
+  if (buttons->down.released) {
+    settings->ccOctaveOneUpChance->step(false);
+    expr->setting(*settings->ccOctaveOneUpChance);
   }
 
   if (buttons->combo(buttons->forward, buttons->backward)) {

@@ -117,9 +117,9 @@ void Grandbot::setup() {
  * Triggers sleep/wake and handles esteem drift timing
 */
 void Grandbot::update() {
-  if (buttons.anyReleased) {
-    play();
-  }
+  // if (buttons.anyReleased) {
+  //   play();
+  // }
   
   unsigned long now = millis();
   int lightRead = analogRead(LIGHT_SENSOR_PIN);
