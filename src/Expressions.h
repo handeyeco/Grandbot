@@ -2,6 +2,7 @@
 #include <Light.h>
 #include <Expression.h>
 #include <ExpressionSets.h>
+#include <Setting.h>
 
 #ifndef EXPRESSIONS_INCL_GUARD
 #define EXPRESSIONS_INCL_GUARD
@@ -57,6 +58,7 @@ class Expressions {
     // ARP STUFF #TODO move this
     void midiBeat(bool beat);
     void control(byte (&ccDisplay)[2], char (&valDisplay)[2]);
+    void setting(Setting &s);
 };
 
 #endif

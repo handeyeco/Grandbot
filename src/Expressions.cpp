@@ -207,6 +207,16 @@ void Expressions::control(byte (&ccDisplay)[2], char (&valDisplay)[2]) {
   lc->setRow(0, 4, B10000000);
 }
 
+
+void Expressions::setting(Setting &s) {
+  byte fullDisplay[4] = {};
+  s.getDisplay(fullDisplay);
+  
+  for (int i = 0; i < 4; i++) {
+    lc->setRow(0, i, fullDisplay[i]);
+  }
+}
+
 bool Expressions::isUnsupportedChar(char c) {
   return c == 'r' || c == 'R';
 }

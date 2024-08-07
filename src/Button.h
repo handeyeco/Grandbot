@@ -21,7 +21,6 @@ struct Button {
     bool released;
     // are we between a press and a release
     bool held;
-
 };
 
 #endif
