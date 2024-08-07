@@ -32,3 +32,14 @@ void ButtonManager::read() {
     }
   }
 }
+
+bool ButtonManager::combo(Button b1, Button b2) {
+  if (
+    (b1.pressed && b2.held) ||
+    (b2.pressed && b1.held)
+  ) {
+    return true;
+  }
+
+  return false;
+}

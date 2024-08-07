@@ -948,6 +948,10 @@ bool Arp::update() {
     regenerateQueued = true;
   }
 
+  if (buttons->combo(buttons->forward, buttons->backward)) {
+    // enter menu
+  }
+
   // Handle swung notes (they don't always land on a clock pulse)
   // #TODO what happens if we stop/continue in the middle of a swung note?
   // the originalSwungNoteTime will be off
