@@ -38,6 +38,8 @@ bool ButtonManager::combo(Button b1, Button b2) {
     (b1.pressed && b2.held) ||
     (b2.pressed && b1.held)
   ) {
+    b1.reset();
+    b2.reset();
     return true;
   }
 

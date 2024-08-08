@@ -40,12 +40,13 @@ class Expressions {
     void handleChangeExpressionState(int mood);
     Expression* getExpression(int state);
   
-    void writeToDisplay(byte* data);
-    void writeExpression();
+    void writeToDisplay(byte* data, bool delayUpdate, bool colon);
+    void writeExpression(bool delayUpdate);
 
     // ARP STUFF #TODO move this
     // When we last wrote text to the screen
     unsigned long lastControlChange = 0;
+    bool inMenu;
     bool isShowingControl();
     bool isUnsupportedChar(char c);
   public:
@@ -57,7 +58,9 @@ class Expressions {
     // ARP STUFF #TODO move this
     void midiBeat(bool beat);
     void control(byte (&ccDisplay)[2], char (&valDisplay)[2]);
-    void setting(Setting &s);
+    void writeText(byte* digits, bool colon = true);
+
+    void setMenu(bool menu);
 };
 
 #endif

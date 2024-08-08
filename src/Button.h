@@ -14,6 +14,7 @@ struct Button {
   public:
     Button(int pin);
     void read();
+    void reset();
     
     // did it just get pressed
     bool pressed;

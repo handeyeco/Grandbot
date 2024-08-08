@@ -42,10 +42,10 @@ void Expressions::handleChangeExpressionState(int mood) {
  * 
  * @param {byte*} data - pointer to an array of bytes to be written
 */
-void Expressions::writeToDisplay(byte* data) {
+void Expressions::writeToDisplay(byte* data, bool delayUpdate = true, bool colon = false) {
   // Skip if we're currently displaying text
   // (for the Arp)
-  if (isShowingControl()) {
+  if (delayUpdate && (isShowingControl() || inMenu)) {
     return;
   }
 
@@ -54,13 +54,13 @@ void Expressions::writeToDisplay(byte* data) {
   }
 
   // Turn the colon off (if it was turned on by `control`)
-  lc->setRow(0, 4, B00000000);
+  lc->setRow(0, 4, colon ? B10000000 : B00000000);
 }
 
 /**
  * Writes the active Expression to the display
 */
-void Expressions::writeExpression() {
+void Expressions::writeExpression(bool delayUpdate = true) {
   Expression expr = *expression;
   byte* data;
   if (isBlinking) {
@@ -69,7 +69,7 @@ void Expressions::writeExpression() {
     data = expr.getRegular();
   }
 
-  writeToDisplay(data);
+  writeToDisplay(data, delay);
 }
 
 /**
@@ -208,20 +208,22 @@ void Expressions::control(byte (&ccDisplay)[2], char (&valDisplay)[2]) {
 }
 
 
-void Expressions::setting(Setting &s) {
+void Expressions::writeText(byte* digits, bool colon = true) {
   lastControlChange = millis();
   
-  byte fullDisplay[4] = {};
-  s.getDisplay(fullDisplay);
-  
-  for (int i = 0; i < 4; i++) {
-    lc->setRow(0, i, fullDisplay[i]);
-  }
-
-  // Turn the colon on
-  lc->setRow(0, 4, B10000000);
+  writeToDisplay(digits, false, colon);
 }
 
 bool Expressions::isUnsupportedChar(char c) {
   return c == 'r' || c == 'R';
+}
+
+
+void Expressions::setMenu(bool menu) {
+  inMenu = menu;
+
+  if (!menu) {
+    Serial.println("writing expression");
+    writeExpression(false);
+  }
 }

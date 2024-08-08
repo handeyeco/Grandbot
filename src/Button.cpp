@@ -4,6 +4,13 @@ Button::Button(int _pin) : pin(_pin) {
   pinMode(_pin, INPUT_PULLUP);
 }
 
+void Button::reset() {
+  prevPressed = false;
+  pressed = false;
+  held = false;
+  released = false;
+}
+
 /**
  * Read and update button state
 */

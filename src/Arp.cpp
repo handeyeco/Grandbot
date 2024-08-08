@@ -8,7 +8,7 @@ Arp::Arp(Grandbot* gb) {
   this->buttons = gb->getButtonManagerPointer();
   this->expr = gb->getExpressionPointer();
   this->light = gb->getLightPointer();
-  this->settings = new SettingManager(expr);
+  this->settings = new SettingManager(expr, buttons);
 
   if (INITIALIZE_ON_START) {
     generateSequence();
@@ -634,11 +634,6 @@ void Arp::handleCommandChange(byte channel, byte cc, byte value) {
  * @param {byte} value - MIDI value received
 */
 void Arp::handleControlChange(byte channel, byte cc, byte value) {
-  if (settings->usesCC(cc)) {
-    settings->handleCC(cc, value);
-    return;
-  }
-
   String valueStr = convertCCToString(value);
   byte ccDisplay[2];
   char valDisplay[2] = {valueStr[0], valueStr[1]};
@@ -931,18 +926,12 @@ bool Arp::update() {
     regenerateQueued = true;
   }
 
-  if (buttons->up.released) {
-    settings->ccUseSpeaker->step(true);
-    expr->setting(*settings->ccUseSpeaker);
-  }
-
-  if (buttons->down.released) {
-    settings->ccUseSpeaker->step(false);
-    expr->setting(*settings->ccUseSpeaker);
-  }
-
   if (buttons->combo(buttons->forward, buttons->backward)) {
-    // enter menu
+    settings->toggleMenu();
+  }
+
+  if (settings->inMenu()) {
+    settings->updateMenu();
   }
 
   // Handle swung notes (they don't always land on a clock pulse)
@@ -986,13 +975,19 @@ bool Arp::update() {
         byte channel = MIDI.getChannel();
         byte cc = MIDI.getData1();
         byte value = MIDI.getData2();
+
+        
         // #TODO, these three callbacks could be merged
         // MIDI setup
-        if (cc <= 15) {
+        if (settings->usesCC(cc)) {
+          settings->handleCC(cc, value);
+          return;
+        }
+        else if (cc <= 15) {
           handleMidiChannelChange(channel, cc, value);
         }
         // Special controls
-        if (cc >= 102) {
+        else if (cc >= 102) {
           handleCommandChange(channel, cc, value);
         }
         // Sequence params
