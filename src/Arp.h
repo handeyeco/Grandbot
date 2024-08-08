@@ -73,7 +73,6 @@
 #define CC_SLIP 116
 #define CC_PANIC 117 // WARNING we listen to this CC regardless of channel
 #define CC_GENERATE_SEQUENCE 118
-#define CC_USE_SPEAKER 119
 
 class Arp {
   private:
@@ -169,7 +168,6 @@ class Arp {
     // Utilities
     byte ccSort = 0;
     byte ccSwing = 0;
-    byte ccUseSpeaker = 0;
     byte ccPanic = 0;
     byte ccGenerate = 0;
     byte ccSlipChance = 10;

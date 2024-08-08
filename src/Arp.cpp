@@ -282,7 +282,7 @@ void Arp::sendNoteOn(byte channel, byte note, byte velocity) {
   MIDI.sendNoteOn(note, velocity, movedChannel);
 
   // if the speaker is set to be on, play note on buzzer
-  if (convertCCToBool(ccUseSpeaker)) {
+  if (convertCCToBool(settings->ccUseSpeaker->getValue())) {
     tone(BUZZER_PIN, getPitchByNote(note));
   }
 }
@@ -585,23 +585,6 @@ void Arp::handleCommandChange(byte channel, byte cc, byte value) {
     if (wasOff && isOn) {
       slipQueued = true;
     }
-  }
-  // Toggle speaker on/off for Arp sequences
-  else if (cc == CC_USE_SPEAKER) {
-    ccUseSpeaker = value;
-    ccDisplay[0] = CHAR_S;
-    ccDisplay[1] = CHAR_P;
-
-    String valStr = "  ";
-    if (convertCCToBool(value)) {
-      valStr = "on";
-    } else {
-      valStr = "of";
-    }
-
-    valDisplay[0] = valStr[0];
-    valDisplay[1] = valStr[1];
-    expr->control(ccDisplay, valDisplay);
   }
   // Toggle note sorting
   else if (cc == CC_SORT) {
@@ -949,13 +932,13 @@ bool Arp::update() {
   }
 
   if (buttons->up.released) {
-    settings->ccOctaveOneUpChance->step(true);
-    expr->setting(*settings->ccOctaveOneUpChance);
+    settings->ccUseSpeaker->step(true);
+    expr->setting(*settings->ccUseSpeaker);
   }
 
   if (buttons->down.released) {
-    settings->ccOctaveOneUpChance->step(false);
-    expr->setting(*settings->ccOctaveOneUpChance);
+    settings->ccUseSpeaker->step(false);
+    expr->setting(*settings->ccUseSpeaker);
   }
 
   if (buttons->combo(buttons->forward, buttons->backward)) {

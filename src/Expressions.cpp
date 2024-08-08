@@ -209,12 +209,17 @@ void Expressions::control(byte (&ccDisplay)[2], char (&valDisplay)[2]) {
 
 
 void Expressions::setting(Setting &s) {
+  lastControlChange = millis();
+  
   byte fullDisplay[4] = {};
   s.getDisplay(fullDisplay);
   
   for (int i = 0; i < 4; i++) {
     lc->setRow(0, i, fullDisplay[i]);
   }
+
+  // Turn the colon on
+  lc->setRow(0, 4, B10000000);
 }
 
 bool Expressions::isUnsupportedChar(char c) {
