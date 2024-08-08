@@ -8,8 +8,8 @@
 #define SETTING_MANAGER_INCL_GUARD
 
 #define MAX_MENU_ITEMS 255
-#define SEQUENCE_SETTING_COUNT 1
-#define GENERAL_SETTING_COUNT 1
+#define SEQUENCE_SETTING_COUNT 2
+#define GENERAL_SETTING_COUNT 2
 
 /**
  * Manages all settings
@@ -34,7 +34,10 @@ struct SettingManager {
     SettingManager(Expressions* expr, ButtonManager* buttons);
 
     Setting* ccOctaveOneUpChance;
+    Setting* ccOctaveOneDownChance;
+
     Setting* ccUseSpeaker;
+    Setting* ccSort;
 
     Setting* getSettingByCC(byte cc);
     bool usesCC(byte cc);

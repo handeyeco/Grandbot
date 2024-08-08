@@ -48,7 +48,6 @@
 // Regular sequence params
 #define CC_BASE_NOTE_LENGTH 20
 #define CC_SEQUENCE_LENGTH 21
-#define CC_OCTAVE_ONE_DOWN 23
 #define CC_OCTAVE_TWO_UP 24
 #define CC_OCTAVE_TWO_DOWN 25
 #define CC_DOUBLE_LENGTH 26
@@ -68,7 +67,6 @@
 
 // Free range 102-119
 // Special controls
-#define CC_SORT 114
 #define CC_SWING 115
 #define CC_SLIP 116
 #define CC_PANIC 117 // WARNING we listen to this CC regardless of channel
@@ -151,7 +149,6 @@ class Arp {
     // CC controlled params; all need to be 0-127
     byte ccBaseNoteLength = 0;
     byte ccSequenceLength = 0;
-    byte ccOctaveOneDownChance = 10;
     byte ccOctaveTwoUpChance = 5;
     byte ccOctaveTwoDownChance = 5;
     byte ccHalfLengthChance = 0;
@@ -166,7 +163,6 @@ class Arp {
     byte ccRandomLengthChance = 0;
 
     // Utilities
-    byte ccSort = 0;
     byte ccSwing = 0;
     byte ccPanic = 0;
     byte ccGenerate = 0;

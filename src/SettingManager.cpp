@@ -37,12 +37,17 @@ byte onOffStepTransform(byte value, bool stepUp) {
 
 SettingManager::SettingManager(Expressions* _expr, ButtonManager* _buttons) : expr(_expr), buttons(_buttons) {
   ccOctaveOneUpChance = new Setting(10, 22, B01100011, B01000000, ccValueTransform, ccStepTransform);
+  ccOctaveOneDownChance = new Setting(10, 23, B00011101, B00001000, ccValueTransform, ccStepTransform);
 
   ccUseSpeaker = new Setting(0, 119, CHAR_S, CHAR_P, onOffValueTransform, onOffStepTransform);
+  // TODO can we add an onchange callback or something to trigger sort of currently pressed/active notes?
+  ccSort = new Setting(0, 114, CHAR_S, CHAR_O, onOffValueTransform, onOffStepTransform);
 
   sequenceSettings[0] = ccOctaveOneUpChance;
+  sequenceSettings[1] = ccOctaveOneDownChance;
 
   generalSettings[0] = ccUseSpeaker;
+  generalSettings[1] = ccSort;
 }
 
 Setting* SettingManager::getSettingByCC(byte cc) {
@@ -85,7 +90,17 @@ void SettingManager::updateMenu() {
     menuIndex = 0;
     writeMenu();
     return;
-  } else if (menuStage > 0) {
+  }
+  else if (menuStage > 1 && (buttons->up.released || buttons->down.released)) {
+    Setting* setting = menuStage == 2
+      ? sequenceSettings[menuIndex %  SEQUENCE_SETTING_COUNT]
+      : generalSettings[menuIndex %  GENERAL_SETTING_COUNT];
+    
+    setting->step(buttons->up.released);
+    writeMenu();
+    return;
+  }
+  else if (menuStage > 0) {
     if (buttons->backward.released) {
       menuStage = (menuStage == 1) ? 0 : 1;
       menuIndex = 0;

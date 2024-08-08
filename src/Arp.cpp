@@ -170,7 +170,7 @@ void Arp::generateSequence() {
     // towards single octave intervals
     if (
       settings->ccOctaveOneUpChance->getValue() ||
-      ccOctaveOneDownChance ||
+      settings->ccOctaveOneDownChance->getValue() ||
       ccOctaveTwoUpChance ||
       ccOctaveTwoDownChance ||
       ccFifthChance ||
@@ -179,7 +179,7 @@ void Arp::generateSequence() {
       if (ccRoll() < settings->ccOctaveOneUpChance->getValue()) {
           // one oct up
           noteOffset = 12;
-      } else if (ccRoll() < ccOctaveOneDownChance) {
+      } else if (ccRoll() < settings->ccOctaveOneDownChance->getValue()) {
           // one oct down
           noteOffset = -12;
       } else if (ccRoll() < ccOctaveTwoUpChance) {
@@ -364,7 +364,7 @@ void Arp::handleNoteOn(byte channel, byte note, byte velocity) {
   numPressedNotes = insert(pressedNotes, numPressedNotes, note, MAX_NOTES);
   numActiveNotes = insert(activeNotes, numActiveNotes, note, MAX_NOTES);
 
-  if (convertCCToBool(ccSort)) {
+  if (convertCCToBool(settings->ccSort->getValue())) {
     sort(pressedNotes, numPressedNotes);
     sort(activeNotes, numActiveNotes);
   }
@@ -586,30 +586,6 @@ void Arp::handleCommandChange(byte channel, byte cc, byte value) {
       slipQueued = true;
     }
   }
-  // Toggle note sorting
-  else if (cc == CC_SORT) {
-    bool turnedOn = convertCCToBool(value) && !convertCCToBool(ccSort);
-    ccSort = value;
-    ccDisplay[0] = CHAR_S;
-    ccDisplay[1] = CHAR_O;
-
-    String valStr = "  ";
-    if (convertCCToBool(value)) {
-      valStr = "on";
-    } else {
-      valStr = "of";
-    }
-
-    valDisplay[0] = valStr[0];
-    valDisplay[1] = valStr[1];
-    expr->control(ccDisplay, valDisplay);
-
-    // sort when going from unsorted to sorted
-    if (turnedOn) {
-      sort(pressedNotes, numPressedNotes);
-      sort(activeNotes, numActiveNotes);
-    }
-  }
   // Note swing
   else if (cc == CC_SWING) {
     ccSwing = value;
@@ -638,14 +614,8 @@ void Arp::handleControlChange(byte channel, byte cc, byte value) {
   byte ccDisplay[2];
   char valDisplay[2] = {valueStr[0], valueStr[1]};
 
-  // Chance a step will be transposed an octave down
-  if (cc == CC_OCTAVE_ONE_DOWN) {
-    ccOctaveOneDownChance = value;
-    ccDisplay[0] = B00011101;
-    ccDisplay[1] = B00001000;
-  }
   // Chance a step will be transposed two octaves up
-  else if (cc == CC_OCTAVE_TWO_UP) {
+  if (cc == CC_OCTAVE_TWO_UP) {
     ccOctaveTwoUpChance = value;
     ccDisplay[0] = B01100011;
     ccDisplay[1] = B01000001;
