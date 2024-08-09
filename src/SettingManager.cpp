@@ -1,5 +1,8 @@
 #include <SettingManager.h>
 
+/**
+ * Transformers
+ */
 void ccValueTransform(byte value, byte output[2]) {
   byte mapped = map(value, 0, 127, 0, 99);
 
@@ -23,6 +26,82 @@ void onOffValueTransform(byte value, byte output[2]) {
   }
 }
 
+void noteLengthValueTransform(byte value, byte output[2]) {
+  if (value > 108) {
+    // double whole
+    output[0] = CHAR_2;
+    output[1] = CHAR_DASH;
+  }
+  else if (value > 90) {
+    // whole
+    output[0] = CHAR_1;
+    output[1] = CHAR_DASH;
+  }
+  else if (value > 72) {
+    // half
+    output[0] = CHAR_H;
+    output[1] = CHAR_A;
+  }
+  else if (value > 54) {
+    // quarter
+    output[0] = CHAR_BLANK;
+    output[1] = CHAR_1;
+  }
+  else if (value > 36) {
+    // 8th
+    output[0] = CHAR_BLANK;
+    output[1] = CHAR_8;
+  }
+  else if (value > 18) {
+    // 16th
+    output[0] = CHAR_1;
+    output[1] = CHAR_6;
+  }
+  else {
+    // random
+    output[0] = CHAR_R;
+    output[1] = CHAR_A;
+  }
+}
+
+byte noteLenthStepTransform(byte value, bool stepUp) {
+  int step = 127 / 7 + 1;
+  step = step * (stepUp ? 1 : -1);
+  int temp = value;
+  temp += step;
+
+  // TODO this is an embarrassing solution to what I imagine
+  // is a simple arithmatic problem
+  if (temp > 108) {
+    // double whole
+    return 108 + 10;
+  }
+  else if (temp > 90) {
+    // whole
+    return 90 + 10;
+  }
+  else if (temp > 72) {
+    // half
+    return 72 + 10;
+  }
+  else if (temp > 54) {
+    // quarter
+    return 54 + 10;
+  }
+  else if (temp > 36) {
+    // 8th
+    return 36 + 10;
+  }
+  else if (temp > 18) {
+    // 16th
+    return 18 + 10;
+  }
+  else {
+    // random
+    return 0;
+  }
+}
+
 // TODO: we store values as 0-127 (because that's what MIDI uses)
 // however we display values as 0-99 (because we only have two free digits)
 // this means that sometimes we have to push the button an extra time
@@ -36,18 +115,20 @@ byte onOffStepTransform(byte value, bool stepUp) {
 }
 
 SettingManager::SettingManager(Expressions* _expr, ButtonManager* _buttons) : expr(_expr), buttons(_buttons) {
-  ccOctaveOneUpChance = new Setting(10, 22, B01100011, B01000000, ccValueTransform, ccStepTransform);
-  ccOctaveOneDownChance = new Setting(10, 23, B00011101, B00001000, ccValueTransform, ccStepTransform);
+  baseNoteLength = new Setting(0, 20, CHAR_N, CHAR_L, noteLengthValueTransform, noteLenthStepTransform);
+  octaveOneUpChance = new Setting(10, 22, B01100011, B01000000, ccValueTransform, ccStepTransform);
+  octaveOneDownChance = new Setting(10, 23, B00011101, B00001000, ccValueTransform, ccStepTransform);
 
-  ccUseSpeaker = new Setting(0, 119, CHAR_S, CHAR_P, onOffValueTransform, onOffStepTransform);
+  useSpeaker = new Setting(0, 119, CHAR_S, CHAR_P, onOffValueTransform, onOffStepTransform);
   // TODO can we add an onchange callback or something to trigger sort of currently pressed/active notes?
-  ccSort = new Setting(0, 114, CHAR_S, CHAR_O, onOffValueTransform, onOffStepTransform);
+  sort = new Setting(0, 114, CHAR_S, CHAR_O, onOffValueTransform, onOffStepTransform);
 
-  sequenceSettings[0] = ccOctaveOneUpChance;
-  sequenceSettings[1] = ccOctaveOneDownChance;
+  sequenceSettings[0] = baseNoteLength;
+  sequenceSettings[1] = octaveOneUpChance;
+  sequenceSettings[2] = octaveOneDownChance;
 
-  generalSettings[0] = ccUseSpeaker;
-  generalSettings[1] = ccSort;
+  generalSettings[0] = useSpeaker;
+  generalSettings[1] = sort;
 }
 
 Setting* SettingManager::getSettingByCC(byte cc) {

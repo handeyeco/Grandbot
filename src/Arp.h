@@ -46,7 +46,6 @@
 
 // Free range 20-31
 // Regular sequence params
-#define CC_BASE_NOTE_LENGTH 20
 #define CC_SEQUENCE_LENGTH 21
 #define CC_OCTAVE_TWO_UP 24
 #define CC_OCTAVE_TWO_DOWN 25
@@ -147,7 +146,6 @@ class Arp {
     byte midiChannelOut = 255;
 
     // CC controlled params; all need to be 0-127
-    byte ccBaseNoteLength = 0;
     byte ccSequenceLength = 0;
     byte ccOctaveTwoUpChance = 5;
     byte ccOctaveTwoDownChance = 5;

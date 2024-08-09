@@ -65,35 +65,36 @@ byte Arp::ccRoll() {
  * @returns {byte} number of 16ths for note
 */
 byte Arp::getNoteLength() {
-    if (ccBaseNoteLength > 108) {
-      // double whole
-      return 32;
-    }
-    else if (ccBaseNoteLength > 90) {
-      // whole
-      return 16;
-    }
-    else if (ccBaseNoteLength > 72) {
-      // half
-      return 8;
-    }
-    else if (ccBaseNoteLength > 54) {
-      // quarter
-      return 4;
-    }
-    else if (ccBaseNoteLength > 36) {
-      // 8th
-      return 2;
-    }
-    else if (ccBaseNoteLength > 18) {
-      // 16th
-      return 1;
-    }
-    else {
-      // random; only choose between
-      // 16th, 8th, and quarter
-      return possibleNoteLengths[random(3)];
-    }
+  byte v = settings->baseNoteLength->getValue();
+  if (v > 108) {
+    // double whole
+    return 32;
+  }
+  else if (v > 90) {
+    // whole
+    return 16;
+  }
+  else if (v > 72) {
+    // half
+    return 8;
+  }
+  else if (v > 54) {
+    // quarter
+    return 4;
+  }
+  else if (v > 36) {
+    // 8th
+    return 2;
+  }
+  else if (v > 18) {
+    // 16th
+    return 1;
+  }
+  else {
+    // random; only choose between
+    // 16th, 8th, and quarter
+    return possibleNoteLengths[random(3)];
+  }
 }
 
 /**
@@ -169,17 +170,17 @@ void Arp::generateSequence() {
     // there's some interplay between them with a bias
     // towards single octave intervals
     if (
-      settings->ccOctaveOneUpChance->getValue() ||
-      settings->ccOctaveOneDownChance->getValue() ||
+      settings->octaveOneUpChance->getValue() ||
+      settings->octaveOneDownChance->getValue() ||
       ccOctaveTwoUpChance ||
       ccOctaveTwoDownChance ||
       ccFifthChance ||
       ccRandomIntervalChance
     ) {
-      if (ccRoll() < settings->ccOctaveOneUpChance->getValue()) {
+      if (ccRoll() < settings->octaveOneUpChance->getValue()) {
           // one oct up
           noteOffset = 12;
-      } else if (ccRoll() < settings->ccOctaveOneDownChance->getValue()) {
+      } else if (ccRoll() < settings->octaveOneDownChance->getValue()) {
           // one oct down
           noteOffset = -12;
       } else if (ccRoll() < ccOctaveTwoUpChance) {
@@ -282,7 +283,7 @@ void Arp::sendNoteOn(byte channel, byte note, byte velocity) {
   MIDI.sendNoteOn(note, velocity, movedChannel);
 
   // if the speaker is set to be on, play note on buzzer
-  if (convertCCToBool(settings->ccUseSpeaker->getValue())) {
+  if (convertCCToBool(settings->useSpeaker->getValue())) {
     tone(BUZZER_PIN, getPitchByNote(note));
   }
 }
@@ -364,7 +365,7 @@ void Arp::handleNoteOn(byte channel, byte note, byte velocity) {
   numPressedNotes = insert(pressedNotes, numPressedNotes, note, MAX_NOTES);
   numActiveNotes = insert(activeNotes, numActiveNotes, note, MAX_NOTES);
 
-  if (convertCCToBool(settings->ccSort->getValue())) {
+  if (convertCCToBool(settings->sort->getValue())) {
     sort(pressedNotes, numPressedNotes);
     sort(activeNotes, numActiveNotes);
   }
@@ -679,45 +680,6 @@ void Arp::handleControlChange(byte channel, byte cc, byte value) {
     ccSlipChance = value;
     ccDisplay[0] = CHAR_S;
     ccDisplay[1] = CHAR_C;
-  }
-  // Set the base note length
-  else if (cc == CC_BASE_NOTE_LENGTH) {
-    ccBaseNoteLength = value;
-    ccDisplay[0] = CHAR_N;
-    ccDisplay[1] = CHAR_L;
-
-    String valStr = "  ";
-    if (ccBaseNoteLength > 108) {
-      // double whole
-      valStr = "2-";
-    }
-    else if (ccBaseNoteLength > 90) {
-      // whole
-      valStr = "1-";
-    }
-    else if (ccBaseNoteLength > 72) {
-      // half
-      valStr = "HA";
-    }
-    else if (ccBaseNoteLength > 54) {
-      // quarter
-      valStr = " 4";
-    }
-    else if (ccBaseNoteLength > 36) {
-      // 8th
-      valStr = " 8";
-    }
-    else if (ccBaseNoteLength > 18) {
-      // 16th
-      valStr = "16";
-    }
-    else {
-      // random
-      valStr = "rA";
-    }
-
-    valDisplay[0] = valStr[0];
-    valDisplay[1] = valStr[1];
   }
   // Set the base sequence length (in bars)
   else if (cc == CC_SEQUENCE_LENGTH) {
