@@ -18,7 +18,7 @@ struct Setting {
     // value transform (map value to display)
     void (&valueTransform)(byte value, byte output[2]);
     // handle setting value with buttons
-    byte (&stepTransform)(byte value, bool stepUp);
+    byte (&stepTransform)(byte value, bool stepUp, bool shift);
   public:
     Setting(
       byte defaultValue,
@@ -26,7 +26,7 @@ struct Setting {
       byte firstDisplayChar,
       byte secondDisplayChar,
       void (&valueTransform)(byte value, byte output[2]),
-      byte (&setValueStepped)(byte value, bool stepUp));
+      byte (&setValueStepped)(byte value, bool stepUp, bool shift));
 
     void getDisplay(byte output[4]);
 
@@ -36,7 +36,7 @@ struct Setting {
 
     byte getValue();
     void setValue(byte nextValue);
-    void step(bool stepUp);
+    void step(bool stepUp, bool shift);
 };
 
 #endif

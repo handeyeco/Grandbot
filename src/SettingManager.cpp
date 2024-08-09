@@ -64,7 +64,15 @@ void noteLengthValueTransform(byte value, byte output[2]) {
   }
 }
 
-byte noteLenthStepTransform(byte value, bool stepUp) {
+byte noteLenthStepTransform(byte value, bool stepUp, bool shift) {
+  if (shift) {
+    if (stepUp) {
+      return 108 + 10;
+    } else {
+      return 0;
+    }
+  }
+
   int step = 127 / 7 + 1;
   step = step * (stepUp ? 1 : -1);
   int temp = value;
@@ -106,11 +114,18 @@ byte noteLenthStepTransform(byte value, bool stepUp) {
 // however we display values as 0-99 (because we only have two free digits)
 // this means that sometimes we have to push the button an extra time
 // to get the screen to update (even though it is updating the actual value correctly)
-byte ccStepTransform(byte value, bool stepUp) {
-  return value + (stepUp ? 1 : -1);
+byte ccStepTransform(byte value, bool stepUp, bool shift) {
+  int stride = shift ? 10 : 1;
+  stride *= stepUp ? 1 : -1;
+  int temp = value;
+  temp += stride;
+  temp = min(temp, 127);
+  temp = max(temp, 0);
+
+  return temp;
 }
 
-byte onOffStepTransform(byte value, bool stepUp) {
+byte onOffStepTransform(byte value, bool stepUp, bool shift) {
   return stepUp ? 127 : 0;
 }
 
@@ -177,7 +192,7 @@ void SettingManager::updateMenu() {
       ? sequenceSettings[menuIndex %  SEQUENCE_SETTING_COUNT]
       : generalSettings[menuIndex %  GENERAL_SETTING_COUNT];
     
-    setting->step(buttons->up.released);
+    setting->step(buttons->up.released, buttons->forward.held);
     writeMenu();
     return;
   }

@@ -6,7 +6,7 @@ Setting::Setting(
   byte firstDisplayChar,
   byte secondDisplayChar,
   void (&_valueTransform)(byte value, byte output[2]),
-  byte (&_stepTransform)(byte value, bool stepUp)) :
+  byte (&_stepTransform)(byte value, bool stepUp, bool shift)) :
     value(_defaultValue), 
     defaultValue(_defaultValue),
     midiCC(_midiCC),
@@ -36,8 +36,8 @@ void Setting::setValue(byte nextValue) {
   value = nextValue;
 }
 
-void Setting::step(bool stepUp) {
+void Setting::step(bool stepUp, bool shift) {
   if ((stepUp && value >= 127) || (!stepUp && value <= 0)) return;
 
-  setValue(stepTransform(value, stepUp));
+  setValue(stepTransform(value, stepUp, shift));
 };

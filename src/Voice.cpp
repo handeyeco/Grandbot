@@ -34,7 +34,7 @@ Voice::Voice(){}
 
 /**
  * Sets the melody/rhythm to a Major 7th sequence
- * #TODO remove stateIndex?
+ * #TODO remove startIndex?
  *
  * @param {int} startIndex - where in the sequence to start
  * @param {int} root - the root note of the chord
