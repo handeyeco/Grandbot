@@ -33,13 +33,13 @@ void ButtonManager::read() {
   }
 }
 
-bool ButtonManager::combo(Button b1, Button b2) {
+bool ButtonManager::combo(Button &b1, Button &b2) {
   if (
     (b1.pressed && b2.held) ||
     (b2.pressed && b1.held)
   ) {
-    b1.reset();
-    b2.reset();
+    b1.ignoreRelease = true;
+    b2.ignoreRelease = true;
     return true;
   }
 

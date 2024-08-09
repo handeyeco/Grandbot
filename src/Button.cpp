@@ -4,17 +4,12 @@ Button::Button(int _pin) : pin(_pin) {
   pinMode(_pin, INPUT_PULLUP);
 }
 
-void Button::reset() {
-  prevPressed = false;
-  pressed = false;
-  held = false;
-  released = false;
-}
-
 /**
  * Read and update button state
 */
 void Button::read() {
+  unsigned long now = millis();
+
   // active LOW
   bool isPressed = !digitalRead(pin);
   pressed = false;
@@ -24,7 +19,12 @@ void Button::read() {
     pressed = true;
     held = true;
   } else if (!isPressed && prevPressed) {
-    released = true;
+    if (ignoreRelease) {
+      ignoreRelease = false;
+    } else {
+      released = true;
+    }
+
     held = false;
   }
 

@@ -185,8 +185,6 @@ void SettingManager::updateMenu() {
     if (buttons->backward.released) {
       menuStage = (menuStage == 1) ? 0 : 1;
       menuIndex = 0;
-      Serial.print("menuStage: ");
-      Serial.println(menuStage);
       if (menuStage == 0) {
         expr->setMenu(0);
       } else {

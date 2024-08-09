@@ -14,7 +14,6 @@ struct Button {
   public:
     Button(int pin);
     void read();
-    void reset();
     
     // did it just get pressed
     bool pressed;
@@ -22,6 +21,8 @@ struct Button {
     bool released;
     // are we between a press and a release
     bool held;
+    // disable release after a combo or press event
+    bool ignoreRelease;
 };
 
 #endif

@@ -69,7 +69,7 @@ void Expressions::writeExpression(bool delayUpdate = true) {
     data = expr.getRegular();
   }
 
-  writeToDisplay(data, delay);
+  writeToDisplay(data, delayUpdate);
 }
 
 /**
@@ -223,7 +223,6 @@ void Expressions::setMenu(bool menu) {
   inMenu = menu;
 
   if (!menu) {
-    Serial.println("writing expression");
     writeExpression(false);
   }
 }
