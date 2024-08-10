@@ -31,6 +31,28 @@ byte ccStepTransform(byte value, bool stepUp, bool shift) {
   return temp;
 }
 
+void swingValueTransform(byte value, byte output[2]) {
+  byte mapped = map(value, 0, 127, 50, 67);
+
+  output[0] = ExpressionSets::convertNumberToByte((mapped / 10) % 10);
+  output[1] = ExpressionSets::convertNumberToByte(mapped % 10);
+}
+
+byte swingStepTransform(byte value, bool stepUp, bool shift) {
+  if (shift) {
+    return stepUp ? 127 : 0;
+  }
+
+  int stride = ceil(127.0 / (67 - 50));
+  stride *= stepUp ? 1 : -1;
+  int temp = value;
+  temp += stride;
+  temp = min(temp, 127);
+  temp = max(temp, 0);
+
+  return temp;
+}
+
 void midiChValueTransform(byte value, byte output[2]) {
   // we use 255 to mean "no channel transform"
   if (value == 255) {
@@ -175,10 +197,10 @@ SettingManager::SettingManager(Expressions* _expr, ButtonManager* _buttons) : ex
   octaveOneUpChance = new Setting(10, 22, B01100011, B01000000, ccValueTransform, ccStepTransform);
   octaveOneDownChance = new Setting(10, 23, B00011101, B00001000, ccValueTransform, ccStepTransform);
 
+  swing = new Setting(0, 115, CHAR_S, CHAR_G, swingValueTransform, swingStepTransform);
   useSpeaker = new Setting(0, 119, CHAR_S, CHAR_P, onOffValueTransform, onOffStepTransform);
   // TODO can we add an onchange callback or something to trigger sort of currently pressed/active notes?
   sort = new Setting(0, 114, CHAR_S, CHAR_O, onOffValueTransform, onOffStepTransform);
-  // TODO make it possible to set these to 255 for "all channels support"
   midiChannelIn = new Setting(255, 14, CHAR_I, CHAR_N, midiChValueTransform, midiChStepTransform);
   midiChannelOut = new Setting(255, 15, CHAR_O, CHAR_T, midiChValueTransform, midiChStepTransform);
 
@@ -186,10 +208,11 @@ SettingManager::SettingManager(Expressions* _expr, ButtonManager* _buttons) : ex
   sequenceSettings[1] = octaveOneUpChance;
   sequenceSettings[2] = octaveOneDownChance;
 
-  generalSettings[0] = useSpeaker;
-  generalSettings[1] = sort;
-  generalSettings[2] = midiChannelIn;
-  generalSettings[3] = midiChannelOut;
+  generalSettings[0] = swing;
+  generalSettings[1] = useSpeaker;
+  generalSettings[2] = sort;
+  generalSettings[3] = midiChannelIn;
+  generalSettings[4] = midiChannelOut;
 }
 
 Setting* SettingManager::getSettingByCC(byte cc) {

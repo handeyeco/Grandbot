@@ -9,7 +9,7 @@
 
 #define MAX_MENU_ITEMS 255
 #define SEQUENCE_SETTING_COUNT 3
-#define GENERAL_SETTING_COUNT 4
+#define GENERAL_SETTING_COUNT 5
 
 /**
  * Manages all settings
@@ -37,6 +37,7 @@ struct SettingManager {
     Setting* octaveOneUpChance;
     Setting* octaveOneDownChance;
 
+    Setting* swing;
     Setting* useSpeaker;
     Setting* sort;
     Setting* midiChannelIn;

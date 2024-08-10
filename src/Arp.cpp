@@ -559,20 +559,6 @@ void Arp::handleCommandChange(byte channel, byte cc, byte value) {
       slipQueued = true;
     }
   }
-  // Note swing
-  else if (cc == CC_SWING) {
-    ccSwing = value;
-    ccDisplay[0] = CHAR_S;
-    ccDisplay[1] = CHAR_G;
-    // Swing is between 50%-67%
-    // 50%, 16th is halfway between 8ths
-    // 67%, 16th is 2/3 between 8ths
-    byte mapped = map(value, 0, 127, 50, 67);
-    String valueStr = String(mapped);
-    valDisplay[0] = valueStr[0];
-    valDisplay[1] = valueStr[1];
-    expr->control(ccDisplay, valDisplay);
-  }
 }
 
 /**
@@ -749,6 +735,7 @@ void Arp::handleClock(unsigned long now) {
     if (stepIndex > -1) {
       // This is all to handle swing if we need to.
       // First we check if we're on even (2 of 2) 16ths
+      byte ccSwing = settings->swing->getValue();
       if (ccSwing > 0 && (pulseCount + PULSES_PER_SIXTEENTH_NOTE) % PULSES_PER_EIGHTH_NOTE == 0) {
         // Swing is between 0 and 2 clock pulses in length, so we need to know how long that is
         unsigned long twoClockPulses = (now - lastClockPulse) * 2;

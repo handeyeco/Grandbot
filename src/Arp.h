@@ -61,7 +61,6 @@
 
 // Free range 102-119
 // Special controls
-#define CC_SWING 115
 #define CC_SLIP 116
 #define CC_PANIC 117 // WARNING we listen to this CC regardless of channel
 #define CC_GENERATE_SEQUENCE 118
@@ -151,7 +150,6 @@ class Arp {
     byte ccRandomLengthChance = 0;
 
     // Utilities
-    byte ccSwing = 0;
     byte ccPanic = 0;
     byte ccGenerate = 0;
     byte ccSlipChance = 10;
