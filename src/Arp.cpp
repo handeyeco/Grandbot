@@ -279,7 +279,8 @@ void Arp::generateSequence() {
 void Arp::sendNoteOn(byte channel, byte note, byte velocity) {
   // if midiChannelOut is 255, we use whatever channel was provided,
   // otherwise use the channel set in midiChannelOut
-  byte movedChannel = midiChannelOut == 255 ? channel : midiChannelOut;
+  byte outCh = ccToMidiCh(settings->midiChannelOut->getValue());
+  byte movedChannel = outCh == 255 ? channel : outCh;
   MIDI.sendNoteOn(note, velocity, movedChannel);
 
   // if the speaker is set to be on, play note on buzzer
@@ -299,9 +300,16 @@ void Arp::sendNoteOn(byte channel, byte note, byte velocity) {
 void Arp::sendNoteOff(byte channel, byte note, byte velocity) {
   // if midiChannelOut is 255, we use whatever channel was provided,
   // otherwise use the channel set in midiChannelOut
-  byte movedChannel = midiChannelOut == 255 ? channel : midiChannelOut;
+  byte outCh = ccToMidiCh(settings->midiChannelOut->getValue());
+  byte movedChannel = outCh == 255 ? channel : outCh;
   MIDI.sendNoteOff(note, velocity, movedChannel);
   noTone(BUZZER_PIN);
+}
+
+byte Arp::ccToMidiCh(byte cc) {
+  if (cc == 255) return cc;
+
+  return map(cc, 0, 127, 0, 16);
 }
 
 int Arp::insert(byte arr[], int arrLen, byte value, int capacity) { 
@@ -483,49 +491,13 @@ String Arp::convertCCToString(byte value) {
 bool Arp::correctInChannel(byte channel) {
   // 255 is the magic number to represent "all channels are okay"
   // otherwise we only care about the channel set in midiChannelIn
-  if (midiChannelIn == 255 || channel == midiChannelIn) {
+  byte inCh = ccToMidiCh(settings->midiChannelIn->getValue());
+  if (inCh == 255 || channel == inCh) {
     return true;
   }
 
   return false;
 };
-
-/**
- * Handle changing MIDI channel we listen to and send from
- *
- * NOTE: we listen to any channel for MIDI channel in changes,
- * we only listen to selected MIDI in channel for MIDI channel out changes
- * - #TODO probably could be merged with handleControlChange
- *
- * @param {byte} channel - MIDI channel received on
- * @param {byte} cc - MIDI CC received
- * @param {byte} value - MIDI value received
-*/
-void Arp::handleMidiChannelChange(byte channel, byte cc, byte value) {
-  // setup bytes to be displayed on the 4D7S
-  byte ccDisplay[2];
-  byte mapped = map(value, 0, 127, 1, 16);
-  String valueStr = String(mapped);
-  String paddedStr = padded(valueStr);
-  char valDisplay[2] = {paddedStr[0], paddedStr[1]};
-
-  // no matter what channel we get this message on
-  // we'll change the incoming MIDI channel
-  // #HACK will likely lead to weird things
-  if (cc == CC_CHANNEL_IN) {
-    midiChannelIn = mapped;
-    ccDisplay[0] = CHAR_I;
-    ccDisplay[1] = CHAR_N;
-    expr->control(ccDisplay, valDisplay);
-  }
-  // but to change MIDI out, we need to be on the right MIDI in channel
-  else if (cc == CC_CHANNEL_OUT && correctInChannel(channel)) {
-    midiChannelOut = mapped;
-    ccDisplay[0] = CHAR_O;
-    ccDisplay[1] = CHAR_T;
-    expr->control(ccDisplay, valDisplay);
-  }
-}
 
 /**
  * Handle changing MIDI CC values for "command" signals
@@ -914,9 +886,6 @@ bool Arp::update() {
         if (settings->usesCC(cc)) {
           settings->handleCC(cc, value);
           return;
-        }
-        else if (cc <= 15) {
-          handleMidiChannelChange(channel, cc, value);
         }
         // Special controls
         else if (cc >= 102) {

@@ -16,6 +16,61 @@ void ccValueTransform(byte value, byte output[2]) {
   output[1] = ExpressionSets::convertNumberToByte(mapped % 10);
 }
 
+// TODO: we store values as 0-127 (because that's what MIDI uses)
+// however we display values as 0-99 (because we only have two free digits)
+// this means that sometimes we have to push the button an extra time
+// to get the screen to update (even though it is updating the actual value correctly)
+byte ccStepTransform(byte value, bool stepUp, bool shift) {
+  int stride = shift ? 10 : 1;
+  stride *= stepUp ? 1 : -1;
+  int temp = value;
+  temp += stride;
+  temp = min(temp, 127);
+  temp = max(temp, 0);
+
+  return temp;
+}
+
+void midiChValueTransform(byte value, byte output[2]) {
+  // we use 255 to mean "no channel transform"
+  if (value == 255) {
+    output[0] = CHAR_A;
+    output[1] = CHAR_L;
+    return;
+  }
+
+  byte mapped = map(value, 0, 127, 0, 16) + 1;
+
+  if (mapped < 10) {
+    output[0] = CHAR_BLANK;
+    output[1] = ExpressionSets::convertNumberToByte(mapped);
+    return;
+  }
+
+  output[0] = ExpressionSets::convertNumberToByte((mapped / 10) % 10);
+  output[1] = ExpressionSets::convertNumberToByte(mapped % 10);
+}
+
+byte midiChStepTransform(byte value, bool stepUp, bool shift) {
+  byte step = ceil(127 / 16.0);
+  byte halfstep = step / 2;
+
+  if (value == 255 && !stepUp) {
+    return 127 - halfstep;
+  } else if (value > 127 - step && stepUp) {
+    return 255;
+  }
+
+  int stride = step * (stepUp ? 1 : -1);
+
+  int temp = value;
+  temp += stride;
+  temp = max(temp, halfstep);
+  temp = min(temp, 127 - halfstep);
+
+  return temp;
+}
+
 void onOffValueTransform(byte value, byte output[2]) {
   output[0] = CHAR_O;
 
@@ -24,6 +79,10 @@ void onOffValueTransform(byte value, byte output[2]) {
   } else {
     output[1] = CHAR_N;
   }
+}
+
+byte onOffStepTransform(byte value, bool stepUp, bool shift) {
+  return stepUp ? 127 : 0;
 }
 
 void noteLengthValueTransform(byte value, byte output[2]) {
@@ -80,6 +139,7 @@ byte noteLenthStepTransform(byte value, bool stepUp, bool shift) {
 
   // TODO this is an embarrassing solution to what I imagine
   // is a simple arithmatic problem
+  // (look at midiChStepTransform)
   if (temp > 108) {
     // double whole
     return 108 + 10;
@@ -110,25 +170,6 @@ byte noteLenthStepTransform(byte value, bool stepUp, bool shift) {
   }
 }
 
-// TODO: we store values as 0-127 (because that's what MIDI uses)
-// however we display values as 0-99 (because we only have two free digits)
-// this means that sometimes we have to push the button an extra time
-// to get the screen to update (even though it is updating the actual value correctly)
-byte ccStepTransform(byte value, bool stepUp, bool shift) {
-  int stride = shift ? 10 : 1;
-  stride *= stepUp ? 1 : -1;
-  int temp = value;
-  temp += stride;
-  temp = min(temp, 127);
-  temp = max(temp, 0);
-
-  return temp;
-}
-
-byte onOffStepTransform(byte value, bool stepUp, bool shift) {
-  return stepUp ? 127 : 0;
-}
-
 SettingManager::SettingManager(Expressions* _expr, ButtonManager* _buttons) : expr(_expr), buttons(_buttons) {
   baseNoteLength = new Setting(0, 20, CHAR_N, CHAR_L, noteLengthValueTransform, noteLenthStepTransform);
   octaveOneUpChance = new Setting(10, 22, B01100011, B01000000, ccValueTransform, ccStepTransform);
@@ -137,6 +178,9 @@ SettingManager::SettingManager(Expressions* _expr, ButtonManager* _buttons) : ex
   useSpeaker = new Setting(0, 119, CHAR_S, CHAR_P, onOffValueTransform, onOffStepTransform);
   // TODO can we add an onchange callback or something to trigger sort of currently pressed/active notes?
   sort = new Setting(0, 114, CHAR_S, CHAR_O, onOffValueTransform, onOffStepTransform);
+  // TODO make it possible to set these to 255 for "all channels support"
+  midiChannelIn = new Setting(255, 14, CHAR_I, CHAR_N, midiChValueTransform, midiChStepTransform);
+  midiChannelOut = new Setting(255, 15, CHAR_O, CHAR_T, midiChValueTransform, midiChStepTransform);
 
   sequenceSettings[0] = baseNoteLength;
   sequenceSettings[1] = octaveOneUpChance;
@@ -144,6 +188,8 @@ SettingManager::SettingManager(Expressions* _expr, ButtonManager* _buttons) : ex
 
   generalSettings[0] = useSpeaker;
   generalSettings[1] = sort;
+  generalSettings[2] = midiChannelIn;
+  generalSettings[3] = midiChannelOut;
 }
 
 Setting* SettingManager::getSettingByCC(byte cc) {

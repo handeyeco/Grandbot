@@ -39,11 +39,6 @@
 // MIDI CCs to listen to
 // =====================
 
-// Free range 14-15
-// MIDI I/O settings
-#define CC_CHANNEL_IN 14 // WARNING we listen to this CC regardless of channel
-#define CC_CHANNEL_OUT 15
-
 // Free range 20-31
 // Regular sequence params
 #define CC_SEQUENCE_LENGTH 21
@@ -140,11 +135,6 @@ class Arp {
     // How many clock pulses through the sequence are we
     unsigned long long pulseCount = 0;
 
-    // MIDI channels; 0-15
-    // 255 = do whatever the original MIDI message wanted
-    byte midiChannelIn = 255;
-    byte midiChannelOut = 255;
-
     // CC controlled params; all need to be 0-127
     byte ccSequenceLength = 0;
     byte ccOctaveTwoUpChance = 5;
@@ -173,7 +163,6 @@ class Arp {
     bool noteInBounds(byte note);
     void handleCommandChange(byte channel, byte cc, byte value);
     void handleControlChange(byte channel, byte cc, byte value);
-    void handleMidiChannelChange(byte channel, byte cc, byte value);
     void handleNoteOn(byte channel, byte pitch, byte velocity);
     void handleNoteOff(byte channel, byte pitch, byte velocity);
     void handleClock(unsigned long now);
@@ -193,6 +182,7 @@ class Arp {
     void sort(byte arr[], int arrLen);
     void sendNoteOn(byte channel, byte pitch, byte velocity);
     void sendNoteOff(byte channel, byte pitch, byte velocity);
+    byte ccToMidiCh(byte cc);
   public:
     Arp(Grandbot* gb);
     void setup();
