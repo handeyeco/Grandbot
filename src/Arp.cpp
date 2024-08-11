@@ -600,7 +600,7 @@ void Arp::handleStep(int stepIndex) {
   //  and `activeNotes` keeps a set of notes that have been played by the user.
   // The index wraps around the total number of active notes
   // to determine which note to play.
-  byte newNoteIndex =  stepInterval % numActiveNotes;
+  byte newNoteIndex = stepInterval % numActiveNotes;
   byte nextNote = activeNotes[newNoteIndex];
 
   // check to make sure we can safely apply note/octave offset
@@ -619,7 +619,7 @@ void Arp::handleStep(int stepIndex) {
 void Arp::handleClock(unsigned long now) {
   // If we hit the start of a new bar
   // and the button has been pressed, regenerate sequence
-  if (pulseCount % PULSES_PER_BAR == 0 && regenerateQueued) {
+  if ((pulseCount % PULSES_PER_BAR == 0) && regenerateQueued) {
     regenerateQueued = false;
     generateSequence();
     pulseCount = 0;
@@ -724,12 +724,14 @@ bool Arp::update() {
 
   if (buttons->combo(buttons->forward, buttons->backward)) {
     settings->toggleMenu();
-  } else if (buttons->combo(buttons->forward, buttons->left)) {
-    panic();
-  } else if (buttons->play.released || buttons->up.released) {
-    regenerateQueued = true;
-  } else if (buttons->down.released) {
-    slipQueued = true;
+  } else if (!settings->inMenu()) {
+    if (buttons->combo(buttons->forward, buttons->left)) {
+      panic();
+    } else if (buttons->play.released || buttons->up.released) {
+      regenerateQueued = true;
+    } else if (buttons->down.released) {
+      slipQueued = true;
+    }
   }
 
   if (settings->inMenu()) {

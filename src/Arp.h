@@ -99,16 +99,16 @@ class Arp {
     int8_t sequenceOffset[MAX_STEPS_IN_SEQ] = {0, 0, 0, 0};
     // Time (in clock pulses) that each step in the sequence starts
     uint16_t sequenceStartPositions[MAX_STEPS_IN_SEQ] = {
-      PULSES_PER_SIXTEENTH_NOTE * 0,
-      PULSES_PER_SIXTEENTH_NOTE * 1,
-      PULSES_PER_SIXTEENTH_NOTE * 2,
-      PULSES_PER_SIXTEENTH_NOTE * 3
+      PULSES_PER_QUARTER_NOTE * 0,
+      PULSES_PER_QUARTER_NOTE * 1,
+      PULSES_PER_QUARTER_NOTE * 2,
+      PULSES_PER_QUARTER_NOTE * 3
     };
 
     // Total sequence length in discrete steps
     byte totalSequenceSteps = 4;
     // Total sequence length in pulses
-    uint16_t totalSequenceLength = 4 * PULSES_PER_SIXTEENTH_NOTE;
+    uint16_t totalSequenceLength = 4 * PULSES_PER_QUARTER_NOTE;
 
     // Basically: is this an odd or even quarter note?
     bool quarterFlipFlop = false;
