@@ -510,6 +510,23 @@ bool Arp::correctInChannel(byte channel) {
   return false;
 };
 
+void Arp::panic() {
+  byte fullDisplay[4];
+  fullDisplay[0] = CHAR_A;
+  fullDisplay[1] = CHAR_H;
+  fullDisplay[2] = CHAR_H;
+  fullDisplay[3] = CHAR_H;
+  expr->writeText(fullDisplay, false);
+
+  noTone(BUZZER_PIN);
+
+  for (byte ch = 0; ch < 16; ch++) {
+    for (byte note = 0; note < 128; note++) {
+      MIDI.sendNoteOff(note, 64, ch+1);
+    }
+  }
+}
+
 /**
  * Handle changing MIDI CC values for "command" signals
  *
@@ -523,8 +540,6 @@ bool Arp::correctInChannel(byte channel) {
  * @param {byte} value - MIDI value received
 */
 void Arp::handleCommandChange(byte channel, byte cc, byte value) {
-  byte ccDisplay[2];
-  char valDisplay[2];
   bool isOn = convertCCToBool(value);
 
   // try to shut it all down
@@ -535,20 +550,7 @@ void Arp::handleCommandChange(byte channel, byte cc, byte value) {
     bool wasOff = !convertCCToBool(ccPanic);
     ccPanic = value;
     if (wasOff && isOn) {
-      noTone(BUZZER_PIN);
-
-      // I don't know why I did it this way
-      ccDisplay[0] = CHAR_A;
-      ccDisplay[1] = CHAR_H;
-      valDisplay[0] = 'h';
-      valDisplay[1] = 'h';
-      expr->control(ccDisplay, valDisplay);
-
-      for (byte ch = 0; ch < 16; ch++) {
-        for (byte note = 0; note < 128; note++) {
-          MIDI.sendNoteOff(note, 64, ch+1);
-        }
-      }
+      panic();
     }
   }
 
@@ -720,12 +722,14 @@ void Arp::setup() {
 bool Arp::update() {
   unsigned long now = millis();
 
-  if (buttons->play.released) {
-    regenerateQueued = true;
-  }
-
   if (buttons->combo(buttons->forward, buttons->backward)) {
     settings->toggleMenu();
+  } else if (buttons->combo(buttons->forward, buttons->left)) {
+    panic();
+  } else if (buttons->play.released || buttons->up.released) {
+    regenerateQueued = true;
+  } else if (buttons->down.released) {
+    slipQueued = true;
   }
 
   if (settings->inMenu()) {

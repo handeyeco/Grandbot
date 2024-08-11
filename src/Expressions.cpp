@@ -165,49 +165,6 @@ bool Expressions::isShowingControl() {
   return now - lastControlChange < 1000;
 }
 
-/**
- * Write control text to the four digit, seven segment display; it's a mess
- * 
- * ex: `SL: 8` uses five bytes:
- * - the "S"
- * - the "L"
- * - the " "
- * - the "8"
- * - the ":" <= is always displayed
- * 
- * @param {byte&[2]} ccDisplay - the left two digits as byte content
- * @param {char&[2]} valDisplay - the right two digits as char content
-*/
-void Expressions::control(byte (&ccDisplay)[2], char (&valDisplay)[2]) {
-  lastControlChange = millis();
-
-  // The first two symbols could probably have been chars,
-  // but I wanted the octaves to show lines to represent up or down
-  for (int i = 0; i < 2; i++) {
-    lc->setRow(0, i, ccDisplay[i]);
-  }
-
-  // The next two symbols could have been just chars,
-  // but LedControl omits a lot of possible characters
-  for (int i = 0; i < 2; i++) {
-    char c = valDisplay[i];
-    // If LedControl doesn't support the character,
-    // use my own list
-    if (isUnsupportedChar(c)) {
-      byte converted = ExpressionSets::convertCharToByte(c);
-      lc->setRow(0, i+2, converted);
-    }
-    // Otherwise leverage LedControl's list
-    else {
-      lc->setChar(0, i+2, c, false);
-    }
-  }
-
-  // Turn the colon on
-  lc->setRow(0, 4, B10000000);
-}
-
-
 void Expressions::writeText(byte* digits, bool colon = true) {
   lastControlChange = millis();
   

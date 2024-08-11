@@ -57,7 +57,6 @@ class Expressions {
 
     // ARP STUFF #TODO move this
     void midiBeat(bool beat);
-    void control(byte (&ccDisplay)[2], char (&valDisplay)[2]);
     void writeText(byte* digits, bool colon = true);
 
     void setMenu(bool menu);

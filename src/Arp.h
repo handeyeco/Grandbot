@@ -145,6 +145,7 @@ class Arp {
     void sendNoteOn(byte channel, byte pitch, byte velocity);
     void sendNoteOff(byte channel, byte pitch, byte velocity);
     byte ccToMidiCh(byte cc);
+    void panic();
   public:
     Arp(Grandbot* gb);
     void setup();
