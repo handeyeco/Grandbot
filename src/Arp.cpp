@@ -65,28 +65,30 @@ byte Arp::ccRoll() {
  * @returns {byte} number of 16ths for note
 */
 byte Arp::getNoteLength() {
-  byte v = settings->baseNoteLength->getValue();
-  if (v > 108) {
+  byte value = settings->baseNoteLength->getValue();
+  byte index = Stepper::getSteppedIndex(value, 7);
+
+  if (index == 6) {
     // double whole
     return 32;
   }
-  else if (v > 90) {
+  else if (index == 5) {
     // whole
     return 16;
   }
-  else if (v > 72) {
+  else if (index == 4) {
     // half
     return 8;
   }
-  else if (v > 54) {
+  else if (index == 3) {
     // quarter
     return 4;
   }
-  else if (v > 36) {
+  else if (index == 2) {
     // 8th
     return 2;
   }
-  else if (v > 18) {
+  else if (index == 1) {
     // 16th
     return 1;
   }
@@ -104,10 +106,16 @@ byte Arp::getNoteLength() {
 */
 byte Arp::getSequenceLength() {
   // Random, 1-8
-  if (ccSequenceLength < 15) {
+  byte ccSequenceLength = settings->sequenceLength->getValue();
+  byte index = Stepper::getSteppedIndex(ccSequenceLength, 9);
+
+  if (index == 0) {
     return random(1, 9);
   } else {
-    return map(ccSequenceLength, 15, 127, 1, 8);
+    return map(
+      ccSequenceLength,
+      Stepper::stepFloor(1, 9),
+      127, 1, 8);
   }
 }
 
@@ -638,24 +646,6 @@ void Arp::handleControlChange(byte channel, byte cc, byte value) {
     ccSlipChance = value;
     ccDisplay[0] = CHAR_S;
     ccDisplay[1] = CHAR_C;
-  }
-  // Set the base sequence length (in bars)
-  else if (cc == CC_SEQUENCE_LENGTH) {
-    ccSequenceLength = value;
-    ccDisplay[0] = CHAR_S;
-    ccDisplay[1] = CHAR_L;
-
-    // Random, 1-8
-    if (value < 15) {
-      String valStr = "rA";
-      valDisplay[0] = valStr[0];
-      valDisplay[1] = valStr[1];
-    } else {
-      byte mapped = map(value, 15, 127, 1, 8);
-      String mappedStr = String(mapped);
-      valDisplay[0] = ' ';
-      valDisplay[1] = mappedStr[0];
-    }
   }
   else {
     return;

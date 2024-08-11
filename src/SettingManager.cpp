@@ -108,32 +108,34 @@ byte onOffStepTransform(byte value, bool stepUp, bool shift) {
 }
 
 void noteLengthValueTransform(byte value, byte output[2]) {
-  if (value > 108) {
+  byte index = Stepper::getSteppedIndex(value, 7);
+
+  if (index == 6) {
     // double whole
     output[0] = CHAR_2;
     output[1] = CHAR_DASH;
   }
-  else if (value > 90) {
+  else if (index == 5) {
     // whole
     output[0] = CHAR_1;
     output[1] = CHAR_DASH;
   }
-  else if (value > 72) {
+  else if (index == 4) {
     // half
     output[0] = CHAR_H;
     output[1] = CHAR_A;
   }
-  else if (value > 54) {
+  else if (index == 3) {
     // quarter
     output[0] = CHAR_BLANK;
     output[1] = CHAR_1;
   }
-  else if (value > 36) {
+  else if (index == 2) {
     // 8th
     output[0] = CHAR_BLANK;
     output[1] = CHAR_8;
   }
-  else if (value > 18) {
+  else if (index == 1) {
     // 16th
     output[0] = CHAR_1;
     output[1] = CHAR_6;
@@ -148,51 +150,44 @@ void noteLengthValueTransform(byte value, byte output[2]) {
 byte noteLenthStepTransform(byte value, bool stepUp, bool shift) {
   if (shift) {
     if (stepUp) {
-      return 108 + 10;
+      return 127;
     } else {
       return 0;
     }
   }
 
-  int step = 127 / 7 + 1;
-  step = step * (stepUp ? 1 : -1);
-  int temp = value;
-  temp += step;
+  return Stepper::stepIndex(value, 7, stepUp);
+}
 
-  // TODO this is an embarrassing solution to what I imagine
-  // is a simple arithmatic problem
-  // (look at midiChStepTransform)
-  if (temp > 108) {
-    // double whole
-    return 108 + 10;
-  }
-  else if (temp > 90) {
-    // whole
-    return 90 + 10;
-  }
-  else if (temp > 72) {
-    // half
-    return 72 + 10;
-  }
-  else if (temp > 54) {
-    // quarter
-    return 54 + 10;
-  }
-  else if (temp > 36) {
-    // 8th
-    return 36 + 10;
-  }
-  else if (temp > 18) {
-    // 16th
-    return 18 + 10;
+void sequenceLengthValueTransform(byte value, byte output[2]) {
+  byte index = Stepper::getSteppedIndex(value, 9);
+
+  // Random
+  if (index == 0) {
+    output[0] = CHAR_R;
+    output[1] = CHAR_A;
+    return;
   }
   else {
-    // random
-    return 0;
+    output[0] = CHAR_BLANK;
+    output[1] = ExpressionSets::convertNumberToByte(index);
   }
 }
 
+byte sequenceLenthStepTransform(byte value, bool stepUp, bool shift) {
+  if (shift) {
+    if (stepUp) {
+      return 127;
+    } else {
+      return 0;
+    }
+  }
+
+  return Stepper::stepIndex(value, 9, stepUp);
+}
+
 SettingManager::SettingManager(Expressions* _expr, ButtonManager* _buttons) : expr(_expr), buttons(_buttons) {
+  sequenceLength = new Setting(0, 21, CHAR_S, CHAR_L, sequenceLengthValueTransform, sequenceLenthStepTransform);
   baseNoteLength = new Setting(0, 20, CHAR_N, CHAR_L, noteLengthValueTransform, noteLenthStepTransform);
   octaveOneUpChance = new Setting(10, 22, B01100011, B01000000, ccValueTransform, ccStepTransform);
   octaveOneDownChance = new Setting(10, 23, B00011101, B00001000, ccValueTransform, ccStepTransform);
@@ -204,9 +199,10 @@ SettingManager::SettingManager(Expressions* _expr, ButtonManager* _buttons) : ex
   midiChannelIn = new Setting(255, 14, CHAR_I, CHAR_N, midiChValueTransform, midiChStepTransform);
   midiChannelOut = new Setting(255, 15, CHAR_O, CHAR_T, midiChValueTransform, midiChStepTransform);
 
-  sequenceSettings[0] = baseNoteLength;
-  sequenceSettings[1] = octaveOneUpChance;
-  sequenceSettings[2] = octaveOneDownChance;
+  sequenceSettings[0] = sequenceLength;
+  sequenceSettings[1] = baseNoteLength;
+  sequenceSettings[2] = octaveOneUpChance;
+  sequenceSettings[3] = octaveOneDownChance;
 
   generalSettings[0] = swing;
   generalSettings[1] = useSpeaker;

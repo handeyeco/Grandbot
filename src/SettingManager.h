@@ -3,12 +3,13 @@
 #include <ButtonManager.h>
 #include <Expressions.h>
 #include <ExpressionSets.h>
+#include <Stepper.h>
 
 #ifndef SETTING_MANAGER_INCL_GUARD
 #define SETTING_MANAGER_INCL_GUARD
 
 #define MAX_MENU_ITEMS 255
-#define SEQUENCE_SETTING_COUNT 3
+#define SEQUENCE_SETTING_COUNT 4
 #define GENERAL_SETTING_COUNT 5
 
 /**
@@ -33,6 +34,7 @@ struct SettingManager {
   public:
     SettingManager(Expressions* expr, ButtonManager* buttons);
 
+    Setting* sequenceLength;
     Setting* baseNoteLength;
     Setting* octaveOneUpChance;
     Setting* octaveOneDownChance;

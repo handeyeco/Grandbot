@@ -7,6 +7,7 @@
 #include <Grandbot.h>
 #include <ButtonManager.h>
 #include <SettingManager.h>
+#include <Stepper.h>
 
 #ifndef ARP_INCL_GUARD
 #define ARP_INCL_GUARD
@@ -41,7 +42,6 @@
 
 // Free range 20-31
 // Regular sequence params
-#define CC_SEQUENCE_LENGTH 21
 #define CC_OCTAVE_TWO_UP 24
 #define CC_OCTAVE_TWO_DOWN 25
 #define CC_DOUBLE_LENGTH 26
@@ -135,7 +135,6 @@ class Arp {
     unsigned long long pulseCount = 0;
 
     // CC controlled params; all need to be 0-127
-    byte ccSequenceLength = 0;
     byte ccOctaveTwoUpChance = 5;
     byte ccOctaveTwoDownChance = 5;
     byte ccHalfLengthChance = 0;
