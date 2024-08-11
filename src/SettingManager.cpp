@@ -4,31 +4,20 @@
  * Transformers
  */
 void ccValueTransform(byte value, byte output[2]) {
-  byte mapped = map(value, 0, 127, 0, 99);
+  byte index = Stepper::getSteppedIndex(value, 100);
 
-  if (mapped < 10) {
+  if (index < 10) {
     output[0] = CHAR_BLANK;
-    output[1] = ExpressionSets::convertNumberToByte(mapped);
+    output[1] = ExpressionSets::convertNumberToByte(index);
     return;
   }
 
-  output[0] = ExpressionSets::convertNumberToByte((mapped / 10) % 10);
-  output[1] = ExpressionSets::convertNumberToByte(mapped % 10);
+  output[0] = ExpressionSets::convertNumberToByte((index / 10) % 10);
+  output[1] = ExpressionSets::convertNumberToByte(index % 10);
 }
 
-// TODO: we store values as 0-127 (because that's what MIDI uses)
-// however we display values as 0-99 (because we only have two free digits)
-// this means that sometimes we have to push the button an extra time
-// to get the screen to update (even though it is updating the actual value correctly)
 byte ccStepTransform(byte value, bool stepUp, bool shift) {
-  int stride = shift ? 10 : 1;
-  stride *= stepUp ? 1 : -1;
-  int temp = value;
-  temp += stride;
-  temp = min(temp, 127);
-  temp = max(temp, 0);
-
-  return temp;
+  return Stepper::stepIndex(value, 100, stepUp, shift ? 10 : 1);
 }
 
 void swingValueTransform(byte value, byte output[2]) {

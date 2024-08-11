@@ -23,20 +23,24 @@ struct Stepper {
   byte static stepIndex(
     byte value,
     byte steps,
-    bool up
+    bool up,
+    byte stride = 1
   ) {
     float step = 127.0f / steps;
     float halfstep = step / 2.0f;
-    byte index = getSteppedIndex(value, steps);
+    int dirStride = stride * (up ? 1 : -1);
 
-    if (!up && index <= 0) {
-      return halfstep;
-    } else if (up && index >= steps - 1) {
-      return (step * (steps - 1)) + halfstep;
-    }
+    int index = getSteppedIndex(value, steps);
+    int nextIndex = index + dirStride;
+    nextIndex = min(nextIndex, steps - 1);
+    nextIndex = max(nextIndex, 0);
 
-    byte nextIndex = index + (up ? 1 : -1);
-    return (nextIndex * step) + halfstep;
+    float result = (nextIndex * step) + halfstep;
+    float rounded = round(result);
+    rounded = min(rounded, 127);
+    rounded = max(rounded, 0);
+
+    return rounded;
   }
 
   byte static stepFloor(
