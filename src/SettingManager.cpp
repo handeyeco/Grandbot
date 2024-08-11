@@ -54,43 +54,35 @@ byte swingStepTransform(byte value, bool stepUp, bool shift) {
 }
 
 void midiChValueTransform(byte value, byte output[2]) {
-  // we use 255 to mean "no channel transform"
-  if (value == 255) {
+  byte index = Stepper::getSteppedIndex(value, 17);
+  
+  // we use channel 0 to mean "no channel transform"
+  if (index == 0) {
     output[0] = CHAR_A;
     output[1] = CHAR_L;
     return;
   }
 
-  byte mapped = map(value, 0, 127, 0, 16) + 1;
-
-  if (mapped < 10) {
+  if (index < 10) {
     output[0] = CHAR_BLANK;
-    output[1] = ExpressionSets::convertNumberToByte(mapped);
+    output[1] = ExpressionSets::convertNumberToByte(index);
     return;
   }
 
-  output[0] = ExpressionSets::convertNumberToByte((mapped / 10) % 10);
-  output[1] = ExpressionSets::convertNumberToByte(mapped % 10);
+  output[0] = ExpressionSets::convertNumberToByte((index / 10) % 10);
+  output[1] = ExpressionSets::convertNumberToByte(index % 10);
 }
 
 byte midiChStepTransform(byte value, bool stepUp, bool shift) {
-  byte step = ceil(127 / 16.0);
-  byte halfstep = step / 2;
-
-  if (value == 255 && !stepUp) {
-    return 127 - halfstep;
-  } else if (value > 127 - step && stepUp) {
-    return 255;
+  if (shift) {
+    if (stepUp) {
+      return 127;
+    } else {
+      return 0;
+    }
   }
 
-  int stride = step * (stepUp ? 1 : -1);
-
-  int temp = value;
-  temp += stride;
-  temp = max(temp, halfstep);
-  temp = min(temp, 127 - halfstep);
-
-  return temp;
+  return Stepper::stepIndex(value, 17, stepUp);
 }
 
 void onOffValueTransform(byte value, byte output[2]) {
@@ -196,8 +188,8 @@ SettingManager::SettingManager(Expressions* _expr, ButtonManager* _buttons) : ex
   useSpeaker = new Setting(0, 119, CHAR_S, CHAR_P, onOffValueTransform, onOffStepTransform);
   // TODO can we add an onchange callback or something to trigger sort of currently pressed/active notes?
   sort = new Setting(0, 114, CHAR_S, CHAR_O, onOffValueTransform, onOffStepTransform);
-  midiChannelIn = new Setting(255, 14, CHAR_I, CHAR_N, midiChValueTransform, midiChStepTransform);
-  midiChannelOut = new Setting(255, 15, CHAR_O, CHAR_T, midiChValueTransform, midiChStepTransform);
+  midiChannelIn = new Setting(0, 14, CHAR_I, CHAR_N, midiChValueTransform, midiChStepTransform);
+  midiChannelOut = new Setting(0, 15, CHAR_O, CHAR_T, midiChValueTransform, midiChStepTransform);
 
   sequenceSettings[0] = sequenceLength;
   sequenceSettings[1] = baseNoteLength;

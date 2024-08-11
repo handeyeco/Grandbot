@@ -285,10 +285,10 @@ void Arp::generateSequence() {
  * @param {byte} velocity - MIDI velocity to send
 */
 void Arp::sendNoteOn(byte channel, byte note, byte velocity) {
-  // if midiChannelOut is 255, we use whatever channel was provided,
+  // if midiChannelOut is 0, we use whatever channel was provided,
   // otherwise use the channel set in midiChannelOut
   byte outCh = ccToMidiCh(settings->midiChannelOut->getValue());
-  byte movedChannel = outCh == 255 ? channel : outCh;
+  byte movedChannel = outCh == 0 ? channel : outCh;
   MIDI.sendNoteOn(note, velocity, movedChannel);
 
   // if the speaker is set to be on, play note on buzzer
@@ -306,18 +306,16 @@ void Arp::sendNoteOn(byte channel, byte note, byte velocity) {
  * @param {byte} velocity - MIDI velocity to send
 */
 void Arp::sendNoteOff(byte channel, byte note, byte velocity) {
-  // if midiChannelOut is 255, we use whatever channel was provided,
+  // if midiChannelOut is 0, we use whatever channel was provided,
   // otherwise use the channel set in midiChannelOut
   byte outCh = ccToMidiCh(settings->midiChannelOut->getValue());
-  byte movedChannel = outCh == 255 ? channel : outCh;
+  byte movedChannel = outCh == 0 ? channel : outCh;
   MIDI.sendNoteOff(note, velocity, movedChannel);
   noTone(BUZZER_PIN);
 }
 
-byte Arp::ccToMidiCh(byte cc) {
-  if (cc == 255) return cc;
-
-  return map(cc, 0, 127, 0, 16);
+byte Arp::ccToMidiCh(byte value) {
+  return Stepper::getSteppedIndex(value, 17);
 }
 
 int Arp::insert(byte arr[], int arrLen, byte value, int capacity) { 
@@ -497,10 +495,10 @@ String Arp::convertCCToString(byte value) {
  * @returns {bool} if we care about that channel
 */
 bool Arp::correctInChannel(byte channel) {
-  // 255 is the magic number to represent "all channels are okay"
+  // 0 is the magic number to represent "all channels are okay"
   // otherwise we only care about the channel set in midiChannelIn
   byte inCh = ccToMidiCh(settings->midiChannelIn->getValue());
-  if (inCh == 255 || channel == inCh) {
+  if (inCh == 0 || channel == inCh) {
     return true;
   }
 
