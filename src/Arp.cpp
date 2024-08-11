@@ -185,10 +185,10 @@ void Arp::generateSequence() {
       ccFifthChance ||
       ccRandomIntervalChance
     ) {
-      if (ccRoll() < settings->octaveOneUpChance->getValue()) {
+      if (settings->octaveOneUpChance->roll()) {
           // one oct up
           noteOffset = 12;
-      } else if (ccRoll() < settings->octaveOneDownChance->getValue()) {
+      } else if (settings->octaveOneDownChance->roll()) {
           // one oct down
           noteOffset = -12;
       } else if (ccRoll() < ccOctaveTwoUpChance) {

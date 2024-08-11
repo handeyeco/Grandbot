@@ -37,6 +37,7 @@ struct Setting {
     byte getValue();
     void setValue(byte nextValue);
     void step(bool stepUp, bool shift);
+    bool roll();
 };
 
 #endif

@@ -41,3 +41,12 @@ void Setting::step(bool stepUp, bool shift) {
 
   setValue(stepTransform(value, stepUp, shift));
 };
+
+/**
+ * Dice roll for chance values
+ *
+ * @returns {bool} whether the roll was successful
+*/
+bool Setting::roll() {
+  return random(128) < getValue();
+}
