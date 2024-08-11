@@ -32,7 +32,8 @@ byte ccStepTransform(byte value, bool stepUp, bool shift) {
 }
 
 void swingValueTransform(byte value, byte output[2]) {
-  byte mapped = map(value, 0, 127, 50, 67);
+  byte index = Stepper::getSteppedIndex(value, 18);
+  byte mapped = index + 50;
 
   output[0] = ExpressionSets::convertNumberToByte((mapped / 10) % 10);
   output[1] = ExpressionSets::convertNumberToByte(mapped % 10);
@@ -43,14 +44,7 @@ byte swingStepTransform(byte value, bool stepUp, bool shift) {
     return stepUp ? 127 : 0;
   }
 
-  int stride = ceil(127.0 / (67 - 50));
-  stride *= stepUp ? 1 : -1;
-  int temp = value;
-  temp += stride;
-  temp = min(temp, 127);
-  temp = max(temp, 0);
-
-  return temp;
+  return Stepper::stepIndex(value, 18, stepUp);
 }
 
 void midiChValueTransform(byte value, byte output[2]) {
@@ -75,11 +69,7 @@ void midiChValueTransform(byte value, byte output[2]) {
 
 byte midiChStepTransform(byte value, bool stepUp, bool shift) {
   if (shift) {
-    if (stepUp) {
-      return 127;
-    } else {
-      return 0;
-    }
+    return stepUp ? 127 : 0;
   }
 
   return Stepper::stepIndex(value, 17, stepUp);
@@ -141,11 +131,7 @@ void noteLengthValueTransform(byte value, byte output[2]) {
 
 byte noteLenthStepTransform(byte value, bool stepUp, bool shift) {
   if (shift) {
-    if (stepUp) {
-      return 127;
-    } else {
-      return 0;
-    }
+    return stepUp ? 127 : 0;
   }
 
   return Stepper::stepIndex(value, 7, stepUp);
@@ -168,11 +154,7 @@ void sequenceLengthValueTransform(byte value, byte output[2]) {
 
 byte sequenceLenthStepTransform(byte value, bool stepUp, bool shift) {
   if (shift) {
-    if (stepUp) {
-      return 127;
-    } else {
-      return 0;
-    }
+    return stepUp ? 127 : 0;
   }
 
   return Stepper::stepIndex(value, 9, stepUp);
