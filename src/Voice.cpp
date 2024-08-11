@@ -214,7 +214,7 @@ void Voice::update()
     {
       byte note = melody[currNoteIndex];
       uint16_t pitch = getPitchByNote(note);
-      // tone(BUZZER_PIN, pitch);
+      tone(BUZZER_PIN, pitch);
       noteStart = now;
       return;
     }

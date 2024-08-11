@@ -48,6 +48,7 @@
 
 class Arp {
   private:
+    Grandbot* gb; 
     SettingManager* settings;
     ButtonManager* buttons;
     // 4D7S display manager

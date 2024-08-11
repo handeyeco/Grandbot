@@ -274,6 +274,7 @@ void SettingManager::updateMenu() {
 
 void SettingManager::toggleMenu() {
   menuStage = menuStage == 0 ? 1 : 0;
+  menuIndex = 0;
   expr->setMenu(menuStage);
   writeMenu();
 }

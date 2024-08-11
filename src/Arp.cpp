@@ -5,6 +5,7 @@
 MIDI_CREATE_INSTANCE(HardwareSerial, Serial1, MIDI); // uncomment for #NANO_EVERY
 
 Arp::Arp(Grandbot* gb) {
+  this->gb = gb;
   this->buttons = gb->getButtonManagerPointer();
   this->expr = gb->getExpressionPointer();
   this->light = gb->getLightPointer();
@@ -731,6 +732,8 @@ bool Arp::update() {
       regenerateQueued = true;
     } else if (buttons->down.released) {
       slipQueued = true;
+    } else if (buttons->left.released) {
+      gb->play();
     }
   }
 

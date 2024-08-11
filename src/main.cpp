@@ -14,15 +14,10 @@ void setup() {
   arp.setup();
 
   Serial.begin(9600);
-
-  // SettingManager sm = SettingManager();
-
-  // Expressions* expr = gb.getExpressionPointer();
-  // expr->setting(*sm.ccOctaveOneUpChance);
 }
 
 void loop() {
-  gb.getButtonManagerPointer()->read();
+  gb.read();
   if (!arp.update()) {
     gb.update();
   }
@@ -40,6 +35,6 @@ void loop() {
 // }
 
 // void loop() {
-//   bool buttonPressed = gb.readButton();
-//   gb.update(buttonPressed);
+//   gb.read();
+//   gb.update();
 // }

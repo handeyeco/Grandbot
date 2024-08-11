@@ -112,14 +112,18 @@ void Grandbot::setup() {
   expr.init();
 }
 
+void Grandbot::read() {
+  getButtonManagerPointer()->read();
+}
+
 /**
  * Update to be called during the Arduino update cycle.
  * Triggers sleep/wake and handles esteem drift timing
 */
 void Grandbot::update() {
-  // if (buttons.anyReleased) {
-  //   play();
-  // }
+  if (buttons.play.released) {
+    play();
+  }
   
   unsigned long now = millis();
   int lightRead = analogRead(LIGHT_SENSOR_PIN);

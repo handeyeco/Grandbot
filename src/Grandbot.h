@@ -58,6 +58,7 @@ class Grandbot {
         Grandbot();
         void play();
         void setup();
+        void read();
         void update();
         ButtonManager* getButtonManagerPointer();
         Expressions* getExpressionPointer();
