@@ -150,28 +150,54 @@ byte sequenceLenthStepTransform(byte value, bool stepUp, bool shift) {
 }
 
 SettingManager::SettingManager(Expressions* _expr, ButtonManager* _buttons) : expr(_expr), buttons(_buttons) {
-  sequenceLength = new Setting(0, 21, CHAR_S, CHAR_L, sequenceLengthValueTransform, sequenceLenthStepTransform);
-  baseNoteLength = new Setting(0, 20, CHAR_N, CHAR_L, noteLengthValueTransform, noteLenthStepTransform);
-  octaveOneUpChance = new Setting(10, 22, B01100011, B01000000, ccValueTransform, ccStepTransform);
-  octaveOneDownChance = new Setting(10, 23, B00011101, B00001000, ccValueTransform, ccStepTransform);
-
-  swing = new Setting(0, 115, CHAR_S, CHAR_G, swingValueTransform, swingStepTransform);
-  useSpeaker = new Setting(0, 119, CHAR_S, CHAR_P, onOffValueTransform, onOffStepTransform);
-  // TODO can we add an onchange callback or something to trigger sort of currently pressed/active notes?
-  sort = new Setting(0, 114, CHAR_S, CHAR_O, onOffValueTransform, onOffStepTransform);
+  // Settings sorted by MIDI CC
   midiChannelIn = new Setting(0, 14, CHAR_I, CHAR_N, midiChValueTransform, midiChStepTransform);
   midiChannelOut = new Setting(0, 15, CHAR_O, CHAR_T, midiChValueTransform, midiChStepTransform);
 
-  sequenceSettings[0] = sequenceLength;
-  sequenceSettings[1] = baseNoteLength;
-  sequenceSettings[2] = octaveOneUpChance;
-  sequenceSettings[3] = octaveOneDownChance;
+  baseNoteLength = new Setting(0, 20, CHAR_N, CHAR_L, noteLengthValueTransform, noteLenthStepTransform);
+  sequenceLength = new Setting(0, 21, CHAR_S, CHAR_L, sequenceLengthValueTransform, sequenceLenthStepTransform);
+
+  octaveOneUpChance = new Setting(10, 22, B01100011, B01000000, ccValueTransform, ccStepTransform);
+  octaveOneDownChance = new Setting(10, 23, B00011101, B00001000, ccValueTransform, ccStepTransform);
+  octaveTwoUpChance = new Setting(5, 24, B01100011, B01000001, ccValueTransform, ccStepTransform);
+  octaveTwoDownChance = new Setting(5, 25, B00011101, B00001001, ccValueTransform, ccStepTransform);
+  halfLengthChance = new Setting(0, 27, CHAR_H, CHAR_L, ccValueTransform, ccStepTransform);
+  doubleLengthChance = new Setting(0, 26, CHAR_D, CHAR_L, ccValueTransform, ccStepTransform);
+  ratchetChance = new Setting(10, 28, CHAR_R, CHAR_A, ccValueTransform, ccStepTransform);
+  restChance = new Setting(5, 29, CHAR_R, CHAR_E, ccValueTransform, ccStepTransform);
+  runChance = new Setting(0, 30, CHAR_R, CHAR_U, ccValueTransform, ccStepTransform);
+  fifthChance = new Setting(0, 85, CHAR_F, CHAR_T, ccValueTransform, ccStepTransform);
+  randomNoteChance = new Setting(0, 86, CHAR_R, CHAR_N, ccValueTransform, ccStepTransform);
+  randomLengthChance = new Setting(0, 87, CHAR_R, CHAR_L, ccValueTransform, ccStepTransform);
+  slipChance = new Setting(10, 89, CHAR_S, CHAR_C, ccValueTransform, ccStepTransform);
+
+  // TODO can we add an onchange callback or something to trigger sort of currently pressed/active notes?
+  sort = new Setting(0, 114, CHAR_S, CHAR_O, onOffValueTransform, onOffStepTransform);
+  swing = new Setting(0, 115, CHAR_S, CHAR_G, swingValueTransform, swingStepTransform);
+  useSpeaker = new Setting(0, 119, CHAR_S, CHAR_P, onOffValueTransform, onOffStepTransform);
+
+  // Settings sorted for menu
+  sequenceSettings[0] = slipChance;
+  sequenceSettings[1] = sequenceLength;
+  sequenceSettings[2] = baseNoteLength;
+  sequenceSettings[3] = ratchetChance;
+  sequenceSettings[4] = restChance;
+  sequenceSettings[5] = octaveOneUpChance;
+  sequenceSettings[6] = octaveOneDownChance;
+  sequenceSettings[7] = octaveTwoUpChance;
+  sequenceSettings[8] = octaveTwoDownChance;
+  sequenceSettings[9] = halfLengthChance;
+  sequenceSettings[10] = doubleLengthChance;
+  sequenceSettings[11] = runChance;
+  sequenceSettings[12] = fifthChance;
+  sequenceSettings[13] = randomNoteChance;
+  sequenceSettings[14] = randomLengthChance;
 
   generalSettings[0] = swing;
   generalSettings[1] = useSpeaker;
-  generalSettings[2] = sort;
-  generalSettings[3] = midiChannelIn;
-  generalSettings[4] = midiChannelOut;
+  generalSettings[2] = midiChannelIn;
+  generalSettings[3] = midiChannelOut;
+  generalSettings[4] = sort;
 }
 
 Setting* SettingManager::getSettingByCC(byte cc) {

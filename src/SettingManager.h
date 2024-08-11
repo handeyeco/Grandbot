@@ -9,7 +9,7 @@
 #define SETTING_MANAGER_INCL_GUARD
 
 #define MAX_MENU_ITEMS 255
-#define SEQUENCE_SETTING_COUNT 4
+#define SEQUENCE_SETTING_COUNT 15
 #define GENERAL_SETTING_COUNT 5
 
 /**
@@ -38,6 +38,17 @@ struct SettingManager {
     Setting* baseNoteLength;
     Setting* octaveOneUpChance;
     Setting* octaveOneDownChance;
+    Setting* octaveTwoUpChance;
+    Setting* octaveTwoDownChance;
+    Setting* halfLengthChance;
+    Setting* doubleLengthChance;
+    Setting* ratchetChance;
+    Setting* restChance;
+    Setting* runChance;
+    Setting* fifthChance;
+    Setting* randomNoteChance;
+    Setting* randomLengthChance;
+    Setting* slipChance;
 
     Setting* swing;
     Setting* useSpeaker;

@@ -40,25 +40,6 @@
 // MIDI CCs to listen to
 // =====================
 
-// Free range 20-31
-// Regular sequence params
-#define CC_OCTAVE_TWO_UP 24
-#define CC_OCTAVE_TWO_DOWN 25
-#define CC_DOUBLE_LENGTH 26
-#define CC_HALF_LENGTH 27
-#define CC_RATCHET 28
-#define CC_REST 29
-#define CC_RUN 30
-
-// Free range 85-87
-// The more chaotic ones
-#define CC_FIFTH_UP 85
-#define CC_RANDOM_INTERVAL 86
-#define CC_RANDOM_LENGTH 87
-
-// Free range 89-90
-#define CC_SLIP_CHANCE 89
-
 // Free range 102-119
 // Special controls
 #define CC_SLIP 116
@@ -134,24 +115,9 @@ class Arp {
     // How many clock pulses through the sequence are we
     unsigned long long pulseCount = 0;
 
-    // CC controlled params; all need to be 0-127
-    byte ccOctaveTwoUpChance = 5;
-    byte ccOctaveTwoDownChance = 5;
-    byte ccHalfLengthChance = 0;
-    byte ccDoubleLengthChance = 5;
-    byte ccRatchetChance = 10;
-    byte ccRestChance = 5;
-    byte ccRunChance = 0;
-
-    // The chaotic ones
-    byte ccFifthChance = 0;
-    byte ccRandomIntervalChance = 0;
-    byte ccRandomLengthChance = 0;
-
     // Utilities
     byte ccPanic = 0;
     byte ccGenerate = 0;
-    byte ccSlipChance = 10;
     byte ccSlip = 0;
 
     void reset();
@@ -159,7 +125,6 @@ class Arp {
     int findStepIndexForPulse(uint16_t pulse);
     bool noteInBounds(byte note);
     void handleCommandChange(byte channel, byte cc, byte value);
-    void handleControlChange(byte channel, byte cc, byte value);
     void handleNoteOn(byte channel, byte pitch, byte velocity);
     void handleNoteOff(byte channel, byte pitch, byte velocity);
     void handleClock(unsigned long now);

@@ -124,10 +124,10 @@ byte Arp::getSequenceLength() {
  * randomly switches steps (randomness based on ccSlipChance)
 */
 void Arp::slipSequence() {
-  if (ccSlipChance == 0) return;
+  if (settings->slipChance->getValue()) return;
 
   for (byte i = 0; i < totalSequenceSteps - 1; i++) {
-    if (ccRoll() < ccSlipChance) {
+    if (settings->slipChance->roll()) {
       byte tmpInterval = sequenceIntervals[i+1];
       int8_t tmpOffset = sequenceOffset[i+1];
       sequenceIntervals[i+1] = sequenceIntervals[i];
@@ -180,10 +180,10 @@ void Arp::generateSequence() {
     if (
       settings->octaveOneUpChance->getValue() ||
       settings->octaveOneDownChance->getValue() ||
-      ccOctaveTwoUpChance ||
-      ccOctaveTwoDownChance ||
-      ccFifthChance ||
-      ccRandomIntervalChance
+      settings->octaveTwoUpChance->getValue() ||
+      settings->octaveTwoDownChance->getValue() ||
+      settings->fifthChance->getValue() ||
+      settings->randomNoteChance->getValue()
     ) {
       if (settings->octaveOneUpChance->roll()) {
           // one oct up
@@ -191,16 +191,16 @@ void Arp::generateSequence() {
       } else if (settings->octaveOneDownChance->roll()) {
           // one oct down
           noteOffset = -12;
-      } else if (ccRoll() < ccOctaveTwoUpChance) {
+      } else if (settings->octaveTwoUpChance->roll()) {
           // two oct up
           noteOffset = 24;
-      } else if (ccRoll() < ccOctaveTwoDownChance) {
+      } else if (settings->octaveTwoDownChance->roll()) {
           // two oct down
           noteOffset = -24;
-      } else if (ccRoll() < ccFifthChance) {
+      } else if (settings->fifthChance->roll()) {
           // fifth up
           noteOffset = 7;
-      } else if (ccRoll() < ccRandomIntervalChance) {
+      } else if (settings->randomNoteChance->roll()) {
           // chaos between two octaves (exclusive)
           noteOffset = random(-11, 12);
       }
@@ -209,8 +209,8 @@ void Arp::generateSequence() {
     // Random note length; this is different than
     // random base note length (affects all notes)
     // this is random for a single step
-    if (ccRandomLengthChance) {
-      if (ccRoll() < ccRandomLengthChance) {
+    if (settings->randomLengthChance->getValue()) {
+      if (settings->randomLengthChance->roll()) {
         // only chose between 16th, 8th, and quarter during random selection
         noteLength = possibleNoteLengths[random(3)] * PULSES_PER_SIXTEENTH_NOTE;
       }
@@ -219,8 +219,13 @@ void Arp::generateSequence() {
     // Note length variation; since they affect the same value (length)
     // there's some interplay between them with a bias
     // towards ratchets
-    if (ccRatchetChance || ccHalfLengthChance || ccDoubleLengthChance || ccRunChance) {
-      if (ccRoll() < ccRatchetChance) {
+    if (
+      settings->ratchetChance->getValue() ||
+      settings->halfLengthChance->getValue() ||
+      settings->doubleLengthChance->getValue() ||
+      settings->runChance->getValue()
+    ) {
+      if (settings->ratchetChance->roll()) {
         noteLength = noteLength / 2;
         newSequenceLength = addStep(
           stepIndex,
@@ -231,7 +236,7 @@ void Arp::generateSequence() {
         );
         stepIndex++;
       }
-      else if ((stepIndex + 4 < MAX_STEPS_IN_SEQ) && (ccRoll() < ccRunChance)) {
+      else if ((stepIndex + 4 < MAX_STEPS_IN_SEQ) && (settings->runChance->roll())) {
         for (int i = 0; i < 4; i++) {
           newSequenceLength = addStep(
             stepIndex,
@@ -243,17 +248,17 @@ void Arp::generateSequence() {
           stepIndex++;
         }
       }
-      else if (ccRoll() < ccHalfLengthChance) {
+      else if (settings->halfLengthChance->roll()) {
         noteLength = noteLength / 2;
       }
-      else if (ccRoll() < ccDoubleLengthChance) {
+      else if (settings->doubleLengthChance->roll()) {
         noteLength = noteLength * 2;
       }
     }
 
-    if (ccRestChance) {
+    if (settings->restChance->getValue()) {
       // Random rest
-      if (ccRoll() < ccRestChance) {
+      if (settings->restChance->roll()) {
         // use 255 to indicate rest
         // TODO fix this, it's hacky
         randomNoteInterval = 255;
@@ -568,92 +573,6 @@ void Arp::handleCommandChange(byte channel, byte cc, byte value) {
 }
 
 /**
- * Handle changing MIDI CC values for "control" signals
- *
- * @param {byte} channel - MIDI channel received on
- * @param {byte} cc - MIDI CC received
- * @param {byte} value - MIDI value received
-*/
-void Arp::handleControlChange(byte channel, byte cc, byte value) {
-  String valueStr = convertCCToString(value);
-  byte ccDisplay[2];
-  char valDisplay[2] = {valueStr[0], valueStr[1]};
-
-  // Chance a step will be transposed two octaves up
-  if (cc == CC_OCTAVE_TWO_UP) {
-    ccOctaveTwoUpChance = value;
-    ccDisplay[0] = B01100011;
-    ccDisplay[1] = B01000001;
-  }
-  // Chance a step will be transposed two octaves down
-  else if (cc == CC_OCTAVE_TWO_DOWN) {
-    ccOctaveTwoDownChance = value;
-    ccDisplay[0] = B00011101;
-    ccDisplay[1] = B00001001;
-  }
-  // Chance a step will be transposed a fifth down
-  else if (cc == CC_FIFTH_UP) {
-    ccFifthChance = value;
-    ccDisplay[0] = CHAR_F;
-    ccDisplay[1] = CHAR_T;
-  }
-  // Chance a step will be transposed by a random interval
-  else if (cc == CC_RANDOM_INTERVAL) {
-    ccRandomIntervalChance = value;
-    ccDisplay[0] = CHAR_R;
-    ccDisplay[1] = CHAR_N;
-  }
-  // Chance a step will be have a random length
-  else if (cc == CC_RANDOM_LENGTH) {
-    ccRandomLengthChance = value;
-    ccDisplay[0] = CHAR_R;
-    ccDisplay[1] = CHAR_L;
-  }
-  // Chance a step will be have half the base length
-  else if (cc == CC_HALF_LENGTH) {
-    ccHalfLengthChance = value;
-    ccDisplay[0] = CHAR_H;
-    ccDisplay[1] = CHAR_L;
-  }
-  // Chance a step will be have double the base length
-  else if (cc == CC_DOUBLE_LENGTH) {
-    ccDoubleLengthChance = value;
-    ccDisplay[0] = CHAR_D;
-    ccDisplay[1] = CHAR_L;
-  }
-  // Chance a step will be a ratchet
-  else if (cc == CC_RATCHET) {
-    ccRatchetChance = value;
-    ccDisplay[0] = CHAR_R;
-    ccDisplay[1] = CHAR_A;
-  }
-  // Chance a step will be a rest
-  else if (cc == CC_REST) {
-    ccRestChance = value;
-    ccDisplay[0] = CHAR_R;
-    ccDisplay[1] = CHAR_E;
-  }
-  // Chance a step will be a run
-  else if (cc == CC_RUN) {
-    ccRunChance = value;
-    ccDisplay[0] = CHAR_R;
-    ccDisplay[1] = CHAR_U;
-  }
-  // Chance a step will slip (be swapped with an adjacent step)
-  else if (cc == CC_SLIP_CHANCE) {
-    ccSlipChance = value;
-    ccDisplay[0] = CHAR_S;
-    ccDisplay[1] = CHAR_C;
-  }
-  else {
-    return;
-  }
-
-  // display the change on the 4D7S
-  expr->control(ccDisplay, valDisplay);
-}
-
-/**
  * Handle changing step in sequence
  *
  * @param {int} stepIndex - index of step in sequence
@@ -859,16 +778,13 @@ bool Arp::update() {
         // #TODO, these three callbacks could be merged
         // MIDI setup
         if (settings->usesCC(cc)) {
+          // TODO filter in channel
           settings->handleCC(cc, value);
           return;
         }
         // Special controls
         else if (cc >= 102) {
           handleCommandChange(channel, cc, value);
-        }
-        // Sequence params
-        else if (correctInChannel(channel)) {
-          handleControlChange(channel, cc, value);
         }
       } break;
       default:
