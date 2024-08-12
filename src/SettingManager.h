@@ -4,6 +4,7 @@
 #include <Expressions.h>
 #include <ExpressionSets.h>
 #include <Stepper.h>
+#include <SettingTransforms.h>
 
 #ifndef SETTING_MANAGER_INCL_GUARD
 #define SETTING_MANAGER_INCL_GUARD
