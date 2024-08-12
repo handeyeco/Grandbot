@@ -113,10 +113,7 @@ byte Arp::getSequenceLength() {
   if (index == 0) {
     return random(1, 9);
   } else {
-    return map(
-      ccSequenceLength,
-      Stepper::stepFloor(1, 9),
-      127, 1, 8);
+    return index;
   }
 }
 
@@ -783,7 +780,6 @@ bool Arp::update() {
         byte cc = MIDI.getData1();
         byte value = MIDI.getData2();
 
-        
         // #TODO, these three callbacks could be merged
         // MIDI setup
         if (settings->usesCC(cc)) {

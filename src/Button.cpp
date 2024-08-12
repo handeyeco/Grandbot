@@ -8,8 +8,6 @@ Button::Button(int _pin) : pin(_pin) {
  * Read and update button state
 */
 void Button::read() {
-  unsigned long now = millis();
-
   // active LOW
   bool isPressed = !digitalRead(pin);
   pressed = false;

@@ -53,7 +53,7 @@ void Expressions::writeToDisplay(byte* data, bool delayUpdate = true, bool colon
     lc->setRow(0, i, data[i]);
   }
 
-  // Turn the colon off (if it was turned on by `control`)
+  // Set colon
   lc->setRow(0, 4, colon ? B10000000 : B00000000);
 }
 
