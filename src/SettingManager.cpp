@@ -78,10 +78,10 @@ void SettingManager::handleCC(byte cc, byte value) {
 
   if (setting == NULL) return;
 
+  setting->setValue(value);
+
   byte fullDisplay[4];
   setting->getDisplay(fullDisplay);
-
-  setting->setValue(value);
   expr->writeText(fullDisplay);
 }
 
@@ -106,13 +106,13 @@ void SettingManager::updateMenu() {
       menuStage = (menuStage == 1) ? 0 : 1;
       menuIndex = 0;
       if (menuStage == 0) {
-        expr->setMenu(0);
+        expr->setMenu(false);
       } else {
         writeMenu();
       }
       return;
     } else if (buttons->right.released) {
-      menuIndex = menuIndex == 255 ? 0 : (menuIndex + 1);
+      menuIndex = menuIndex == MAX_MENU_ITEMS ? 0 : (menuIndex + 1);
       writeMenu();
       return;
     } else if (buttons->left.released) {
