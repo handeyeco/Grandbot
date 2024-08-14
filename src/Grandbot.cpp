@@ -1,15 +1,18 @@
 #include <Grandbot.h>
  
 Grandbot::Grandbot()
-  : voice(), light(), lc(SERIAL_DATA_PIN, SERIAL_CLOCK_PIN, SERIAL_LOAD_PIN, 1), expr(&lc, &light)
+  : buttons(), voice(), light(), lc(SERIAL_DATA_PIN, SERIAL_CLOCK_PIN, SERIAL_LOAD_PIN, 1), expr(&lc, &light)
 {}
 
+  ButtonManager* Grandbot::getButtonManagerPointer() {
+    return &buttons;
+  }
 
-Expressions* Grandbot::getExpressionPointer(){
+Expressions* Grandbot::getExpressionPointer() {
   return &expr;
 }
 
-Light* Grandbot::getLightPointer(){
+Light* Grandbot::getLightPointer() {
   return &light;
 }
 
@@ -95,7 +98,6 @@ void Grandbot::play() {
  * Setup to be called during the Arduino setup stage.
 */
 void Grandbot::setup() {
-  pinMode(PLAY_BUTTON_PIN, INPUT_PULLUP);
   randomSeed(analogRead(RANDOM_PIN));
 
   // Wake up Max7219
@@ -111,24 +113,21 @@ void Grandbot::setup() {
 }
 
 /**
- * Reads the button a returns if it's been pressed
- * since last read
- * 
- * @returns {bool} whether button has been pressed
-*/
-bool Grandbot::readButton() {
-  bool read = digitalRead(PLAY_BUTTON_PIN);
-  bool pressed = read == LOW && lastButtonRead == HIGH;
-  lastButtonRead = read;
-  return pressed;
+ * Since GB owns the buttons, the Arp needs the buttons,
+ * and the Arp state dictates GB behavior...I've split GB's update
+ * into read/update. That way we can read buttons, Arp can do its thing,
+ * and then we come back to finish GB's update.
+ */
+void Grandbot::read() {
+  getButtonManagerPointer()->read();
 }
 
 /**
  * Update to be called during the Arduino update cycle.
  * Triggers sleep/wake and handles esteem drift timing
 */
-void Grandbot::update(bool buttonPressed) {
-  if (buttonPressed) {
+void Grandbot::update() {
+  if (buttons.play.released) {
     play();
   }
   

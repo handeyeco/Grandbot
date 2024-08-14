@@ -41,11 +41,13 @@ void Expressions::handleChangeExpressionState(int mood) {
  * bytes to LedControl to be sent to the display
  * 
  * @param {byte*} data - pointer to an array of bytes to be written
+ * @param {bool} delayUpdate - whether update should interupt current display (like setting changes)
+ * @param {bool} colon - whether or not to light the colon on the display
 */
-void Expressions::writeToDisplay(byte* data) {
+void Expressions::writeToDisplay(byte* data, bool delayUpdate = true, bool colon = false) {
   // Skip if we're currently displaying text
   // (for the Arp)
-  if (isShowingControl()) {
+  if (delayUpdate && (isShowingControl() || inMenu)) {
     return;
   }
 
@@ -53,14 +55,16 @@ void Expressions::writeToDisplay(byte* data) {
     lc->setRow(0, i, data[i]);
   }
 
-  // Turn the colon off (if it was turned on by `control`)
-  lc->setRow(0, 4, B00000000);
+  // Set colon
+  lc->setRow(0, 4, colon ? B10000000 : B00000000);
 }
 
 /**
  * Writes the active Expression to the display
+ * 
+ * @param {bool} delayUpdate - whether update should interupt current display (like setting changes)
 */
-void Expressions::writeExpression() {
+void Expressions::writeExpression(bool delayUpdate = true) {
   Expression expr = *expression;
   byte* data;
   if (isBlinking) {
@@ -69,7 +73,7 @@ void Expressions::writeExpression() {
     data = expr.getRegular();
   }
 
-  writeToDisplay(data);
+  writeToDisplay(data, delayUpdate);
 }
 
 /**
@@ -166,141 +170,29 @@ bool Expressions::isShowingControl() {
 }
 
 /**
- * Write control text to the four digit, seven segment display; it's a mess
+ * Write text to the 4D7S display while updating lastControlChange
+ * (to block updates so expression changes don't interupt setting changes)
  * 
- * ex: `SL: 8` uses five bytes:
- * - the "S"
- * - the "L"
- * - the " "
- * - the "8"
- * - the ":" <= is always displayed
- * 
- * @param {byte&[2]} ccDisplay - the left two digits as byte content
- * @param {char&[2]} valDisplay - the right two digits as char content
+ * @param {byte*} digits - pointer to an array of bytes representing what should be written
+ * @param {bool} colon - whether or not to light the colon on the display
 */
-void Expressions::control(byte (&ccDisplay)[2], char (&valDisplay)[2]) {
+void Expressions::writeText(byte* digits, bool colon = true) {
   lastControlChange = millis();
-
-  // The first two symbols could probably have been chars,
-  // but I wanted the octaves to show lines to represent up or down
-  for (int i = 0; i < 2; i++) {
-    lc->setRow(0, i, ccDisplay[i]);
-  }
-
-  // The next two symbols could have been just chars,
-  // but LedControl omits a lot of possible characters
-  for (int i = 0; i < 2; i++) {
-    char c = valDisplay[i];
-    // If LedControl doesn't support the character,
-    // use my own list
-    if (isUnsupportedChar(c)) {
-      byte converted = convertCharToByte(c);
-      lc->setRow(0, i+2, converted);
-    }
-    // Otherwise leverage LedControl's list
-    else {
-      lc->setChar(0, i+2, c, false);
-    }
-  }
-
-  // Turn the colon on
-  lc->setRow(0, 4, B10000000);
-}
-
-bool Expressions::isUnsupportedChar(char c) {
-  return c == 'r' || c == 'R';
+  
+  writeToDisplay(digits, false, colon);
 }
 
 /**
- * My own char to byte conversion; it's overkill,
- * but I'm thinking of just removing LedControl
- * since it's missing chars and hasn't been maintained
+ * Toggle menu and write expression when leaving
  * 
- * @param {char} c - the char to convert
- * @returns {byte} the 4D7S representation of the char
+ * TODO if we're in MIDI mode, make sure it goes back to MIDI expressions
+ * 
+ * @param {bool} menu - whether or not we're in the menu
 */
-byte Expressions::convertCharToByte(char c) {
-  switch (c) {
-    case 'A':
-    case 'a':
-      return CHAR_A;
-    case 'B':
-    case 'b':
-      return CHAR_B;
-    case 'C':
-    case 'c':
-      return CHAR_C;
-    case 'D':
-    case 'd':
-      return CHAR_D;
-    case 'E':
-    case 'e':
-      return CHAR_E;
-    case 'F':
-    case 'f':
-      return CHAR_F;
-    case 'G':
-    case 'g':
-      return CHAR_G;
-    case 'H':
-    case 'h':
-      return CHAR_H;
-    case 'I':
-    case 'i':
-      return CHAR_I;
-    case 'J':
-    case 'j':
-      return CHAR_J;
-    case 'L':
-    case 'l':
-      return CHAR_L;
-    case 'N':
-    case 'n':
-      return CHAR_N;
-    case 'O':
-    case 'o':
-      return CHAR_O;
-    case 'P':
-    case 'p':
-      return CHAR_P;
-    case 'R':
-    case 'r':
-      return CHAR_R;
-    case 'S':
-    case 's':
-      return CHAR_S;
-    case 'T':
-    case 't':
-      return CHAR_T;
-    case 'U':
-    case 'u':
-      return CHAR_U;
-    case 'Y':
-    case 'y':
-      return CHAR_Y;
-    case '0':
-      return CHAR_0;
-    case '1':
-      return CHAR_1;
-    case '2':
-      return CHAR_2;
-    case '3':
-      return CHAR_3;
-    case '4':
-      return CHAR_4;
-    case '5':
-      return CHAR_5;
-    case '6':
-      return CHAR_6;
-    case '7':
-      return CHAR_7;
-    case '8':
-      return CHAR_8;
-    case '9':
-      return CHAR_9;
-    case '-':
-      return CHAR_DASH;
-    default:
-      return CHAR_BLANK;
-    }
+void Expressions::setMenu(bool menu) {
+  inMenu = menu;
+
+  if (!menu) {
+    writeExpression(false);
+  }
 }

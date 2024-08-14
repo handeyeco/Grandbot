@@ -5,8 +5,11 @@
 MIDI_CREATE_INSTANCE(HardwareSerial, Serial1, MIDI); // uncomment for #NANO_EVERY
 
 Arp::Arp(Grandbot* gb) {
+  this->gb = gb;
+  this->buttons = gb->getButtonManagerPointer();
   this->expr = gb->getExpressionPointer();
   this->light = gb->getLightPointer();
+  this->settings = new SettingManager(expr, buttons);
 
   if (INITIALIZE_ON_START) {
     generateSequence();
@@ -63,35 +66,16 @@ byte Arp::ccRoll() {
  * @returns {byte} number of 16ths for note
 */
 byte Arp::getNoteLength() {
-    if (ccBaseNoteLength > 108) {
-      // double whole
-      return 32;
-    }
-    else if (ccBaseNoteLength > 90) {
-      // whole
-      return 16;
-    }
-    else if (ccBaseNoteLength > 72) {
-      // half
-      return 8;
-    }
-    else if (ccBaseNoteLength > 54) {
-      // quarter
-      return 4;
-    }
-    else if (ccBaseNoteLength > 36) {
-      // 8th
-      return 2;
-    }
-    else if (ccBaseNoteLength > 18) {
-      // 16th
-      return 1;
-    }
-    else {
-      // random; only choose between
-      // 16th, 8th, and quarter
-      return possibleNoteLengths[random(3)];
-    }
+  byte value = settings->baseNoteLength->getValue();
+  byte index = Stepper::getSteppedIndex(value, 7);
+
+  if (index == 0) {
+    // random; only choose between
+    // 16th, 8th, and quarter
+    return possibleNoteLengths[random(3)];
+  } else {
+    return possibleNoteLengths[index - 1];
+  }
 }
 
 /**
@@ -100,11 +84,16 @@ byte Arp::getNoteLength() {
  * @returns {byte} number between 1-8
 */
 byte Arp::getSequenceLength() {
-  // Random, 1-8
-  if (ccSequenceLength < 15) {
+  byte ccSequenceLength = settings->sequenceLength->getValue();
+  byte index = Stepper::getSteppedIndex(ccSequenceLength, 9);
+
+  // Random
+  if (index == 0) {
     return random(1, 9);
-  } else {
-    return map(ccSequenceLength, 15, 127, 1, 8);
+  }
+  // 1-8 bars
+  else {
+    return index;
   }
 }
 
@@ -113,10 +102,10 @@ byte Arp::getSequenceLength() {
  * randomly switches steps (randomness based on ccSlipChance)
 */
 void Arp::slipSequence() {
-  if (ccSlipChance == 0) return;
+  if (!settings->slipChance->getValue()) return;
 
   for (byte i = 0; i < totalSequenceSteps - 1; i++) {
-    if (ccRoll() < ccSlipChance) {
+    if (settings->slipChance->roll()) {
       byte tmpInterval = sequenceIntervals[i+1];
       int8_t tmpOffset = sequenceOffset[i+1];
       sequenceIntervals[i+1] = sequenceIntervals[i];
@@ -167,29 +156,29 @@ void Arp::generateSequence() {
     // there's some interplay between them with a bias
     // towards single octave intervals
     if (
-      ccOctaveOneUpChance ||
-      ccOctaveOneDownChance ||
-      ccOctaveTwoUpChance ||
-      ccOctaveTwoDownChance ||
-      ccFifthChance ||
-      ccRandomIntervalChance
+      settings->octaveOneUpChance->getValue() ||
+      settings->octaveOneDownChance->getValue() ||
+      settings->octaveTwoUpChance->getValue() ||
+      settings->octaveTwoDownChance->getValue() ||
+      settings->fifthChance->getValue() ||
+      settings->randomNoteChance->getValue()
     ) {
-      if (ccRoll() < ccOctaveOneUpChance) {
+      if (settings->octaveOneUpChance->roll()) {
           // one oct up
           noteOffset = 12;
-      } else if (ccRoll() < ccOctaveOneDownChance) {
+      } else if (settings->octaveOneDownChance->roll()) {
           // one oct down
           noteOffset = -12;
-      } else if (ccRoll() < ccOctaveTwoUpChance) {
+      } else if (settings->octaveTwoUpChance->roll()) {
           // two oct up
           noteOffset = 24;
-      } else if (ccRoll() < ccOctaveTwoDownChance) {
+      } else if (settings->octaveTwoDownChance->roll()) {
           // two oct down
           noteOffset = -24;
-      } else if (ccRoll() < ccFifthChance) {
+      } else if (settings->fifthChance->roll()) {
           // fifth up
           noteOffset = 7;
-      } else if (ccRoll() < ccRandomIntervalChance) {
+      } else if (settings->randomNoteChance->roll()) {
           // chaos between two octaves (exclusive)
           noteOffset = random(-11, 12);
       }
@@ -198,8 +187,8 @@ void Arp::generateSequence() {
     // Random note length; this is different than
     // random base note length (affects all notes)
     // this is random for a single step
-    if (ccRandomLengthChance) {
-      if (ccRoll() < ccRandomLengthChance) {
+    if (settings->randomLengthChance->getValue()) {
+      if (settings->randomLengthChance->roll()) {
         // only chose between 16th, 8th, and quarter during random selection
         noteLength = possibleNoteLengths[random(3)] * PULSES_PER_SIXTEENTH_NOTE;
       }
@@ -208,8 +197,13 @@ void Arp::generateSequence() {
     // Note length variation; since they affect the same value (length)
     // there's some interplay between them with a bias
     // towards ratchets
-    if (ccRatchetChance || ccHalfLengthChance || ccDoubleLengthChance || ccRunChance) {
-      if (ccRoll() < ccRatchetChance) {
+    if (
+      settings->ratchetChance->getValue() ||
+      settings->halfLengthChance->getValue() ||
+      settings->doubleLengthChance->getValue() ||
+      settings->runChance->getValue()
+    ) {
+      if (settings->ratchetChance->roll()) {
         noteLength = noteLength / 2;
         newSequenceLength = addStep(
           stepIndex,
@@ -220,7 +214,7 @@ void Arp::generateSequence() {
         );
         stepIndex++;
       }
-      else if ((stepIndex + 4 < MAX_STEPS_IN_SEQ) && (ccRoll() < ccRunChance)) {
+      else if ((stepIndex + 4 < MAX_STEPS_IN_SEQ) && (settings->runChance->roll())) {
         for (int i = 0; i < 4; i++) {
           newSequenceLength = addStep(
             stepIndex,
@@ -232,17 +226,17 @@ void Arp::generateSequence() {
           stepIndex++;
         }
       }
-      else if (ccRoll() < ccHalfLengthChance) {
+      else if (settings->halfLengthChance->roll()) {
         noteLength = noteLength / 2;
       }
-      else if (ccRoll() < ccDoubleLengthChance) {
+      else if (settings->doubleLengthChance->roll()) {
         noteLength = noteLength * 2;
       }
     }
 
-    if (ccRestChance) {
+    if (settings->restChance->getValue()) {
       // Random rest
-      if (ccRoll() < ccRestChance) {
+      if (settings->restChance->roll()) {
         // use 255 to indicate rest
         // TODO fix this, it's hacky
         randomNoteInterval = 255;
@@ -274,13 +268,14 @@ void Arp::generateSequence() {
  * @param {byte} velocity - MIDI velocity to send
 */
 void Arp::sendNoteOn(byte channel, byte note, byte velocity) {
-  // if midiChannelOut is 255, we use whatever channel was provided,
+  // if midiChannelOut is 0, we use whatever channel was provided,
   // otherwise use the channel set in midiChannelOut
-  byte movedChannel = midiChannelOut == 255 ? channel : midiChannelOut;
+  byte outCh = ccToMidiCh(settings->midiChannelOut->getValue());
+  byte movedChannel = outCh == 0 ? channel : outCh;
   MIDI.sendNoteOn(note, velocity, movedChannel);
 
   // if the speaker is set to be on, play note on buzzer
-  if (convertCCToBool(ccUseSpeaker)) {
+  if (convertCCToBool(settings->useSpeaker->getValue())) {
     tone(BUZZER_PIN, getPitchByNote(note));
   }
 }
@@ -294,11 +289,16 @@ void Arp::sendNoteOn(byte channel, byte note, byte velocity) {
  * @param {byte} velocity - MIDI velocity to send
 */
 void Arp::sendNoteOff(byte channel, byte note, byte velocity) {
-  // if midiChannelOut is 255, we use whatever channel was provided,
+  // if midiChannelOut is 0, we use whatever channel was provided,
   // otherwise use the channel set in midiChannelOut
-  byte movedChannel = midiChannelOut == 255 ? channel : midiChannelOut;
+  byte outCh = ccToMidiCh(settings->midiChannelOut->getValue());
+  byte movedChannel = outCh == 0 ? channel : outCh;
   MIDI.sendNoteOff(note, velocity, movedChannel);
   noTone(BUZZER_PIN);
+}
+
+byte Arp::ccToMidiCh(byte value) {
+  return Stepper::getSteppedIndex(value, 17);
 }
 
 int Arp::insert(byte arr[], int arrLen, byte value, int capacity) { 
@@ -362,7 +362,7 @@ void Arp::handleNoteOn(byte channel, byte note, byte velocity) {
   numPressedNotes = insert(pressedNotes, numPressedNotes, note, MAX_NOTES);
   numActiveNotes = insert(activeNotes, numActiveNotes, note, MAX_NOTES);
 
-  if (convertCCToBool(ccSort)) {
+  if (convertCCToBool(settings->sort->getValue())) {
     sort(pressedNotes, numPressedNotes);
     sort(activeNotes, numActiveNotes);
   }
@@ -478,9 +478,10 @@ String Arp::convertCCToString(byte value) {
  * @returns {bool} if we care about that channel
 */
 bool Arp::correctInChannel(byte channel) {
-  // 255 is the magic number to represent "all channels are okay"
+  // 0 is the magic number to represent "all channels are okay"
   // otherwise we only care about the channel set in midiChannelIn
-  if (midiChannelIn == 255 || channel == midiChannelIn) {
+  byte inCh = ccToMidiCh(settings->midiChannelIn->getValue());
+  if (inCh == 0 || channel == inCh) {
     return true;
   }
 
@@ -488,39 +489,25 @@ bool Arp::correctInChannel(byte channel) {
 };
 
 /**
- * Handle changing MIDI channel we listen to and send from
- *
- * NOTE: we listen to any channel for MIDI channel in changes,
- * we only listen to selected MIDI in channel for MIDI channel out changes
- * - #TODO probably could be merged with handleControlChange
- *
- * @param {byte} channel - MIDI channel received on
- * @param {byte} cc - MIDI CC received
- * @param {byte} value - MIDI value received
+ * Goes through every note on every channel
+ * sending a "note off" message
+ * 
+ * TODO should it also send CC123 "all notes off"?
 */
-void Arp::handleMidiChannelChange(byte channel, byte cc, byte value) {
-  // setup bytes to be displayed on the 4D7S
-  byte ccDisplay[2];
-  byte mapped = map(value, 0, 127, 1, 16);
-  String valueStr = String(mapped);
-  String paddedStr = padded(valueStr);
-  char valDisplay[2] = {paddedStr[0], paddedStr[1]};
+void Arp::panic() {
+  byte fullDisplay[4];
+  fullDisplay[0] = CHAR_A;
+  fullDisplay[1] = CHAR_H;
+  fullDisplay[2] = CHAR_H;
+  fullDisplay[3] = CHAR_H;
+  expr->writeText(fullDisplay, false);
 
-  // no matter what channel we get this message on
-  // we'll change the incoming MIDI channel
-  // #HACK will likely lead to weird things
-  if (cc == CC_CHANNEL_IN) {
-    midiChannelIn = mapped;
-    ccDisplay[0] = CHAR_I;
-    ccDisplay[1] = CHAR_N;
-    expr->control(ccDisplay, valDisplay);
-  }
-  // but to change MIDI out, we need to be on the right MIDI in channel
-  else if (cc == CC_CHANNEL_OUT && correctInChannel(channel)) {
-    midiChannelOut = mapped;
-    ccDisplay[0] = CHAR_O;
-    ccDisplay[1] = CHAR_T;
-    expr->control(ccDisplay, valDisplay);
+  noTone(BUZZER_PIN);
+
+  for (byte ch = 0; ch < 16; ch++) {
+    for (byte note = 0; note < 128; note++) {
+      MIDI.sendNoteOff(note, 64, ch+1);
+    }
   }
 }
 
@@ -529,40 +516,23 @@ void Arp::handleMidiChannelChange(byte channel, byte cc, byte value) {
  *
  * NOTE: this mostly ignores messages that are on the wrong channel,
  * except for Panic signals
- * - #TODO move panic to AllNotesOff CC
- * - #TODO probably could be merged with handleControlChange
  *
  * @param {byte} channel - MIDI channel received on
  * @param {byte} cc - MIDI CC received
  * @param {byte} value - MIDI value received
 */
 void Arp::handleCommandChange(byte channel, byte cc, byte value) {
-  byte ccDisplay[2];
-  char valDisplay[2];
   bool isOn = convertCCToBool(value);
 
   // try to shut it all down
   // (no matter what channel we get this message on
-  // we'll trigger a panic.
+  // we'll trigger a panic)
   // @HACK will likely lead to weird things)
   if (cc == CC_PANIC) {
     bool wasOff = !convertCCToBool(ccPanic);
     ccPanic = value;
     if (wasOff && isOn) {
-      noTone(BUZZER_PIN);
-
-      // I don't know why I did it this way
-      ccDisplay[0] = CHAR_A;
-      ccDisplay[1] = CHAR_H;
-      valDisplay[0] = 'h';
-      valDisplay[1] = 'h';
-      expr->control(ccDisplay, valDisplay);
-
-      for (byte ch = 0; ch < 16; ch++) {
-        for (byte note = 0; note < 128; note++) {
-          MIDI.sendNoteOff(note, 64, ch+1);
-        }
-      }
+      panic();
     }
   }
 
@@ -584,216 +554,6 @@ void Arp::handleCommandChange(byte channel, byte cc, byte value) {
       slipQueued = true;
     }
   }
-  // Toggle speaker on/off for Arp sequences
-  else if (cc == CC_USE_SPEAKER) {
-    ccUseSpeaker = value;
-    ccDisplay[0] = CHAR_S;
-    ccDisplay[1] = CHAR_P;
-
-    String valStr = "  ";
-    if (convertCCToBool(value)) {
-      valStr = "on";
-    } else {
-      valStr = "of";
-    }
-
-    valDisplay[0] = valStr[0];
-    valDisplay[1] = valStr[1];
-    expr->control(ccDisplay, valDisplay);
-  }
-  // Toggle note sorting
-  else if (cc == CC_SORT) {
-    bool turnedOn = convertCCToBool(value) && !convertCCToBool(ccSort);
-    ccSort = value;
-    ccDisplay[0] = CHAR_S;
-    ccDisplay[1] = CHAR_O;
-
-    String valStr = "  ";
-    if (convertCCToBool(value)) {
-      valStr = "on";
-    } else {
-      valStr = "of";
-    }
-
-    valDisplay[0] = valStr[0];
-    valDisplay[1] = valStr[1];
-    expr->control(ccDisplay, valDisplay);
-
-    // sort when going from unsorted to sorted
-    if (turnedOn) {
-      sort(pressedNotes, numPressedNotes);
-      sort(activeNotes, numActiveNotes);
-    }
-  }
-  // Note swing
-  else if (cc == CC_SWING) {
-    ccSwing = value;
-    ccDisplay[0] = CHAR_S;
-    ccDisplay[1] = CHAR_G;
-    // Swing is between 50%-67%
-    // 50%, 16th is halfway between 8ths
-    // 67%, 16th is 2/3 between 8ths
-    byte mapped = map(value, 0, 127, 50, 67);
-    String valueStr = String(mapped);
-    valDisplay[0] = valueStr[0];
-    valDisplay[1] = valueStr[1];
-    expr->control(ccDisplay, valDisplay);
-  }
-}
-
-/**
- * Handle changing MIDI CC values for "control" signals
- *
- * @param {byte} channel - MIDI channel received on
- * @param {byte} cc - MIDI CC received
- * @param {byte} value - MIDI value received
-*/
-void Arp::handleControlChange(byte channel, byte cc, byte value) {
-  String valueStr = convertCCToString(value);
-  byte ccDisplay[2];
-  char valDisplay[2] = {valueStr[0], valueStr[1]};
-
-  // Chance a step will be transposed an octave up
-  if (cc == CC_OCTAVE_ONE_UP) {
-    ccOctaveOneUpChance = value;
-    ccDisplay[0] = B01100011;
-    ccDisplay[1] = B01000000;
-  }
-  // Chance a step will be transposed an octave down
-  else if (cc == CC_OCTAVE_ONE_DOWN) {
-    ccOctaveOneDownChance = value;
-    ccDisplay[0] = B00011101;
-    ccDisplay[1] = B00001000;
-  }
-  // Chance a step will be transposed two octaves up
-  else if (cc == CC_OCTAVE_TWO_UP) {
-    ccOctaveTwoUpChance = value;
-    ccDisplay[0] = B01100011;
-    ccDisplay[1] = B01000001;
-  }
-  // Chance a step will be transposed two octaves down
-  else if (cc == CC_OCTAVE_TWO_DOWN) {
-    ccOctaveTwoDownChance = value;
-    ccDisplay[0] = B00011101;
-    ccDisplay[1] = B00001001;
-  }
-  // Chance a step will be transposed a fifth down
-  else if (cc == CC_FIFTH_UP) {
-    ccFifthChance = value;
-    ccDisplay[0] = CHAR_F;
-    ccDisplay[1] = CHAR_T;
-  }
-  // Chance a step will be transposed by a random interval
-  else if (cc == CC_RANDOM_INTERVAL) {
-    ccRandomIntervalChance = value;
-    ccDisplay[0] = CHAR_R;
-    ccDisplay[1] = CHAR_N;
-  }
-  // Chance a step will be have a random length
-  else if (cc == CC_RANDOM_LENGTH) {
-    ccRandomLengthChance = value;
-    ccDisplay[0] = CHAR_R;
-    ccDisplay[1] = CHAR_L;
-  }
-  // Chance a step will be have half the base length
-  else if (cc == CC_HALF_LENGTH) {
-    ccHalfLengthChance = value;
-    ccDisplay[0] = CHAR_H;
-    ccDisplay[1] = CHAR_L;
-  }
-  // Chance a step will be have double the base length
-  else if (cc == CC_DOUBLE_LENGTH) {
-    ccDoubleLengthChance = value;
-    ccDisplay[0] = CHAR_D;
-    ccDisplay[1] = CHAR_L;
-  }
-  // Chance a step will be a ratchet
-  else if (cc == CC_RATCHET) {
-    ccRatchetChance = value;
-    ccDisplay[0] = CHAR_R;
-    ccDisplay[1] = CHAR_A;
-  }
-  // Chance a step will be a rest
-  else if (cc == CC_REST) {
-    ccRestChance = value;
-    ccDisplay[0] = CHAR_R;
-    ccDisplay[1] = CHAR_E;
-  }
-  // Chance a step will be a run
-  else if (cc == CC_RUN) {
-    ccRunChance = value;
-    ccDisplay[0] = CHAR_R;
-    ccDisplay[1] = CHAR_U;
-  }
-  // Chance a step will slip (be swapped with an adjacent step)
-  else if (cc == CC_SLIP_CHANCE) {
-    ccSlipChance = value;
-    ccDisplay[0] = CHAR_S;
-    ccDisplay[1] = CHAR_C;
-  }
-  // Set the base note length
-  else if (cc == CC_BASE_NOTE_LENGTH) {
-    ccBaseNoteLength = value;
-    ccDisplay[0] = CHAR_N;
-    ccDisplay[1] = CHAR_L;
-
-    String valStr = "  ";
-    if (ccBaseNoteLength > 108) {
-      // double whole
-      valStr = "2-";
-    }
-    else if (ccBaseNoteLength > 90) {
-      // whole
-      valStr = "1-";
-    }
-    else if (ccBaseNoteLength > 72) {
-      // half
-      valStr = "HA";
-    }
-    else if (ccBaseNoteLength > 54) {
-      // quarter
-      valStr = " 4";
-    }
-    else if (ccBaseNoteLength > 36) {
-      // 8th
-      valStr = " 8";
-    }
-    else if (ccBaseNoteLength > 18) {
-      // 16th
-      valStr = "16";
-    }
-    else {
-      // random
-      valStr = "rA";
-    }
-
-    valDisplay[0] = valStr[0];
-    valDisplay[1] = valStr[1];
-  }
-  // Set the base sequence length (in bars)
-  else if (cc == CC_SEQUENCE_LENGTH) {
-    ccSequenceLength = value;
-    ccDisplay[0] = CHAR_S;
-    ccDisplay[1] = CHAR_L;
-
-    // Random, 1-8
-    if (value < 15) {
-      String valStr = "rA";
-      valDisplay[0] = valStr[0];
-      valDisplay[1] = valStr[1];
-    } else {
-      byte mapped = map(value, 15, 127, 1, 8);
-      String mappedStr = String(mapped);
-      valDisplay[0] = ' ';
-      valDisplay[1] = mappedStr[0];
-    }
-  }
-  else {
-    return;
-  }
-
-  // display the change on the 4D7S
-  expr->control(ccDisplay, valDisplay);
 }
 
 /**
@@ -822,7 +582,7 @@ void Arp::handleStep(int stepIndex) {
   //  and `activeNotes` keeps a set of notes that have been played by the user.
   // The index wraps around the total number of active notes
   // to determine which note to play.
-  byte newNoteIndex =  stepInterval % numActiveNotes;
+  byte newNoteIndex = stepInterval % numActiveNotes;
   byte nextNote = activeNotes[newNoteIndex];
 
   // check to make sure we can safely apply note/octave offset
@@ -841,7 +601,7 @@ void Arp::handleStep(int stepIndex) {
 void Arp::handleClock(unsigned long now) {
   // If we hit the start of a new bar
   // and the button has been pressed, regenerate sequence
-  if (pulseCount % PULSES_PER_BAR == 0 && regenerateQueued) {
+  if ((pulseCount % PULSES_PER_BAR == 0) && regenerateQueued) {
     regenerateQueued = false;
     generateSequence();
     pulseCount = 0;
@@ -866,6 +626,7 @@ void Arp::handleClock(unsigned long now) {
     if (stepIndex > -1) {
       // This is all to handle swing if we need to.
       // First we check if we're on even (2 of 2) 16ths
+      byte ccSwing = settings->swing->getValue();
       if (ccSwing > 0 && (pulseCount + PULSES_PER_SIXTEENTH_NOTE) % PULSES_PER_EIGHTH_NOTE == 0) {
         // Swing is between 0 and 2 clock pulses in length, so we need to know how long that is
         unsigned long twoClockPulses = (now - lastClockPulse) * 2;
@@ -940,11 +701,34 @@ void Arp::setup() {
  *
  * @returns {bool} whether a MIDI message was read
 */
-bool Arp::update(bool buttonPressed) {
+bool Arp::update() {
   unsigned long now = millis();
 
-  if (buttonPressed) {
-    regenerateQueued = true;
+  // Handle Grandbot Controller buttons
+  // Two right buttons are a shortcut for the menu
+  if (buttons->combo(buttons->forward, buttons->backward)) {
+    settings->toggleMenu();
+  } else if (!settings->inMenu()) {
+    // Forward + Left is a shortcut for panic
+    if (buttons->combo(buttons->forward, buttons->left)) {
+      panic();
+    }
+    // Up || Play triggers sequence generation
+    else if (buttons->play.released || buttons->up.released) {
+      regenerateQueued = true;
+    }
+    // Down triggers sequence slip
+    else if (buttons->down.released) {
+      slipQueued = true;
+    }
+    // Left triggers GB play sequence (unrelated to the Arp)
+    else if (buttons->left.released) {
+      gb->play();
+    }
+  }
+
+  if (settings->inMenu()) {
+    settings->updateMenu();
   }
 
   // Handle swung notes (they don't always land on a clock pulse)
@@ -988,18 +772,17 @@ bool Arp::update(bool buttonPressed) {
         byte channel = MIDI.getChannel();
         byte cc = MIDI.getData1();
         byte value = MIDI.getData2();
+
         // #TODO, these three callbacks could be merged
         // MIDI setup
-        if (cc <= 15) {
-          handleMidiChannelChange(channel, cc, value);
+        if (settings->usesCC(cc)) {
+          // TODO filter in channel
+          settings->handleCC(cc, value);
+          return;
         }
         // Special controls
-        if (cc >= 102) {
+        else if (cc >= 102) {
           handleCommandChange(channel, cc, value);
-        }
-        // Sequence params
-        else if (correctInChannel(channel)) {
-          handleControlChange(channel, cc, value);
         }
       } break;
       default:

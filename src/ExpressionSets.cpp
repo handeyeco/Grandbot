@@ -213,3 +213,36 @@ int ExpressionSets::unhappyLength = sizeof(ExpressionSets::unhappyExpressions) /
 Expression ExpressionSets::midiBeatExpressions[] = {
     Expression(bigEyeSmileLeft, smileBlinkLeft),
     Expression(bigEyeSmileRight, smileBlinkRight)};
+
+/**
+ * Convert single-digit number to 4D7S display byte
+ *
+ * @param {byte} single digit number to convert
+ * @returns {byte} byte representing a 4D7S digit display value
+*/
+byte ExpressionSets::convertNumberToByte(byte num) {
+  switch (num) {
+    case 0:
+      return CHAR_0;
+    case 1:
+      return CHAR_1;
+    case 2:
+      return CHAR_2;
+    case 3:
+      return CHAR_3;
+    case 4:
+      return CHAR_4;
+    case 5:
+      return CHAR_5;
+    case 6:
+      return CHAR_6;
+    case 7:
+      return CHAR_7;
+    case 8:
+      return CHAR_8;
+    case 9:
+      return CHAR_9;
+    default:
+      return CHAR_BLANK;
+    }
+}

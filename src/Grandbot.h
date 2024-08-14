@@ -4,12 +4,14 @@
 #include <Light.h>
 #include <Expression.h>
 #include <Expressions.h>
+#include <ButtonManager.h>
 
 #ifndef GRANDBOT_INCL_GUARD
 #define GRANDBOT_INCL_GUARD
 
 class Grandbot {
     private:
+        ButtonManager buttons;
         // The voice manager
         Voice voice;
         // The RGB LED manager
@@ -45,8 +47,6 @@ class Grandbot {
         void updateMood();
         // Last time someone pushed Grandbot's button
         unsigned long lastPlayTime = 0;
-        // Last value found during a button read
-        bool lastButtonRead = HIGH;
 
         // #TODO I think these could be ints
         // How long (ms) between interactions before an interaction is considered unique
@@ -58,8 +58,9 @@ class Grandbot {
         Grandbot();
         void play();
         void setup();
-        bool readButton();
-        void update(bool buttonPressed);
+        void read();
+        void update();
+        ButtonManager* getButtonManagerPointer();
         Expressions* getExpressionPointer();
         Light* getLightPointer();
 };

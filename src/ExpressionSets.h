@@ -17,6 +17,7 @@
 #define CHAR_N B00010101
 #define CHAR_O B00011101
 #define CHAR_P B01100111
+#define CHAR_Q B01110011
 #define CHAR_R B00000101
 #define CHAR_S B01011011
 #define CHAR_T B00001111
@@ -54,6 +55,8 @@ struct ExpressionSets {
     static Expression unhappyExpressions[];
     static int unhappyLength;
     static Expression midiBeatExpressions[];
+
+    static byte convertNumberToByte(byte num);
 };
 
 #endif

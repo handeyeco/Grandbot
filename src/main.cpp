@@ -1,6 +1,10 @@
 #include <Arduino.h>
+#include <ButtonManager.h>
 #include <Grandbot.h>
 #include <Arp.h>
+#include <Expressions.h>
+#include <Setting.h>
+#include <SettingManager.h>
 
 Grandbot gb = Grandbot();
 Arp arp = Arp(&gb);
@@ -13,9 +17,9 @@ void setup() {
 }
 
 void loop() {
-  bool buttonPressed = gb.readButton();
-  if (!arp.update(buttonPressed)) {
-    gb.update(buttonPressed);
+  gb.read();
+  if (!arp.update()) {
+    gb.update();
   }
 }
 
@@ -31,6 +35,6 @@ void loop() {
 // }
 
 // void loop() {
-//   bool buttonPressed = gb.readButton();
-//   gb.update(buttonPressed);
+//   gb.read();
+//   gb.update();
 // }
