@@ -185,6 +185,8 @@ void Expressions::writeText(byte* digits, bool colon = true) {
 /**
  * Toggle menu and write expression when leaving
  * 
+ * TODO if we're in MIDI mode, make sure it goes back to MIDI expressions
+ * 
  * @param {bool} menu - whether or not we're in the menu
 */
 void Expressions::setMenu(bool menu) {

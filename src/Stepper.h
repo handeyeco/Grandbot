@@ -66,6 +66,12 @@ struct Stepper {
     nextIndex = min(nextIndex, steps - 1);
     nextIndex = max(nextIndex, 0);
 
+    if (nextIndex == 0) {
+      return 0;
+    } else if (nextIndex == steps - 1) {
+      return 127;
+    }
+    
     float result = (nextIndex * step) + halfstep;
     float rounded = round(result);
     rounded = min(rounded, 127);
