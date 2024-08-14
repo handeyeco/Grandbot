@@ -510,6 +510,12 @@ bool Arp::correctInChannel(byte channel) {
   return false;
 };
 
+/**
+ * Goes through every note on every channel
+ * sending a "note off" message
+ * 
+ * TODO should it also send CC123 "all notes off"?
+*/
 void Arp::panic() {
   byte fullDisplay[4];
   fullDisplay[0] = CHAR_A;
@@ -532,8 +538,6 @@ void Arp::panic() {
  *
  * NOTE: this mostly ignores messages that are on the wrong channel,
  * except for Panic signals
- * - #TODO move panic to AllNotesOff CC
- * - #TODO probably could be merged with handleControlChange
  *
  * @param {byte} channel - MIDI channel received on
  * @param {byte} cc - MIDI CC received
@@ -544,7 +548,7 @@ void Arp::handleCommandChange(byte channel, byte cc, byte value) {
 
   // try to shut it all down
   // (no matter what channel we get this message on
-  // we'll trigger a panic.
+  // we'll trigger a panic)
   // @HACK will likely lead to weird things)
   if (cc == CC_PANIC) {
     bool wasOff = !convertCCToBool(ccPanic);
