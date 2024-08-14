@@ -147,8 +147,8 @@ void SettingManager::updateMenu() {
   // Increment/decrement focused setting when in a submenu
   else if (menuStage > 1 && (buttons->up.released || buttons->down.released)) {
     Setting* setting = menuStage == 2
-      ? sequenceSettings[menuIndex %  SEQUENCE_SETTING_COUNT]
-      : generalSettings[menuIndex %  GENERAL_SETTING_COUNT];
+      ? sequenceSettings[menuIndex]
+      : generalSettings[menuIndex];
     
     setting->step(buttons->up.released, buttons->forward.held);
     writeMenu();
@@ -167,16 +167,21 @@ void SettingManager::updateMenu() {
       return;
     }
     // Handle scrolling right through settings
-    // TODO this could be merged with scrolling left
-    else if (buttons->right.released) {
-      menuIndex = menuIndex == MAX_MENU_ITEMS ? 0 : (menuIndex + 1);
-      writeMenu();
-      return;
-    }
+    else if (buttons->right.released || buttons->left.released) {
+      int nextIndex = menuIndex + (buttons->right.released ? 1 : -1);
+      
+      byte maxIndex = menuStage == 1 ? 2
+        : menuStage == 2 ? SEQUENCE_SETTING_COUNT
+        : GENERAL_SETTING_COUNT;
+      maxIndex -= 1;
 
-    // Handle scrolling left through settings
-    else if (buttons->left.released) {
-      menuIndex = menuIndex == 0 ? MAX_MENU_ITEMS : (menuIndex - 1);
+      if (nextIndex < 0) {
+        nextIndex = maxIndex;
+      } else if (nextIndex > maxIndex) {
+        nextIndex = 0;
+      }
+
+      menuIndex = nextIndex;
       writeMenu();
       return;
     }
@@ -211,7 +216,7 @@ void SettingManager::writeMenu() {
   byte dis[4];
   // Handle top-level menu
   if (menuStage == 1) {
-    if (menuIndex % 2 == 0) {
+    if (menuIndex == 0) {
       // SEQU = sequence settings
       dis[0]=CHAR_S;dis[1]=CHAR_E;dis[2]=CHAR_Q;dis[3]=CHAR_U;
     } else {
@@ -223,8 +228,8 @@ void SettingManager::writeMenu() {
   // Handle sub menus
   else {
     Setting* setting = menuStage == 2
-      ? sequenceSettings[menuIndex %  SEQUENCE_SETTING_COUNT]
-      : generalSettings[menuIndex %  GENERAL_SETTING_COUNT];
+      ? sequenceSettings[menuIndex]
+      : generalSettings[menuIndex];
 
     setting->getDisplay(dis);
     expr->writeText(dis, true);
