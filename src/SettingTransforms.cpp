@@ -1,5 +1,9 @@
 #include <SettingTransforms.h>
 
+/**
+ * Default value transform
+ * Since MIDI CC is 0-127 but we only have two digits for the value we map 0-127 to 0-99
+ */
 void SettingTransforms::ccValueTransform(byte value, byte output[2]) {
   byte index = Stepper::getSteppedIndex(value, 100);
 
@@ -13,10 +17,40 @@ void SettingTransforms::ccValueTransform(byte value, byte output[2]) {
   output[1] = ExpressionSets::convertNumberToByte(index % 10);
 }
 
+/**
+ * Default step transform
+ * Since MIDI CC gets mapped from 0-127 to 0-99,
+ * we also want to step by more than 1
+ * (so for example: we don't need to press up twice to get to the next displayed value)
+ */
 byte SettingTransforms::ccStepTransform(byte value, bool stepUp, bool shift) {
   return Stepper::stepIndex(value, 100, stepUp, shift ? 10 : 1);
 }
 
+/**
+ * Value transform for on/off settings
+ */
+void SettingTransforms::onOffValueTransform(byte value, byte output[2]) {
+  output[0] = CHAR_O;
+
+  if (value < 64) {
+    output[1] = CHAR_F;
+  } else {
+    output[1] = CHAR_N;
+  }
+}
+
+/**
+ * Step transform for on/off settings
+ */
+byte SettingTransforms::onOffStepTransform(byte value, bool stepUp, bool shift) {
+  return stepUp ? 127 : 0;
+}
+
+/**
+ * Value transform for swing
+ * (since MIDI 0-127 gets mapped to 50-67)
+ */
 void SettingTransforms::swingValueTransform(byte value, byte output[2]) {
   byte index = Stepper::getSteppedIndex(value, 18);
   byte mapped = index + 50;
@@ -25,6 +59,11 @@ void SettingTransforms::swingValueTransform(byte value, byte output[2]) {
   output[1] = ExpressionSets::convertNumberToByte(mapped % 10);
 }
 
+/**
+ * Step transfor for swing
+ * 
+ * TODO consolidate these transformers that are basically doing the same thing
+ */
 byte SettingTransforms::swingStepTransform(byte value, bool stepUp, bool shift) {
   if (shift) {
     return stepUp ? 127 : 0;
@@ -33,6 +72,10 @@ byte SettingTransforms::swingStepTransform(byte value, bool stepUp, bool shift) 
   return Stepper::stepIndex(value, 18, stepUp);
 }
 
+/**
+ * Value transform for MIDI channel
+ * (since MIDI 0-127 gets mapped to all, 1-16)
+ */
 void SettingTransforms::midiChValueTransform(byte value, byte output[2]) {
   byte index = Stepper::getSteppedIndex(value, 17);
   
@@ -53,6 +96,11 @@ void SettingTransforms::midiChValueTransform(byte value, byte output[2]) {
   output[1] = ExpressionSets::convertNumberToByte(index % 10);
 }
 
+/**
+ * Step transform for MIDI channel
+ * 
+ * TODO consolidate these transformers that are basically doing the same thing
+ */
 byte SettingTransforms::midiChStepTransform(byte value, bool stepUp, bool shift) {
   if (shift) {
     return stepUp ? 127 : 0;
@@ -61,20 +109,10 @@ byte SettingTransforms::midiChStepTransform(byte value, bool stepUp, bool shift)
   return Stepper::stepIndex(value, 17, stepUp);
 }
 
-void SettingTransforms::onOffValueTransform(byte value, byte output[2]) {
-  output[0] = CHAR_O;
-
-  if (value < 64) {
-    output[1] = CHAR_F;
-  } else {
-    output[1] = CHAR_N;
-  }
-}
-
-byte SettingTransforms::onOffStepTransform(byte value, bool stepUp, bool shift) {
-  return stepUp ? 127 : 0;
-}
-
+/**
+ * Value transform for note length
+ * (since MIDI 0-127 gets mapped to various different note lengths)
+ */
 void SettingTransforms::noteLengthValueTransform(byte value, byte output[2]) {
   byte index = Stepper::getSteppedIndex(value, 7);
 
@@ -115,6 +153,11 @@ void SettingTransforms::noteLengthValueTransform(byte value, byte output[2]) {
   }
 }
 
+/**
+ * Step transform for note length
+ * 
+ * TODO consolidate these transformers that are basically doing the same thing
+ */
 byte SettingTransforms::noteLenthStepTransform(byte value, bool stepUp, bool shift) {
   if (shift) {
     return stepUp ? 127 : 0;
@@ -123,6 +166,10 @@ byte SettingTransforms::noteLenthStepTransform(byte value, bool stepUp, bool shi
   return Stepper::stepIndex(value, 7, stepUp);
 }
 
+/**
+ * Value transform for sequence length
+ * (since MIDI 0-127 gets mapped to random, 1-8)
+ */
 void SettingTransforms::sequenceLengthValueTransform(byte value, byte output[2]) {
   byte index = Stepper::getSteppedIndex(value, 9);
 
@@ -138,6 +185,11 @@ void SettingTransforms::sequenceLengthValueTransform(byte value, byte output[2])
   }
 }
 
+/**
+ * Step transform for sequence length
+ * 
+ * TODO consolidate these transformers that are basically doing the same thing
+ */
 byte SettingTransforms::sequenceLenthStepTransform(byte value, bool stepUp, bool shift) {
   if (shift) {
     return stepUp ? 127 : 0;

@@ -9,8 +9,12 @@
 /**
  * Tranformers for manipulating setting values
  * 
- * value transforms: taking a value and converting it to a display
- * step transforms: mapping 0-127 CC to discrete steps (for buttons)
+ * value transforms: taking a value and converting it to a display. Ex:
+ *    - "swing: 127" would get mapped to "SG:67"
+ *    - "baseNoteLength: 127" would get mapped to "nL:2-"
+ * step transforms: mapping 0-127 CC to discrete steps (for buttons). Ex:
+ *    - for on/off settings, we want to step between 0 (off) and 127 (off) immediately
+ *    - for other settings, we might want to move by 1 or move by 10 when shift is held
 */
 namespace SettingTransforms {
   // shared
@@ -20,6 +24,7 @@ namespace SettingTransforms {
   byte onOffStepTransform(byte value, bool stepUp, bool shift);
 
   // specialized
+  // TODO a lot of these could be consolidated
   void swingValueTransform(byte value, byte output[2]);
   byte swingStepTransform(byte value, bool stepUp, bool shift);
   void midiChValueTransform(byte value, byte output[2]);
