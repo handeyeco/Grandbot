@@ -106,13 +106,15 @@ byte Arp::getNoteLength() {
  * @returns {byte} number between 1-8
 */
 byte Arp::getSequenceLength() {
-  // Random, 1-8
   byte ccSequenceLength = settings->sequenceLength->getValue();
   byte index = Stepper::getSteppedIndex(ccSequenceLength, 9);
 
+  // Random
   if (index == 0) {
     return random(1, 9);
-  } else {
+  }
+  // 1-8 bars
+  else {
     return index;
   }
 }
@@ -122,7 +124,7 @@ byte Arp::getSequenceLength() {
  * randomly switches steps (randomness based on ccSlipChance)
 */
 void Arp::slipSequence() {
-  if (settings->slipChance->getValue()) return;
+  if (!settings->slipChance->getValue()) return;
 
   for (byte i = 0; i < totalSequenceSteps - 1; i++) {
     if (settings->slipChance->roll()) {
