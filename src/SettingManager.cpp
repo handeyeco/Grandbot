@@ -2,10 +2,19 @@
 
 SettingManager::SettingManager(Expressions* _expr, ButtonManager* _buttons) : expr(_expr), buttons(_buttons) {
   // Settings sorted by MIDI CC
+
+  // MIDI channel to listen to (respected by most things except panic and midiChannelIn itself)
+  // options are: 0 = all channels / 1-16 = channels 1-16
   midiChannelIn = new Setting(0, 14, CHAR_I, CHAR_N, SettingTransforms::midiChValueTransform, SettingTransforms::midiChStepTransform);
+  // MIDI channel to send to
+  // options are: 0 = all channels / 1-16 = channels 1-16
   midiChannelOut = new Setting(0, 15, CHAR_O, CHAR_T, SettingTransforms::midiChValueTransform, SettingTransforms::midiChStepTransform);
 
+  // Default note length in a sequence (gets transformed by other parameters per step)
+  // options are: random, 1/16, 1/8, 1/4, 1/2, 1 (whole note), 2
   baseNoteLength = new Setting(0, 20, CHAR_N, CHAR_L, SettingTransforms::noteLengthValueTransform, SettingTransforms::noteLenthStepTransform);
+  // The length of the generated sequence
+  // options are: random, 1-8 bars
   sequenceLength = new Setting(0, 21, CHAR_S, CHAR_L, SettingTransforms::sequenceLengthValueTransform, SettingTransforms::sequenceLenthStepTransform);
 
   octaveOneUpChance = new Setting(10, 22, B01100011, B01000000, SettingTransforms::ccValueTransform, SettingTransforms::ccStepTransform);

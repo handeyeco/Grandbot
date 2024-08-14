@@ -69,34 +69,12 @@ byte Arp::getNoteLength() {
   byte value = settings->baseNoteLength->getValue();
   byte index = Stepper::getSteppedIndex(value, 7);
 
-  if (index == 6) {
-    // double whole
-    return 32;
-  }
-  else if (index == 5) {
-    // whole
-    return 16;
-  }
-  else if (index == 4) {
-    // half
-    return 8;
-  }
-  else if (index == 3) {
-    // quarter
-    return 4;
-  }
-  else if (index == 2) {
-    // 8th
-    return 2;
-  }
-  else if (index == 1) {
-    // 16th
-    return 1;
-  }
-  else {
+  if (index == 0) {
     // random; only choose between
     // 16th, 8th, and quarter
     return possibleNoteLengths[random(3)];
+  } else {
+    return possibleNoteLengths[index - 1];
   }
 }
 
