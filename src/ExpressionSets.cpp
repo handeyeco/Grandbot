@@ -214,6 +214,12 @@ Expression ExpressionSets::midiBeatExpressions[] = {
     Expression(bigEyeSmileLeft, smileBlinkLeft),
     Expression(bigEyeSmileRight, smileBlinkRight)};
 
+/**
+ * Convert single-digit number to 4D7S display byte
+ *
+ * @param {byte} single digit number to convert
+ * @returns {byte} byte representing a 4D7S digit display value
+*/
 byte ExpressionSets::convertNumberToByte(byte num) {
   switch (num) {
     case 0:

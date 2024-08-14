@@ -33,6 +33,13 @@ void ButtonManager::read() {
   }
 }
 
+/**
+ * Determine if we triggered a button combo
+ * 
+ * @param {Button&} b1 - button that might be part of combo
+ * @param {Button&} b2 - button that might be part of combo
+ * @returns {bool} if the buttons triggered a combo
+*/
 bool ButtonManager::combo(Button &b1, Button &b2) {
   if (
     (b1.pressed && b2.held) ||

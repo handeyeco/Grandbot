@@ -112,6 +112,12 @@ void Grandbot::setup() {
   expr.init();
 }
 
+/**
+ * Since GB owns the buttons, the Arp needs the buttons,
+ * and the Arp state dictates GB behavior...I've split GB's update
+ * into read/update. That way we can read buttons, Arp can do its thing,
+ * and then we come back to finish GB's update.
+ */
 void Grandbot::read() {
   getButtonManagerPointer()->read();
 }

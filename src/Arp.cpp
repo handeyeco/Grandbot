@@ -704,16 +704,25 @@ void Arp::setup() {
 bool Arp::update() {
   unsigned long now = millis();
 
+  // Handle Grandbot Controller buttons
+  // Two right buttons are a shortcut for the menu
   if (buttons->combo(buttons->forward, buttons->backward)) {
     settings->toggleMenu();
   } else if (!settings->inMenu()) {
+    // Forward + Left is a shortcut for panic
     if (buttons->combo(buttons->forward, buttons->left)) {
       panic();
-    } else if (buttons->play.released || buttons->up.released) {
+    }
+    // Up || Play triggers sequence generation
+    else if (buttons->play.released || buttons->up.released) {
       regenerateQueued = true;
-    } else if (buttons->down.released) {
+    }
+    // Down triggers sequence slip
+    else if (buttons->down.released) {
       slipQueued = true;
-    } else if (buttons->left.released) {
+    }
+    // Left triggers GB play sequence (unrelated to the Arp)
+    else if (buttons->left.released) {
       gb->play();
     }
   }

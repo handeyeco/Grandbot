@@ -40,7 +40,7 @@
 // MIDI CCs to listen to
 // =====================
 
-// Free range 102-119
+// TODO these probably need to move to SettingManager with the other CCs
 // Special controls
 #define CC_SLIP 116
 #define CC_PANIC 117 // WARNING we listen to this CC regardless of channel
@@ -100,6 +100,8 @@ class Arp {
     int8_t sequenceOffset[MAX_STEPS_IN_SEQ] = {0, 0, 0, 0};
     // Time (in clock pulses) that each step in the sequence starts
     uint16_t sequenceStartPositions[MAX_STEPS_IN_SEQ] = {
+      // WARNING manually changing these values can introduce a silent bug
+      // value sum must be >= totalSequenceLength
       PULSES_PER_QUARTER_NOTE * 0,
       PULSES_PER_QUARTER_NOTE * 1,
       PULSES_PER_QUARTER_NOTE * 2,

@@ -17,23 +17,40 @@ SettingManager::SettingManager(Expressions* _expr, ButtonManager* _buttons) : ex
   // options are: random, 1-8 bars
   sequenceLength = new Setting(0, 21, CHAR_S, CHAR_L, SettingTransforms::sequenceLengthValueTransform, SettingTransforms::sequenceLenthStepTransform);
 
+  // Chance a step will be transposed one octave up
   octaveOneUpChance = new Setting(10, 22, B01100011, B01000000, SettingTransforms::ccValueTransform, SettingTransforms::ccStepTransform);
+  // Chance a step will be transposed one octave down
   octaveOneDownChance = new Setting(10, 23, B00011101, B00001000, SettingTransforms::ccValueTransform, SettingTransforms::ccStepTransform);
+  // Chance a step will be transposed two octaves up
   octaveTwoUpChance = new Setting(5, 24, B01100011, B01000001, SettingTransforms::ccValueTransform, SettingTransforms::ccStepTransform);
+  // Chance a step will be transposed two octaves down
   octaveTwoDownChance = new Setting(5, 25, B00011101, B00001001, SettingTransforms::ccValueTransform, SettingTransforms::ccStepTransform);
+  // Chance a step's length will change to half length
   halfLengthChance = new Setting(0, 27, CHAR_H, CHAR_L, SettingTransforms::ccValueTransform, SettingTransforms::ccStepTransform);
+  // Chance a step's length will change to double length
   doubleLengthChance = new Setting(0, 26, CHAR_D, CHAR_L, SettingTransforms::ccValueTransform, SettingTransforms::ccStepTransform);
+  // Chance a step will be a ratchet (two half-length steps of the same note)
   ratchetChance = new Setting(10, 28, CHAR_R, CHAR_A, SettingTransforms::ccValueTransform, SettingTransforms::ccStepTransform);
+  // Chance a step will be a rest
   restChance = new Setting(5, 29, CHAR_R, CHAR_E, SettingTransforms::ccValueTransform, SettingTransforms::ccStepTransform);
+  // Chance a step will be a run (4 quick, different notes)
   runChance = new Setting(0, 30, CHAR_R, CHAR_U, SettingTransforms::ccValueTransform, SettingTransforms::ccStepTransform);
+  // Chance a step will be transposed a fifth up
   fifthChance = new Setting(0, 85, CHAR_F, CHAR_T, SettingTransforms::ccValueTransform, SettingTransforms::ccStepTransform);
+  // Chance a step will be transposed randomly (-11 to 11)
   randomNoteChance = new Setting(0, 86, CHAR_R, CHAR_N, SettingTransforms::ccValueTransform, SettingTransforms::ccStepTransform);
+  // Chance a step's length will be randomized
   randomLengthChance = new Setting(0, 87, CHAR_R, CHAR_L, SettingTransforms::ccValueTransform, SettingTransforms::ccStepTransform);
+  // Chance a step will be swapped with an adjacent step (during slips not sequence generation)
   slipChance = new Setting(10, 89, CHAR_S, CHAR_C, SettingTransforms::ccValueTransform, SettingTransforms::ccStepTransform);
 
+  // Whether incoming notes are sorted; true leads to more predictable sequences, but are less exciting due to less variation
   // TODO can we add an onchange callback or something to trigger sort of currently pressed/active notes?
   sort = new Setting(0, 114, CHAR_S, CHAR_O, SettingTransforms::onOffValueTransform, SettingTransforms::onOffStepTransform);
+  // Swing of sequence playback; delays every other 16th note when activated. 50% = no swing; 67% max swing
+  // TODO how hard would it be to support negative swing?
   swing = new Setting(0, 115, CHAR_S, CHAR_G, SettingTransforms::swingValueTransform, SettingTransforms::swingStepTransform);
+  // Whether to play the sequence through GB's speaker or not
   useSpeaker = new Setting(0, 119, CHAR_S, CHAR_P, SettingTransforms::onOffValueTransform, SettingTransforms::onOffStepTransform);
 
   // Settings sorted for menu
@@ -60,6 +77,13 @@ SettingManager::SettingManager(Expressions* _expr, ButtonManager* _buttons) : ex
   generalSettings[4] = sort;
 }
 
+/**
+ * Go through all of the settings and find the one that uses
+ * a specific MIDI CC
+ * 
+ * @param {byte} cc - the MIDI CC to look for
+ * @returns {Setting* | NULL} returns a pointer to the setting if found; otherwise NULL
+ */
 Setting* SettingManager::getSettingByCC(byte cc) {
   for (int i = 0; i < SEQUENCE_SETTING_COUNT; i++) {
     if (sequenceSettings[i]->midiCC == cc) {
@@ -76,12 +100,26 @@ Setting* SettingManager::getSettingByCC(byte cc) {
   return NULL;
 }
 
+/**
+ * Go through all of the settings and see if we're using
+ * a given MIDI CC
+ * 
+ * @param {byte} cc - the MIDI CC to look for
+ * @returns {bool} whether we care about the CC or not
+ */
 bool SettingManager::usesCC(byte cc){
   Setting* needle = getSettingByCC(cc);
 
   return needle != NULL;
 }
 
+/**
+ * Handle incoming CC by setting Setting value
+ * and updating the display
+ * 
+ * @param {byte} cc - the MIDI CC to handle
+ * @param {byte} value - the incoming value
+ */
 void SettingManager::handleCC(byte cc, byte value) {
   Setting* setting = getSettingByCC(cc);
 
@@ -94,13 +132,19 @@ void SettingManager::handleCC(byte cc, byte value) {
   expr->writeText(fullDisplay);
 }
 
+/**
+ * Handles interactions and displays when inside
+ * of the menu
+ */
 void SettingManager::updateMenu() {
+  // Select submenu from top menu
   if (menuStage == 1 && buttons->forward.released) {
     menuStage = (menuIndex % 2 == 0) ? 2 : 3;
     menuIndex = 0;
     writeMenu();
     return;
   }
+  // Increment/decrement focused setting when in a submenu
   else if (menuStage > 1 && (buttons->up.released || buttons->down.released)) {
     Setting* setting = menuStage == 2
       ? sequenceSettings[menuIndex %  SEQUENCE_SETTING_COUNT]
@@ -111,6 +155,7 @@ void SettingManager::updateMenu() {
     return;
   }
   else if (menuStage > 0) {
+    // Back out of menus
     if (buttons->backward.released) {
       menuStage = (menuStage == 1) ? 0 : 1;
       menuIndex = 0;
@@ -120,11 +165,17 @@ void SettingManager::updateMenu() {
         writeMenu();
       }
       return;
-    } else if (buttons->right.released) {
+    }
+    // Handle scrolling right through settings
+    // TODO this could be merged with scrolling left
+    else if (buttons->right.released) {
       menuIndex = menuIndex == MAX_MENU_ITEMS ? 0 : (menuIndex + 1);
       writeMenu();
       return;
-    } else if (buttons->left.released) {
+    }
+
+    // Handle scrolling left through settings
+    else if (buttons->left.released) {
       menuIndex = menuIndex == 0 ? MAX_MENU_ITEMS : (menuIndex - 1);
       writeMenu();
       return;
@@ -132,6 +183,9 @@ void SettingManager::updateMenu() {
   }
 }
 
+/**
+ * Jump in and out of the menu
+ */
 void SettingManager::toggleMenu() {
   menuStage = menuStage == 0 ? 1 : 0;
   menuIndex = 0;
@@ -139,22 +193,35 @@ void SettingManager::toggleMenu() {
   writeMenu();
 }
 
+/**
+ * Are we in a menu?
+ * 
+ * @returns {bool} whether we're in the menu
+ */
 bool SettingManager::inMenu() {
   return menuStage > 0;
 }
 
+/**
+ * Write the current state of the menu to the display
+ */
 void SettingManager::writeMenu() {
   if (menuStage == 0) return;
 
   byte dis[4];
+  // Handle top-level menu
   if (menuStage == 1) {
     if (menuIndex % 2 == 0) {
+      // SEQU = sequence settings
       dis[0]=CHAR_S;dis[1]=CHAR_E;dis[2]=CHAR_Q;dis[3]=CHAR_U;
     } else {
+      // SETT = general settings
       dis[0]=CHAR_S;dis[1]=CHAR_E;dis[2]=CHAR_T;dis[3]=CHAR_T;
     }
     expr->writeText(dis, false);
-  } else {
+  }
+  // Handle sub menus
+  else {
     Setting* setting = menuStage == 2
       ? sequenceSettings[menuIndex %  SEQUENCE_SETTING_COUNT]
       : generalSettings[menuIndex %  GENERAL_SETTING_COUNT];

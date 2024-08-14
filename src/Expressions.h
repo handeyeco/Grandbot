@@ -48,7 +48,6 @@ class Expressions {
     unsigned long lastControlChange = 0;
     bool inMenu;
     bool isShowingControl();
-    bool isUnsupportedChar(char c);
   public:
     Expressions(LedControl* _lc, Light* _light);
     void init();

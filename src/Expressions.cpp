@@ -41,6 +41,8 @@ void Expressions::handleChangeExpressionState(int mood) {
  * bytes to LedControl to be sent to the display
  * 
  * @param {byte*} data - pointer to an array of bytes to be written
+ * @param {bool} delayUpdate - whether update should interupt current display (like setting changes)
+ * @param {bool} colon - whether or not to light the colon on the display
 */
 void Expressions::writeToDisplay(byte* data, bool delayUpdate = true, bool colon = false) {
   // Skip if we're currently displaying text
@@ -59,6 +61,8 @@ void Expressions::writeToDisplay(byte* data, bool delayUpdate = true, bool colon
 
 /**
  * Writes the active Expression to the display
+ * 
+ * @param {bool} delayUpdate - whether update should interupt current display (like setting changes)
 */
 void Expressions::writeExpression(bool delayUpdate = true) {
   Expression expr = *expression;
@@ -165,17 +169,24 @@ bool Expressions::isShowingControl() {
   return now - lastControlChange < 1000;
 }
 
+/**
+ * Write text to the 4D7S display while updating lastControlChange
+ * (to block updates so expression changes don't interupt setting changes)
+ * 
+ * @param {byte*} digits - pointer to an array of bytes representing what should be written
+ * @param {bool} colon - whether or not to light the colon on the display
+*/
 void Expressions::writeText(byte* digits, bool colon = true) {
   lastControlChange = millis();
   
   writeToDisplay(digits, false, colon);
 }
 
-bool Expressions::isUnsupportedChar(char c) {
-  return c == 'r' || c == 'R';
-}
-
-
+/**
+ * Toggle menu and write expression when leaving
+ * 
+ * @param {bool} menu - whether or not we're in the menu
+*/
 void Expressions::setMenu(bool menu) {
   inMenu = menu;
 
