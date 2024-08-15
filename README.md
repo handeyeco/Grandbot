@@ -52,6 +52,8 @@ There's endless potential just doing that. If you'd like more control, there are
 | Ratchet (double note) chance    | 28      | rA      |
 | Random length chance            | 87      | rL      |
 | Note run chance                 | 30      | ru      |
+| **» Post Generate**             |
+| Collapse notes                  | 19      | Co      |
 | **» Generate / Slip**           |
 | Queue sequence generation       | 118     |         | \*     |
 | Slip chance                     | 89      | SC      |

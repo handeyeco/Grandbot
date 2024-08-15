@@ -2,6 +2,7 @@
 
 SettingManager::SettingManager(Expressions* _expr, ButtonManager* _buttons) : expr(_expr), buttons(_buttons) {
   // Settings sorted by MIDI CC
+  // available CC: 3, 9, 14-15, 20-31, 85-87, 89-90, 102-119
 
   // MIDI channel to listen to (respected by most things except panic and midiChannelIn itself)
   // options are: 0 = all channels / 1-16 = channels 1-16
@@ -10,6 +11,9 @@ SettingManager::SettingManager(Expressions* _expr, ButtonManager* _buttons) : ex
   // options are: 0 = all channels / 1-16 = channels 1-16
   midiChannelOut = new Setting(0, 15, CHAR_O, CHAR_T, SettingTransforms::midiChValueTransform, SettingTransforms::midiChStepTransform);
 
+  // Collapse all notes/rests to one side
+  // options are: none, start (play notes at the beginning), end (play notes at the end)
+  collapseNotes = new Setting(0, 19, CHAR_C, CHAR_O, SettingTransforms::collapseNotesValueTransform, SettingTransforms::collapseNotesStepTransform);
   // Default note length in a sequence (gets transformed by other parameters per step)
   // options are: random, 1/16, 1/8, 1/4, 1/2, 1 (whole note), 2
   baseNoteLength = new Setting(0, 20, CHAR_N, CHAR_L, SettingTransforms::noteLengthValueTransform, SettingTransforms::noteLenthStepTransform);
@@ -25,10 +29,10 @@ SettingManager::SettingManager(Expressions* _expr, ButtonManager* _buttons) : ex
   octaveTwoUpChance = new Setting(5, 24, B01100011, B01000001, SettingTransforms::ccValueTransform, SettingTransforms::ccStepTransform);
   // Chance a step will be transposed two octaves down
   octaveTwoDownChance = new Setting(5, 25, B00011101, B00001001, SettingTransforms::ccValueTransform, SettingTransforms::ccStepTransform);
-  // Chance a step's length will change to half length
-  halfLengthChance = new Setting(0, 27, CHAR_H, CHAR_L, SettingTransforms::ccValueTransform, SettingTransforms::ccStepTransform);
   // Chance a step's length will change to double length
   doubleLengthChance = new Setting(0, 26, CHAR_D, CHAR_L, SettingTransforms::ccValueTransform, SettingTransforms::ccStepTransform);
+  // Chance a step's length will change to half length
+  halfLengthChance = new Setting(0, 27, CHAR_H, CHAR_L, SettingTransforms::ccValueTransform, SettingTransforms::ccStepTransform);
   // Chance a step will be a ratchet (two half-length steps of the same note)
   ratchetChance = new Setting(10, 28, CHAR_R, CHAR_A, SettingTransforms::ccValueTransform, SettingTransforms::ccStepTransform);
   // Chance a step will be a rest
@@ -69,6 +73,7 @@ SettingManager::SettingManager(Expressions* _expr, ButtonManager* _buttons) : ex
   sequenceSettings[12] = fifthChance;
   sequenceSettings[13] = randomNoteChance;
   sequenceSettings[14] = randomLengthChance;
+  sequenceSettings[15] = collapseNotes;
 
   generalSettings[0] = swing;
   generalSettings[1] = useSpeaker;

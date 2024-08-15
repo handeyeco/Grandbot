@@ -197,3 +197,40 @@ byte SettingTransforms::sequenceLenthStepTransform(byte value, bool stepUp, bool
 
   return Stepper::stepIndex(value, 9, stepUp);
 }
+
+/**
+ * Value transform for collapse notes
+ * (since MIDI 0-127 gets mapped to none, start, or end)
+ */
+void SettingTransforms::collapseNotesValueTransform(byte value, byte output[2]) {
+  byte index = Stepper::getSteppedIndex(value, 3);
+
+  // No collapse
+  if (index == 0) {
+    output[0] = CHAR_N;
+    output[1] = CHAR_O;
+  }
+  // Play notes at the start
+  else if (index == 1) {
+    output[0] = CHAR_S;
+    output[1] = CHAR_T;
+  }
+  // Play notes at the end
+  else {
+    output[0] = CHAR_E;
+    output[1] = CHAR_N;
+  }
+}
+
+/**
+ * Step transform for collapse notes
+ * 
+ * TODO consolidate these transformers that are basically doing the same thing
+ */
+byte SettingTransforms::collapseNotesStepTransform(byte value, bool stepUp, bool shift) {
+  if (shift) {
+    return stepUp ? 127 : 0;
+  }
+
+  return Stepper::stepIndex(value, 3, stepUp);
+}

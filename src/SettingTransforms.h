@@ -33,6 +33,8 @@ namespace SettingTransforms {
   byte noteLenthStepTransform(byte value, bool stepUp, bool shift);
   void sequenceLengthValueTransform(byte value, byte output[2]);
   byte sequenceLenthStepTransform(byte value, bool stepUp, bool shift);
+  void collapseNotesValueTransform(byte value, byte output[2]);
+  byte collapseNotesStepTransform(byte value, bool stepUp, bool shift);
 };
 
 #endif

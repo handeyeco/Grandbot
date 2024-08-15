@@ -254,6 +254,39 @@ void Arp::generateSequence() {
     stepIndex++;
   }
 
+  byte collapseIndex = Stepper::getSteppedIndex(settings->collapseNotes->getValue(), 3);
+  // move rests to the end
+  if (collapseIndex == 1) {
+    byte count = 0;
+    for (byte i = 0; i < stepIndex; i++) {
+      if (sequenceIntervals[i] != 255) {
+        byte tmp = sequenceIntervals[i];
+        sequenceIntervals[i] = sequenceIntervals[count];
+        sequenceIntervals[count] = tmp;
+        count++;
+      }
+    }
+  }
+  // move rests to the beginning
+  else if (collapseIndex == 2) {
+    int end = -1;
+    for (int i = stepIndex - 1; i >= 0; i--) {
+      if (sequenceIntervals[i] == 255) {
+        end = i;
+        break;
+      }
+    }
+
+    for (int i = end - 1; i >= 0; i--) {
+      if (sequenceIntervals[i] != 255) {
+          byte tmp = sequenceIntervals[i];
+          sequenceIntervals[i] = sequenceIntervals[end];
+          sequenceIntervals[end] = tmp;
+          end--;
+      }
+    }
+  }
+
   totalSequenceSteps = stepIndex;
   totalSequenceLength = newTotalSequenceLength;
 }

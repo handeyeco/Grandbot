@@ -10,7 +10,7 @@
 #define SETTING_MANAGER_INCL_GUARD
 
 #define MAX_MENU_ITEM_INDEX 254
-#define SEQUENCE_SETTING_COUNT 15
+#define SEQUENCE_SETTING_COUNT 16
 #define GENERAL_SETTING_COUNT 5
 
 /**
@@ -35,6 +35,7 @@ struct SettingManager {
   public:
     SettingManager(Expressions* expr, ButtonManager* buttons);
 
+    Setting* collapseNotes;
     Setting* sequenceLength;
     Setting* baseNoteLength;
     Setting* octaveOneUpChance;
