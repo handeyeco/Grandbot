@@ -62,6 +62,9 @@ class Arp {
     // Track Start/Stop/Continue messages
     // #TODO could this replace midiMode?
     bool running = false;
+    unsigned long lastInternalClockPulseTime;
+    unsigned long timeBetweenInternalClockPulses = 60000000 / (24 * 120);
+
     unsigned long lastMidiMessage;
 
     // Whether we should trigger a sequence regeneration
@@ -134,6 +137,7 @@ class Arp {
     void handleStartContinue(bool reset);
     void handleStop();
     void handleStep(int stepIndex);
+    void handleButtons();
     uint16_t addStep(byte stepIndex, byte noteInterval, int8_t noteOffset, byte noteLength, uint16_t startPosition);
     byte getNoteLength();
     byte getSequenceLength();

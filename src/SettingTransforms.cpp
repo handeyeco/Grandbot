@@ -48,6 +48,49 @@ byte SettingTransforms::onOffStepTransform(byte value, bool stepUp, bool shift) 
 }
 
 /**
+ * Value transform for MIDI clock
+ * (since MIDI 0-127 gets mapped to external / internal)
+ */
+void SettingTransforms::clockValueTransform(byte value, byte output[2]) {
+  // external clock
+  if (value < 64) {
+    output[0] = CHAR_E;
+    output[1] = CHAR_T;
+  }
+  // internal clock
+  else {
+    output[0] = CHAR_I;
+    output[1] = CHAR_N;
+  }
+}
+
+/**
+ * Value transform for BPM
+ * (since MIDI 0-127 gets mapped to 50-67)
+ */
+void SettingTransforms::bpmValueTransform(byte value, byte output[2]) {
+  byte index = Stepper::getSteppedIndex(value, 100);
+
+  if (index < 10) {
+    output[0] = CHAR_BLANK;
+    output[1] = ExpressionSets::convertNumberToByte(index);
+    return;
+  }
+
+  output[0] = ExpressionSets::convertNumberToByte((index / 10) % 10);
+  output[1] = ExpressionSets::convertNumberToByte(index % 10);
+}
+
+/**
+ * Step transfor for BPM
+ * 
+ * TODO consolidate these transformers that are basically doing the same thing
+ */
+byte SettingTransforms::bpmStepTransform(byte value, bool stepUp, bool shift) {
+  return Stepper::stepIndex(value, 100, stepUp, shift ? 10 : 1);
+}
+
+/**
  * Value transform for swing
  * (since MIDI 0-127 gets mapped to 50-67)
  */

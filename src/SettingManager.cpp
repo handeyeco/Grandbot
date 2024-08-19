@@ -48,6 +48,8 @@ SettingManager::SettingManager(Expressions* _expr, ButtonManager* _buttons) : ex
   // Chance a step will be swapped with an adjacent step (during slips not sequence generation)
   slipChance = new Setting(10, 89, CHAR_S, CHAR_C, SettingTransforms::ccValueTransform, SettingTransforms::ccStepTransform);
 
+  clock = new Setting(0, 112, CHAR_C, CHAR_L, SettingTransforms::clockValueTransform, SettingTransforms::onOffStepTransform);
+  bpm = new Setting(0, 113, CHAR_B, CHAR_BLANK, SettingTransforms::bpmValueTransform, SettingTransforms::bpmStepTransform);
   // Whether incoming notes are sorted; true leads to more predictable sequences, but are less exciting due to less variation
   // TODO can we add an onchange callback or something to trigger sort of currently pressed/active notes?
   sort = new Setting(0, 114, CHAR_S, CHAR_O, SettingTransforms::onOffValueTransform, SettingTransforms::onOffStepTransform);
@@ -75,11 +77,13 @@ SettingManager::SettingManager(Expressions* _expr, ButtonManager* _buttons) : ex
   sequenceSettings[14] = randomLengthChance;
   sequenceSettings[15] = collapseNotes;
 
-  generalSettings[0] = swing;
-  generalSettings[1] = useSpeaker;
-  generalSettings[2] = midiChannelIn;
-  generalSettings[3] = midiChannelOut;
-  generalSettings[4] = sort;
+  generalSettings[0] = clock;
+  generalSettings[1] = bpm;
+  generalSettings[2] = swing;
+  generalSettings[3] = useSpeaker;
+  generalSettings[4] = midiChannelIn;
+  generalSettings[5] = midiChannelOut;
+  generalSettings[6] = sort;
 }
 
 /**

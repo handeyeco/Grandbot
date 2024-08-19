@@ -487,6 +487,8 @@ String Arp::padded(String input) {
  *
  * @param {byte} value - CC value
  * @returns {boolean} if CC is above threshold
+ * 
+ * TODO should this be part of Setting or SettingsTransform?
 */
 bool Arp::convertCCToBool(byte value) {
   return value > 64;
@@ -699,13 +701,16 @@ void Arp::reset() {
  * Handle start and continue MIDI signals
  *
  * @param {bool} resetSeq - whether to reset progress
+ * 
+ * TODO should this play the current note when continuing?
 */
 void Arp::handleStartContinue(bool resetSeq) {
-  if (resetSeq) {
+  if (resetSeq || convertCCToBool(settings->clock->getValue())) {
     reset();
   }
 
   running = true;
+  lastInternalClockPulseTime = millis();
 
   // trigger dance / light show again
   expr->midiBeat(quarterFlipFlop);
@@ -728,6 +733,52 @@ void Arp::setup() {
   MIDI.turnThruOff();
 }
 
+void Arp::handleButtons() {
+  if (!(buttons->anyPressed || buttons->anyReleased)) {
+    return;
+  }
+
+  // Handle Grandbot Controller buttons
+  // Two right buttons are a shortcut for the menu
+  if (buttons->combo(buttons->forward, buttons->backward)) {
+    settings->toggleMenu();
+    return;
+  } else if (!settings->inMenu()) {
+    // Forward + Left is a shortcut for panic
+    if (buttons->combo(buttons->forward, buttons->left)) {
+      panic();
+      return;
+    }
+    // Up || Play triggers sequence generation
+    else if (buttons->play.released || buttons->up.released) {
+      regenerateQueued = true;
+      return;
+    }
+    // Down triggers sequence slip
+    else if (buttons->down.released) {
+      slipQueued = true;
+      return;
+    }
+    // Left triggers GB play sequence (unrelated to the Arp)
+    else if (buttons->left.released) {
+      gb->play();
+      return;
+    }
+    // Play / Pause
+    else if (buttons->forward.released && !running) {
+      Serial.println("start");
+      handleStartContinue(true);
+      return;
+    }
+    // Stop
+    else if (buttons->backward.released && running) {
+      Serial.println("stop");
+      handleStop();
+      return;
+    }
+  }
+}
+
 /**
  * Update to be called during the Arduino update cycle.
  * Reads MIDI messages and tries to handle them.
@@ -735,30 +786,13 @@ void Arp::setup() {
  * @returns {bool} whether a MIDI message was read
 */
 bool Arp::update() {
+  // TODO might be best to switch this all to micros
   unsigned long now = millis();
+  bool readMidi = false;
 
-  // Handle Grandbot Controller buttons
-  // Two right buttons are a shortcut for the menu
-  if (buttons->combo(buttons->forward, buttons->backward)) {
-    settings->toggleMenu();
-  } else if (!settings->inMenu()) {
-    // Forward + Left is a shortcut for panic
-    if (buttons->combo(buttons->forward, buttons->left)) {
-      panic();
-    }
-    // Up || Play triggers sequence generation
-    else if (buttons->play.released || buttons->up.released) {
-      regenerateQueued = true;
-    }
-    // Down triggers sequence slip
-    else if (buttons->down.released) {
-      slipQueued = true;
-    }
-    // Left triggers GB play sequence (unrelated to the Arp)
-    else if (buttons->left.released) {
-      gb->play();
-    }
-  }
+  bool useInternalClock = convertCCToBool(settings->clock->getValue());
+
+  handleButtons();
 
   if (settings->inMenu()) {
     settings->updateMenu();
@@ -774,13 +808,20 @@ bool Arp::update() {
     }
   }
 
-  bool readMidi = false;
+  // calculate internal clock pulse if internal clock enabled
+  if(useInternalClock && running) {
+    unsigned long nowMicros = micros();
+    if (nowMicros - lastInternalClockPulseTime > timeBetweenInternalClockPulses) {
+      lastInternalClockPulseTime = nowMicros;
+      handleClock(now);
+    }
+  }
 
   if (MIDI.read()) {
     readMidi = true;
     switch(MIDI.getType()) {
       case midi::Clock:
-        if (running) {
+        if (running && !useInternalClock) {
           handleClock(now);
         } else {
           readMidi = false;
@@ -836,5 +877,5 @@ bool Arp::update() {
     }
   }
 
-  return midiMode;
+  return midiMode || (useInternalClock && running);
 }

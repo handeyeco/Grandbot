@@ -25,6 +25,9 @@ namespace SettingTransforms {
 
   // specialized
   // TODO a lot of these could be consolidated
+  void clockValueTransform(byte value, byte output[2]);
+  void bpmValueTransform(byte value, byte output[2]);
+  byte bpmStepTransform(byte value, bool stepUp, bool shift);
   void swingValueTransform(byte value, byte output[2]);
   byte swingStepTransform(byte value, bool stepUp, bool shift);
   void midiChValueTransform(byte value, byte output[2]);

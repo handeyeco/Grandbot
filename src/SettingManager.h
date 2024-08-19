@@ -11,7 +11,7 @@
 
 #define MAX_MENU_ITEM_INDEX 254
 #define SEQUENCE_SETTING_COUNT 16
-#define GENERAL_SETTING_COUNT 5
+#define GENERAL_SETTING_COUNT 7
 
 /**
  * Manages all settings
@@ -52,6 +52,8 @@ struct SettingManager {
     Setting* randomLengthChance;
     Setting* slipChance;
 
+    Setting* clock;
+    Setting* bpm;
     Setting* swing;
     Setting* useSpeaker;
     Setting* sort;
