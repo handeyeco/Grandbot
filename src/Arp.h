@@ -62,8 +62,7 @@ class Arp {
     // Track Start/Stop/Continue messages
     // #TODO could this replace midiMode?
     bool running = false;
-    unsigned long lastInternalClockPulseTime;
-    unsigned long timeBetweenInternalClockPulses = 60000000 / (24 * 120);
+    unsigned long lastInternalClockPulseTime = 0;
 
     unsigned long lastMidiMessage;
 

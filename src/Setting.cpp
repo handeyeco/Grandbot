@@ -5,13 +5,15 @@ Setting::Setting(
   byte _midiCC,
   byte firstDisplayChar,
   byte secondDisplayChar,
-  void (&_valueTransform)(byte value, byte output[2]),
-  byte (&_stepTransform)(byte value, bool stepUp, bool shift)) :
+  void (&_valueTransform)(Setting &self, byte output[2]),
+  byte (&_stepTransform)(byte value, bool stepUp, bool shift),
+  bool _usesColon) :
     value(_defaultValue), 
     defaultValue(_defaultValue),
     midiCC(_midiCC),
     valueTransform(_valueTransform),
-    stepTransform(_stepTransform)
+    stepTransform(_stepTransform),
+    usesColon(_usesColon)
 {
   // TODO ideally this would be passed in as an array,
   // but I couldn't figure it out because C++ is big brain programming
@@ -26,13 +28,13 @@ Setting::Setting(
  * @param {byte[]} output - MIDI channel in question
 */
 void Setting::getDisplay(byte output[4]) {
-  output[0] = nameDisplay[0];
-  output[1] = nameDisplay[1];
+  // output[0] = nameDisplay[0];
+  // output[1] = nameDisplay[1];
 
-  byte valueBytes[2] = {};
-  valueTransform(value, valueBytes);
-  output[2] = valueBytes[0];
-  output[3] = valueBytes[1];
+  // byte valueBytes[2] = {};
+  valueTransform(*this, output);
+  // output[2] = valueBytes[0];
+  // output[3] = valueBytes[1];
 }
 
 byte Setting::getValue() {

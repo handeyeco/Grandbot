@@ -809,8 +809,12 @@ bool Arp::update() {
   }
 
   // calculate internal clock pulse if internal clock enabled
-  if(useInternalClock && running) {
+  if (useInternalClock && running) {
     unsigned long nowMicros = micros();
+
+    // TODO this could be optimized by only calculating values on change
+    byte bpm = settings->bpm->getValue() + 73;
+    unsigned long timeBetweenInternalClockPulses = 60000000 / (24 * bpm);
     if (nowMicros - lastInternalClockPulseTime > timeBetweenInternalClockPulses) {
       lastInternalClockPulseTime = nowMicros;
       handleClock(now);
