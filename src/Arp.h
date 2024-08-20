@@ -136,7 +136,7 @@ class Arp {
     void handleStartContinue(bool reset);
     void handleStop();
     void handleStep(int stepIndex);
-    void handleButtons();
+    void handleButtons(bool useInternalClock);
     uint16_t addStep(byte stepIndex, byte noteInterval, int8_t noteOffset, byte noteLength, uint16_t startPosition);
     byte getNoteLength();
     byte getSequenceLength();

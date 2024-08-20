@@ -733,7 +733,7 @@ void Arp::setup() {
   MIDI.turnThruOff();
 }
 
-void Arp::handleButtons() {
+void Arp::handleButtons(bool useInternalClock) {
   if (!(buttons->anyPressed || buttons->anyReleased)) {
     return;
   }
@@ -765,14 +765,14 @@ void Arp::handleButtons() {
       return;
     }
     // Play / Pause
-    else if (buttons->forward.released && !running) {
-      Serial.println("start");
+    else if (useInternalClock && buttons->forward.released && !running) {
+      MIDI.sendStart();
       handleStartContinue(true);
       return;
     }
     // Stop
-    else if (buttons->backward.released && running) {
-      Serial.println("stop");
+    else if (useInternalClock && buttons->backward.released && running) {
+      MIDI.sendStop();
       handleStop();
       return;
     }
@@ -792,7 +792,7 @@ bool Arp::update() {
 
   bool useInternalClock = convertCCToBool(settings->clock->getValue());
 
-  handleButtons();
+  handleButtons(useInternalClock);
 
   if (settings->inMenu()) {
     settings->updateMenu();
@@ -818,6 +818,7 @@ bool Arp::update() {
     if (nowMicros - lastInternalClockPulseTime > timeBetweenInternalClockPulses) {
       lastInternalClockPulseTime = nowMicros;
       handleClock(now);
+      MIDI.sendClock();
     }
   }
 
