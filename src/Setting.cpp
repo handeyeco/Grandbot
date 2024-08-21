@@ -28,13 +28,7 @@ Setting::Setting(
  * @param {byte[]} output - MIDI channel in question
 */
 void Setting::getDisplay(byte output[4]) {
-  // output[0] = nameDisplay[0];
-  // output[1] = nameDisplay[1];
-
-  // byte valueBytes[2] = {};
   valueTransform(*this, output);
-  // output[2] = valueBytes[0];
-  // output[3] = valueBytes[1];
 }
 
 byte Setting::getValue() {

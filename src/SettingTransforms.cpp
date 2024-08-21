@@ -82,6 +82,7 @@ void SettingTransforms::clockValueTransform(Setting &self, byte output[4]) {
 void SettingTransforms::bpmValueTransform(Setting &self, byte output[4]) {
   output[0] = CHAR_B;
 
+  // TODO: this should use BPM_OFFSET
   byte mapped = self.getValue() + 73;
 
   if (mapped < 100) {

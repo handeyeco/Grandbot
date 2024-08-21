@@ -13,6 +13,9 @@
 #define SEQUENCE_SETTING_COUNT 16
 #define GENERAL_SETTING_COUNT 7
 
+// used to map MIDI CC 0-127 to 73-200 BPM
+#define BPM_OFFSET 73
+
 /**
  * Manages all settings
 */

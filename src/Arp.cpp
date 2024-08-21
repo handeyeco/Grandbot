@@ -813,8 +813,8 @@ bool Arp::update() {
     unsigned long nowMicros = micros();
 
     // TODO this could be optimized by only calculating values on change
-    byte bpm = settings->bpm->getValue() + 73;
-    unsigned long timeBetweenInternalClockPulses = 60000000 / (24 * bpm);
+    byte bpm = settings->bpm->getValue() + BPM_OFFSET;
+    unsigned long timeBetweenInternalClockPulses = 60000000L / (PULSES_PER_QUARTER_NOTE * bpm);
     if (nowMicros - lastInternalClockPulseTime > timeBetweenInternalClockPulses) {
       lastInternalClockPulseTime = nowMicros;
       handleClock(now);
