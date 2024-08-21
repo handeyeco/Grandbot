@@ -22,6 +22,17 @@ Setting::Setting(
 }
 
 /**
+ * Converts a MIDI CC value (0-127) to a boolean
+ *
+ * @param {byte} value - CC value
+ * @returns {boolean} if CC is above threshold
+*/
+bool Setting::convertCCToBool(byte cc) {
+  // MIDI CC is 0-127, so is the CC greater than half
+  return cc > 64;
+}
+
+/**
  * Gets an array of bytes that is sent to the 4D7S
  * to be displayed when viewing/updating a setting
  *
@@ -34,6 +45,10 @@ void Setting::getDisplay(byte output[4]) {
 byte Setting::getValue() {
   return value;
 }
+
+bool Setting::getValueAsBool() {
+  return convertCCToBool(value);
+};
 
 void Setting::setValue(byte nextValue) {
   value = nextValue;

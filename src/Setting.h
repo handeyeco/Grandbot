@@ -40,6 +40,8 @@ struct Setting {
     void setValue(byte nextValue);
     void step(bool stepUp, bool shift);
     bool roll();
+    static bool convertCCToBool(byte cc);
+    bool getValueAsBool();
 };
 
 #endif

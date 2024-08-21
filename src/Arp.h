@@ -143,7 +143,6 @@ class Arp {
     void generateSequence();
     void slipSequence();
     String padded(String input);
-    bool convertCCToBool(byte value);
     String convertCCToString(byte value);
     bool correctInChannel(byte channel);
     int insert(byte arr[], int arrLen, byte value, int capacity);

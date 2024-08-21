@@ -308,7 +308,7 @@ void Arp::sendNoteOn(byte channel, byte note, byte velocity) {
   MIDI.sendNoteOn(note, velocity, movedChannel);
 
   // if the speaker is set to be on, play note on buzzer
-  if (convertCCToBool(settings->useSpeaker->getValue())) {
+  if (settings->useSpeaker->getValueAsBool()) {
     tone(BUZZER_PIN, getPitchByNote(note));
   }
 }
@@ -395,7 +395,7 @@ void Arp::handleNoteOn(byte channel, byte note, byte velocity) {
   numPressedNotes = insert(pressedNotes, numPressedNotes, note, MAX_NOTES);
   numActiveNotes = insert(activeNotes, numActiveNotes, note, MAX_NOTES);
 
-  if (convertCCToBool(settings->sort->getValue())) {
+  if (settings->sort->getValueAsBool()) {
     sort(pressedNotes, numPressedNotes);
     sort(activeNotes, numActiveNotes);
   }
@@ -483,18 +483,6 @@ String Arp::padded(String input) {
 }
 
 /**
- * Converts a MIDI CC value (0-127) to a boolean
- *
- * @param {byte} value - CC value
- * @returns {boolean} if CC is above threshold
- * 
- * TODO should this be part of Setting or SettingsTransform?
-*/
-bool Arp::convertCCToBool(byte value) {
-  return value > 64;
-}
-
-/**
  * Converts a MIDI CC value (0-127) to a 0-99 string
  *
  * @param {byte} value - CC value
@@ -557,14 +545,14 @@ void Arp::panic() {
  * @param {byte} value - MIDI value received
 */
 void Arp::handleCommandChange(byte channel, byte cc, byte value) {
-  bool isOn = convertCCToBool(value);
+  bool isOn = Setting::convertCCToBool(value);
 
   // try to shut it all down
   // (no matter what channel we get this message on
   // we'll trigger a panic)
   // @HACK will likely lead to weird things)
   if (cc == CC_PANIC) {
-    bool wasOff = !convertCCToBool(ccPanic);
+    bool wasOff = !Setting::convertCCToBool(ccPanic);
     ccPanic = value;
     if (wasOff && isOn) {
       panic();
@@ -575,7 +563,7 @@ void Arp::handleCommandChange(byte channel, byte cc, byte value) {
 
   // Queue a new sequence
   if (cc == CC_GENERATE_SEQUENCE) {
-    bool wasOff = !convertCCToBool(ccGenerate);
+    bool wasOff = !Setting::convertCCToBool(ccGenerate);
     ccGenerate = value;
     if (wasOff && isOn) {
       regenerateQueued = true;
@@ -583,7 +571,7 @@ void Arp::handleCommandChange(byte channel, byte cc, byte value) {
   }
   // Queue a sequence slip
   else if (cc == CC_SLIP) {
-    bool wasOff = !convertCCToBool(ccSlip);
+    bool wasOff = !Setting::convertCCToBool(ccSlip);
     ccSlip = value;
     if (wasOff && isOn) {
       slipQueued = true;
@@ -705,7 +693,7 @@ void Arp::reset() {
  * TODO should this play the current note when continuing?
 */
 void Arp::handleStartContinue(bool resetSeq) {
-  if (resetSeq || convertCCToBool(settings->clock->getValue())) {
+  if (resetSeq || settings->clock->getValueAsBool()) {
     reset();
   }
 
@@ -790,7 +778,7 @@ bool Arp::update() {
   unsigned long now = millis();
   bool readMidi = false;
 
-  bool useInternalClock = convertCCToBool(settings->clock->getValue());
+  bool useInternalClock = settings->clock->getValueAsBool();
 
   handleButtons(useInternalClock);
 
