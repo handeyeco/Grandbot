@@ -10,9 +10,10 @@
 /**
  * Tranformers for manipulating setting values
  * 
- * value transforms: taking a value and converting it to a display. Ex:
+ * value transforms: taking a name/value and converting it to a display. Ex:
  *    - "swing: 127" would get mapped to "SG:67"
  *    - "baseNoteLength: 127" would get mapped to "nL:2-"
+ *    - "bpm: 127" would get mapped to "b200"
  * step transforms: mapping 0-127 CC to discrete steps (for buttons). Ex:
  *    - for on/off settings, we want to step between 0 (off) and 127 (off) immediately
  *    - for other settings, we might want to move by 1 or move by 10 when shift is held

@@ -721,6 +721,11 @@ void Arp::setup() {
   MIDI.turnThruOff();
 }
 
+/**
+ * Go through and respond to button presses
+ * 
+ * @param {bool} useInternalClock - whether or not we're using an internal clock/transport
+ */
 void Arp::handleButtons(bool useInternalClock) {
   if (!(buttons->anyPressed || buttons->anyReleased)) {
     return;
@@ -800,7 +805,7 @@ bool Arp::update() {
   if (useInternalClock && running) {
     unsigned long nowMicros = micros();
 
-    // TODO this could be optimized by only calculating values on change
+    // TODO this could be optimized by only calculating values on BPM change
     byte bpm = settings->bpm->getValue() + BPM_OFFSET;
     unsigned long timeBetweenInternalClockPulses = 60000000L / (PULSES_PER_QUARTER_NOTE * bpm);
     if (nowMicros - lastInternalClockPulseTime > timeBetweenInternalClockPulses) {

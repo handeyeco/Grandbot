@@ -5,7 +5,7 @@ Setting::Setting(
   byte _midiCC,
   byte firstDisplayChar,
   byte secondDisplayChar,
-  void (&_valueTransform)(Setting &self, byte output[2]),
+  void (&_valueTransform)(Setting &self, byte output[4]),
   byte (&_stepTransform)(byte value, bool stepUp, bool shift),
   bool _usesColon) :
     value(_defaultValue), 

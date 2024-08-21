@@ -62,6 +62,8 @@ class Arp {
     // Track Start/Stop/Continue messages
     // #TODO could this replace midiMode?
     bool running = false;
+    // When using an internal clock, when we sent last clock pulse
+    // TODO are we handling when this is 0 and micros is 0?
     unsigned long lastInternalClockPulseTime = 0;
 
     unsigned long lastMidiMessage;
