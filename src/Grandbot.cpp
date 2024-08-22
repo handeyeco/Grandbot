@@ -1,25 +1,20 @@
 #include <Grandbot.h>
- 
+
 Grandbot::Grandbot()
-  : buttons(), voice(), light(), lc(SERIAL_DATA_PIN, SERIAL_CLOCK_PIN, SERIAL_LOAD_PIN, 1), expr(&lc, &light)
-{}
+    : buttons(), voice(), light(),
+      lc(SERIAL_DATA_PIN, SERIAL_CLOCK_PIN, SERIAL_LOAD_PIN, 1),
+      expr(&lc, &light) {}
 
-  ButtonManager* Grandbot::getButtonManagerPointer() {
-    return &buttons;
-  }
+ButtonManager *Grandbot::getButtonManagerPointer() { return &buttons; }
 
-Expressions* Grandbot::getExpressionPointer() {
-  return &expr;
-}
+Expressions *Grandbot::getExpressionPointer() { return &expr; }
 
-Light* Grandbot::getLightPointer() {
-  return &light;
-}
+Light *Grandbot::getLightPointer() { return &light; }
 
 /**
  * Determine mood based on esteem (a finer resolution mood);
  * triggers a new expression and new LED color
-*/
+ */
 void Grandbot::updateMood() {
   int last = mood;
 
@@ -47,7 +42,7 @@ void Grandbot::updateMood() {
 /**
  * Sleep is a low activity state;
  * no mood, expression, or LED changes
-*/
+ */
 void Grandbot::sleep() {
   lc.setIntensity(0, 0);
   int lastMood = mood;
@@ -65,7 +60,7 @@ void Grandbot::sleep() {
 
 /**
  * Return back to an active state
-*/
+ */
 void Grandbot::wakeup() {
   // So he doesn't wake up angry
   lastPlayTime = millis();
@@ -77,7 +72,7 @@ void Grandbot::wakeup() {
 /**
  * When Grandbot is interacted with,
  * it boosts his esteem and he makes sound
-*/
+ */
 void Grandbot::play() {
   if (mood < 1) {
     return;
@@ -96,7 +91,7 @@ void Grandbot::play() {
 
 /**
  * Setup to be called during the Arduino setup stage.
-*/
+ */
 void Grandbot::setup() {
   randomSeed(analogRead(RANDOM_PIN));
 
@@ -118,19 +113,17 @@ void Grandbot::setup() {
  * into read/update. That way we can read buttons, Arp can do its thing,
  * and then we come back to finish GB's update.
  */
-void Grandbot::read() {
-  getButtonManagerPointer()->read();
-}
+void Grandbot::read() { getButtonManagerPointer()->read(); }
 
 /**
  * Update to be called during the Arduino update cycle.
  * Triggers sleep/wake and handles esteem drift timing
-*/
+ */
 void Grandbot::update() {
   if (buttons.play.released) {
     play();
   }
-  
+
   unsigned long now = millis();
   int lightRead = analogRead(LIGHT_SENSOR_PIN);
   bool awake = lightRead > wakeThresh;
@@ -145,7 +138,7 @@ void Grandbot::update() {
     // Sleep
     if (asleep) {
       sleep();
-    } 
+    }
     // Normal
     else {
       if (now - lastPlayTime > ignoreThresh) {

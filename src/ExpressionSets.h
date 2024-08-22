@@ -41,22 +41,22 @@
 /**
  * A collection of different Expression structs,
  * sorted by their emotion state
-*/
+ */
 struct ExpressionSets {
-  public:
-    static Expression errorExpressions[];
-    static int errorLength;
-    static Expression sleepingExpressions[];
-    static int sleepingLength;
-    static Expression happyExpressions[];
-    static int happyLength;
-    static Expression neutralExpressions[];
-    static int neutralLength;
-    static Expression unhappyExpressions[];
-    static int unhappyLength;
-    static Expression midiBeatExpressions[];
+public:
+  static Expression errorExpressions[];
+  static int errorLength;
+  static Expression sleepingExpressions[];
+  static int sleepingLength;
+  static Expression happyExpressions[];
+  static int happyLength;
+  static Expression neutralExpressions[];
+  static int neutralLength;
+  static Expression unhappyExpressions[];
+  static int unhappyLength;
+  static Expression midiBeatExpressions[];
 
-    static byte convertNumberToByte(byte num);
+  static byte convertNumberToByte(byte num);
 };
 
 #endif

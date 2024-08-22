@@ -2,35 +2,12 @@
 
 const byte Voice::singingNotes[27] = {
     84, // C6
-    85,
-    86,
-    87,
-    88,
-    89,
-    90,
-    91,
-    92,
-    93,
-    94,
-    95,
-    96,
-    97,
-    98,
-    99,
-    100,
-    101,
-    102,
-    103,
-    104,
-    105,
-    106,
-    107,
-    108,
-    109,
+    85,  86, 87,  88,  89,  90,  91,  92,  93,  94,  95,  96,  97,
+    98,  99, 100, 101, 102, 103, 104, 105, 106, 107, 108, 109,
     110, // D8
 };
 
-Voice::Voice(){}
+Voice::Voice() {}
 
 /**
  * Sets the melody/rhythm to a Major 7th sequence
@@ -39,19 +16,16 @@ Voice::Voice(){}
  * @param {int} startIndex - where in the sequence to start
  * @param {int} root - the root note of the chord
  * @returns {int} the length of the sequence
-*/
-int Voice::setMajor7th(int startIndex, int root)
-{
+ */
+int Voice::setMajor7th(int startIndex, int root) {
   int len = 4;
 
-  byte notes[len] = {
-      singingNotes[root],       // Root
-      singingNotes[root + 4],   // Major 3rd
-      singingNotes[root + 7],   // Fifth
-      singingNotes[root + 11]}; // Major 7th
+  byte notes[len] = {singingNotes[root],       // Root
+                     singingNotes[root + 4],   // Major 3rd
+                     singingNotes[root + 7],   // Fifth
+                     singingNotes[root + 11]}; // Major 7th
 
-  for (int i = 0; i < len; i++)
-  {
+  for (int i = 0; i < len; i++) {
     melody[startIndex + i] = notes[i];
     rhythm[startIndex + i] = 250;
   }
@@ -66,22 +40,19 @@ int Voice::setMajor7th(int startIndex, int root)
  * @param {int} root - the root note of the chord
  * @param {bool} major - whether it'll be major or minor
  * @returns {int} the length of the sequence
-*/
-int Voice::setTriad(int startIndex, int root, bool major)
-{
+ */
+int Voice::setTriad(int startIndex, int root, bool major) {
   byte len = 3;
   // Set the 3rd to a major or minor 3rd
   byte third = major ? 4 : 3;
 
-  byte notes[len] = {
-      singingNotes[root],         // Root
-      singingNotes[root + third], // 3rd
-      singingNotes[root + 7]};    // Fifth
+  byte notes[len] = {singingNotes[root],         // Root
+                     singingNotes[root + third], // 3rd
+                     singingNotes[root + 7]};    // Fifth
 
   byte noteLenFlip = random(0, 4);
   int noteLen = (noteLenFlip * 100) + 100;
-  for (byte i = 0; i < len; i++)
-  {
+  for (byte i = 0; i < len; i++) {
     melody[startIndex + i] = notes[i];
     rhythm[startIndex + i] = noteLen;
   }
@@ -93,9 +64,8 @@ int Voice::setTriad(int startIndex, int root, bool major)
  * Create a harmonic melody using a major scale
  *
  * @returns {int} the length of the sequence
-*/
-int Voice::setSong()
-{
+ */
+int Voice::setSong() {
   // Root note
   int start = random(0, 12);
   // How many chords to add to the melody
@@ -104,8 +74,7 @@ int Voice::setSong()
   int interval;
   bool major;
   int melodyIndex = 0;
-  for (int i = 0; i < chords; i++)
-  {
+  for (int i = 0; i < chords; i++) {
     // interval within a major (not chromatic) scale
     interval = random(0, 7);
     // use a major chord for I, IV, and V; minor for ii, iii, vi, vii
@@ -122,11 +91,9 @@ int Voice::setSong()
  *
  * @param {byte} length - the length of the sequence
  * @returns {int} the length of the sequence
-*/
-byte Voice::setRandomSequence(byte len)
-{
-  for (byte i = 0, rand; i < len; i++)
-  {
+ */
+byte Voice::setRandomSequence(byte len) {
+  for (byte i = 0, rand; i < len; i++) {
     rand = random(0, 27);
     melody[i] = singingNotes[rand];
     rhythm[i] = 75;
@@ -139,9 +106,8 @@ byte Voice::setRandomSequence(byte len)
  * Uphappy sequence is always the same ho-hum
  *
  * @returns {int} the length of the sequence
-*/
-int Voice::setUnhappy()
-{
+ */
+int Voice::setUnhappy() {
   melody[0] = 56;
   melody[1] = 45;
   rhythm[0] = 1000;
@@ -154,9 +120,8 @@ int Voice::setUnhappy()
  * Queue the melody to play
  *
  * @param {int} playLength - length of the new sequence
-*/
-void Voice::play(int playLength)
-{
+ */
+void Voice::play(int playLength) {
   playing = true;
   melodyLength = playLength;
   currNoteIndex = -1;
@@ -167,13 +132,11 @@ void Voice::play(int playLength)
  *
  * @param {int} mood - enum for emotional state as defined in Grandbot.h
  * @param {byte} esteem - a finer resolution of mood
-*/
-void Voice::emote(int mood, byte esteem)
-{
+ */
+void Voice::emote(int mood, byte esteem) {
   int len = 0;
 
-  switch (mood)
-  {
+  switch (mood) {
   // Sleeping - Major 7th sequence
   case 0:
     len = setMajor7th(0, random(0, 12));
@@ -199,27 +162,22 @@ void Voice::emote(int mood, byte esteem)
 /**
  * Update to be called during the Arduino update cycle.
  * Handles actually playing the melody
-*/
-void Voice::update()
-{
+ */
+void Voice::update() {
   if (!playing)
     return;
 
   unsigned long now = millis();
-  if (currNoteIndex == -1 || now - noteStart > rhythm[currNoteIndex])
-  {
+  if (currNoteIndex == -1 || now - noteStart > rhythm[currNoteIndex]) {
     currNoteIndex++;
 
-    if (currNoteIndex < melodyLength)
-    {
+    if (currNoteIndex < melodyLength) {
       byte note = melody[currNoteIndex];
       uint16_t pitch = getPitchByNote(note);
       tone(BUZZER_PIN, pitch);
       noteStart = now;
       return;
-    }
-    else
-    {
+    } else {
       // end of sequence, turn off buzzer
       noTone(BUZZER_PIN);
       playing = false;
