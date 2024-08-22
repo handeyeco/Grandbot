@@ -5,18 +5,31 @@ Setting::Setting(
   byte _midiCC,
   byte firstDisplayChar,
   byte secondDisplayChar,
-  void (&_valueTransform)(byte value, byte output[2]),
-  byte (&_stepTransform)(byte value, bool stepUp, bool shift)) :
+  void (&_valueTransform)(Setting &self, byte output[4]),
+  byte (&_stepTransform)(byte value, bool stepUp, bool shift),
+  bool _usesColon) :
     value(_defaultValue), 
     defaultValue(_defaultValue),
     midiCC(_midiCC),
     valueTransform(_valueTransform),
-    stepTransform(_stepTransform)
+    stepTransform(_stepTransform),
+    usesColon(_usesColon)
 {
   // TODO ideally this would be passed in as an array,
   // but I couldn't figure it out because C++ is big brain programming
   nameDisplay[0] = firstDisplayChar;
   nameDisplay[1] = secondDisplayChar;
+}
+
+/**
+ * Converts a MIDI CC value (0-127) to a boolean
+ *
+ * @param {byte} value - CC value
+ * @returns {boolean} if CC is above threshold
+*/
+bool Setting::convertCCToBool(byte cc) {
+  // MIDI CC is 0-127, so is the CC greater than half?
+  return cc > 64;
 }
 
 /**
@@ -26,18 +39,16 @@ Setting::Setting(
  * @param {byte[]} output - MIDI channel in question
 */
 void Setting::getDisplay(byte output[4]) {
-  output[0] = nameDisplay[0];
-  output[1] = nameDisplay[1];
-
-  byte valueBytes[2] = {};
-  valueTransform(value, valueBytes);
-  output[2] = valueBytes[0];
-  output[3] = valueBytes[1];
+  valueTransform(*this, output);
 }
 
 byte Setting::getValue() {
   return value;
 }
+
+bool Setting::getValueAsBool() {
+  return convertCCToBool(value);
+};
 
 void Setting::setValue(byte nextValue) {
   value = nextValue;

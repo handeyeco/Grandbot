@@ -308,7 +308,7 @@ void Arp::sendNoteOn(byte channel, byte note, byte velocity) {
   MIDI.sendNoteOn(note, velocity, movedChannel);
 
   // if the speaker is set to be on, play note on buzzer
-  if (convertCCToBool(settings->useSpeaker->getValue())) {
+  if (settings->useSpeaker->getValueAsBool()) {
     tone(BUZZER_PIN, getPitchByNote(note));
   }
 }
@@ -395,7 +395,7 @@ void Arp::handleNoteOn(byte channel, byte note, byte velocity) {
   numPressedNotes = insert(pressedNotes, numPressedNotes, note, MAX_NOTES);
   numActiveNotes = insert(activeNotes, numActiveNotes, note, MAX_NOTES);
 
-  if (convertCCToBool(settings->sort->getValue())) {
+  if (settings->sort->getValueAsBool()) {
     sort(pressedNotes, numPressedNotes);
     sort(activeNotes, numActiveNotes);
   }
@@ -483,16 +483,6 @@ String Arp::padded(String input) {
 }
 
 /**
- * Converts a MIDI CC value (0-127) to a boolean
- *
- * @param {byte} value - CC value
- * @returns {boolean} if CC is above threshold
-*/
-bool Arp::convertCCToBool(byte value) {
-  return value > 64;
-}
-
-/**
  * Converts a MIDI CC value (0-127) to a 0-99 string
  *
  * @param {byte} value - CC value
@@ -555,14 +545,14 @@ void Arp::panic() {
  * @param {byte} value - MIDI value received
 */
 void Arp::handleCommandChange(byte channel, byte cc, byte value) {
-  bool isOn = convertCCToBool(value);
+  bool isOn = Setting::convertCCToBool(value);
 
   // try to shut it all down
   // (no matter what channel we get this message on
   // we'll trigger a panic)
   // @HACK will likely lead to weird things)
   if (cc == CC_PANIC) {
-    bool wasOff = !convertCCToBool(ccPanic);
+    bool wasOff = !Setting::convertCCToBool(ccPanic);
     ccPanic = value;
     if (wasOff && isOn) {
       panic();
@@ -573,7 +563,7 @@ void Arp::handleCommandChange(byte channel, byte cc, byte value) {
 
   // Queue a new sequence
   if (cc == CC_GENERATE_SEQUENCE) {
-    bool wasOff = !convertCCToBool(ccGenerate);
+    bool wasOff = !Setting::convertCCToBool(ccGenerate);
     ccGenerate = value;
     if (wasOff && isOn) {
       regenerateQueued = true;
@@ -581,7 +571,7 @@ void Arp::handleCommandChange(byte channel, byte cc, byte value) {
   }
   // Queue a sequence slip
   else if (cc == CC_SLIP) {
-    bool wasOff = !convertCCToBool(ccSlip);
+    bool wasOff = !Setting::convertCCToBool(ccSlip);
     ccSlip = value;
     if (wasOff && isOn) {
       slipQueued = true;
@@ -699,13 +689,16 @@ void Arp::reset() {
  * Handle start and continue MIDI signals
  *
  * @param {bool} resetSeq - whether to reset progress
+ * 
+ * TODO should this play the current note when continuing?
 */
 void Arp::handleStartContinue(bool resetSeq) {
-  if (resetSeq) {
+  if (resetSeq || settings->clock->getValueAsBool()) {
     reset();
   }
 
   running = true;
+  lastInternalClockPulseTime = millis();
 
   // trigger dance / light show again
   expr->midiBeat(quarterFlipFlop);
@@ -729,36 +722,70 @@ void Arp::setup() {
 }
 
 /**
+ * Go through and respond to button presses
+ * 
+ * @param {bool} useInternalClock - whether or not we're using an internal clock/transport
+ */
+void Arp::handleButtons(bool useInternalClock) {
+  if (!(buttons->anyPressed || buttons->anyReleased)) {
+    return;
+  }
+
+  // Handle Grandbot Controller buttons
+  // Two right buttons are a shortcut for the menu
+  if (buttons->combo(buttons->forward, buttons->backward)) {
+    settings->toggleMenu();
+    return;
+  } else if (!settings->inMenu()) {
+    // Forward + Left is a shortcut for panic
+    if (buttons->combo(buttons->forward, buttons->left)) {
+      panic();
+      return;
+    }
+    // Up || Play triggers sequence generation
+    else if (buttons->play.released || buttons->up.released) {
+      regenerateQueued = true;
+      return;
+    }
+    // Down triggers sequence slip
+    else if (buttons->down.released) {
+      slipQueued = true;
+      return;
+    }
+    // Left triggers GB play sequence (unrelated to the Arp)
+    else if (buttons->left.released) {
+      gb->play();
+      return;
+    }
+    // Play / Pause
+    else if (useInternalClock && buttons->forward.released && !running) {
+      MIDI.sendStart();
+      handleStartContinue(true);
+      return;
+    }
+    // Stop
+    else if (useInternalClock && buttons->backward.released && running) {
+      MIDI.sendStop();
+      handleStop();
+      return;
+    }
+  }
+}
+
+/**
  * Update to be called during the Arduino update cycle.
  * Reads MIDI messages and tries to handle them.
  *
  * @returns {bool} whether a MIDI message was read
 */
 bool Arp::update() {
+  // TODO might be best to switch this all to micros
   unsigned long now = millis();
+  bool readMidi = false;
 
-  // Handle Grandbot Controller buttons
-  // Two right buttons are a shortcut for the menu
-  if (buttons->combo(buttons->forward, buttons->backward)) {
-    settings->toggleMenu();
-  } else if (!settings->inMenu()) {
-    // Forward + Left is a shortcut for panic
-    if (buttons->combo(buttons->forward, buttons->left)) {
-      panic();
-    }
-    // Up || Play triggers sequence generation
-    else if (buttons->play.released || buttons->up.released) {
-      regenerateQueued = true;
-    }
-    // Down triggers sequence slip
-    else if (buttons->down.released) {
-      slipQueued = true;
-    }
-    // Left triggers GB play sequence (unrelated to the Arp)
-    else if (buttons->left.released) {
-      gb->play();
-    }
-  }
+  bool useInternalClock = settings->clock->getValueAsBool();
+
+  handleButtons(useInternalClock);
 
   if (settings->inMenu()) {
     settings->updateMenu();
@@ -774,13 +801,25 @@ bool Arp::update() {
     }
   }
 
-  bool readMidi = false;
+  // calculate internal clock pulse if internal clock enabled
+  if (useInternalClock && running) {
+    unsigned long nowMicros = micros();
+
+    // TODO this could be optimized by only calculating values on BPM change
+    byte bpm = settings->bpm->getValue() + BPM_OFFSET;
+    unsigned long timeBetweenInternalClockPulses = 60000000L / (PULSES_PER_QUARTER_NOTE * bpm);
+    if (nowMicros - lastInternalClockPulseTime > timeBetweenInternalClockPulses) {
+      lastInternalClockPulseTime = nowMicros;
+      handleClock(now);
+      MIDI.sendClock();
+    }
+  }
 
   if (MIDI.read()) {
     readMidi = true;
     switch(MIDI.getType()) {
       case midi::Clock:
-        if (running) {
+        if (running && !useInternalClock) {
           handleClock(now);
         } else {
           readMidi = false;
@@ -836,5 +875,5 @@ bool Arp::update() {
     }
   }
 
-  return midiMode;
+  return midiMode || (useInternalClock && running);
 }

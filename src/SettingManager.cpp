@@ -48,6 +48,11 @@ SettingManager::SettingManager(Expressions* _expr, ButtonManager* _buttons) : ex
   // Chance a step will be swapped with an adjacent step (during slips not sequence generation)
   slipChance = new Setting(10, 89, CHAR_S, CHAR_C, SettingTransforms::ccValueTransform, SettingTransforms::ccStepTransform);
 
+  // Whether to use an external (Et) or internal (In) clock
+  clock = new Setting(0, 112, CHAR_C, CHAR_L, SettingTransforms::clockValueTransform, SettingTransforms::onOffStepTransform);
+  // When using an internal clock, what BPM? 0-127 gets mapped to 73-200
+  // TODO can we add an onchange callback or something to update timeBetweenInternalClockPulses when changed
+  bpm = new Setting(47, 113, CHAR_B, CHAR_BLANK, SettingTransforms::bpmValueTransform, SettingTransforms::bpmStepTransform, false);
   // Whether incoming notes are sorted; true leads to more predictable sequences, but are less exciting due to less variation
   // TODO can we add an onchange callback or something to trigger sort of currently pressed/active notes?
   sort = new Setting(0, 114, CHAR_S, CHAR_O, SettingTransforms::onOffValueTransform, SettingTransforms::onOffStepTransform);
@@ -80,6 +85,8 @@ SettingManager::SettingManager(Expressions* _expr, ButtonManager* _buttons) : ex
   generalSettings[2] = midiChannelIn;
   generalSettings[3] = midiChannelOut;
   generalSettings[4] = sort;
+  generalSettings[5] = clock;
+  generalSettings[6] = bpm;
 }
 
 /**
@@ -237,6 +244,6 @@ void SettingManager::writeMenu() {
       : generalSettings[menuIndex];
 
     setting->getDisplay(dis);
-    expr->writeText(dis, true);
+    expr->writeText(dis, setting->usesColon);
   }
 }

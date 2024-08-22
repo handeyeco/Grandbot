@@ -65,6 +65,8 @@ There's endless potential just doing that. If you'd like more control, there are
 | Select MIDI channel out         | 15      | ot      |
 | Panic / all notes off           | 117     | AH      | \*     |
 | Toggle internal speaker for arp | 119     | SP      |
+| Clock: external or internal     | 112     | CL      |
+| BPM for internal clock (73-200) | 113     | b       |
 
 **Additional Notes**
 
