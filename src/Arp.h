@@ -87,9 +87,9 @@ class Arp {
     // Number of notes that are currently pressed
     byte numPressedNotes = 0;
     // MIDI notes that are currently active
-    byte activeNotes[MAX_NOTES] = {62, 65, 69, 65};
+    byte activeNotes[MAX_NOTES] = {60, 62, 64, 65, 67, 69, 71, 72};
     // Number of notes that are currently active
-    byte numActiveNotes = 4;
+    byte numActiveNotes = 8;
 
     // Note currently being played
     byte currNote = 0;
@@ -97,7 +97,7 @@ class Arp {
     // #TODO this is poorly named, it's not really an "interval"
     // it's an index for accessing a note from `activeNotes`
     // so it's a sequence of array indexes modulo'd by `numActiveNotes`
-    byte sequenceIntervals[MAX_STEPS_IN_SEQ] = {0, 1, 2, 3};
+    byte sequenceIntervals[MAX_STEPS_IN_SEQ] = {1, 3, 5, 3};
 
     // Offset the note at this step (like for octaves)
     // 0=no offset; 12=+1 oct; -24=-2oct

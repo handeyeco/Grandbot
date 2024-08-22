@@ -28,7 +28,7 @@ Setting::Setting(
  * @returns {boolean} if CC is above threshold
 */
 bool Setting::convertCCToBool(byte cc) {
-  // MIDI CC is 0-127, so is the CC greater than half
+  // MIDI CC is 0-127, so is the CC greater than half?
   return cc > 64;
 }
 
