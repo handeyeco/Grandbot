@@ -695,7 +695,8 @@ void Arp::handleClock(unsigned long now) {
       quarterFlipFlop = !quarterFlipFlop;
 
       // dance
-      expr->midiBeat(quarterFlipFlop, !settings->inMenu() && (regenerateQueued || slipQueued));
+      expr->midiBeat(quarterFlipFlop,
+                     !settings->inMenu() && (regenerateQueued || slipQueued));
       // light show
       light->midiBeat(quarterFlipFlop);
     }
@@ -730,7 +731,8 @@ void Arp::handleStartContinue(bool resetSeq) {
   lastInternalClockPulseTime = millis();
 
   // trigger dance / light show again
-  expr->midiBeat(quarterFlipFlop, !settings->inMenu() && (regenerateQueued || slipQueued));
+  expr->midiBeat(quarterFlipFlop,
+                 !settings->inMenu() && (regenerateQueued || slipQueued));
   light->midiBeat(quarterFlipFlop);
 }
 
@@ -784,6 +786,11 @@ void Arp::handleButtons(bool useInternalClock) {
       } else {
         queueSlip(true);
       }
+      return;
+    }
+    // Randomize sequence settings
+    else if (buttons->combo(buttons->forward, buttons->up)) {
+      settings->randomize();
       return;
     }
     // Up || Play triggers sequence generation

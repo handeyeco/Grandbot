@@ -1,5 +1,17 @@
 #include <SettingTransforms.h>
 
+byte SettingTransforms::noRandomize() {
+  return 0;
+}
+
+byte SettingTransforms::mediumChance() {
+  if (random(2)) {
+    return random(0, 128);
+  } else {
+    return 0;
+  }
+}
+
 /**
  * Most settings are displayed as `nn:vv`, so this gets the name part sorted
  */
@@ -227,8 +239,8 @@ void SettingTransforms::noteLengthValueTransform(Setting& self,
  * TODO consolidate these transformers that are basically doing the same thing
  */
 byte SettingTransforms::noteLengthStepTransform(byte value,
-                                               bool stepUp,
-                                               bool shift) {
+                                                bool stepUp,
+                                                bool shift) {
   if (shift) {
     return stepUp ? 127 : 0;
   }
@@ -262,8 +274,8 @@ void SettingTransforms::sequenceLengthValueTransform(Setting& self,
  * TODO consolidate these transformers that are basically doing the same thing
  */
 byte SettingTransforms::sequenceLengthStepTransform(byte value,
-                                                   bool stepUp,
-                                                   bool shift) {
+                                                    bool stepUp,
+                                                    bool shift) {
   if (shift) {
     return stepUp ? 127 : 0;
   }

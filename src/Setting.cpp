@@ -6,12 +6,14 @@ Setting::Setting(byte _defaultValue,
                  byte secondDisplayChar,
                  void (&_valueTransform)(Setting& self, byte output[4]),
                  byte (&_stepTransform)(byte value, bool stepUp, bool shift),
+                 byte (&_randomizeValue)(),
                  bool _usesColon)
     : value(_defaultValue),
       defaultValue(_defaultValue),
       midiCC(_midiCC),
       valueTransform(_valueTransform),
       stepTransform(_stepTransform),
+      randomizeValue(_randomizeValue),
       usesColon(_usesColon) {
   // TODO ideally this would be passed in as an array,
   // but I couldn't figure it out because C++ is big brain programming
@@ -66,6 +68,10 @@ void Setting::step(bool stepUp, bool shift) {
 
   setValue(stepTransform(value, stepUp, shift));
 };
+
+void Setting::randomize() {
+  setValue(randomizeValue());
+}
 
 /**
  * Dice roll for chance values

@@ -67,6 +67,8 @@ struct SettingManager {
   Setting* getSettingByCC(byte cc);
   bool usesCC(byte cc);
   void handleCC(byte cc, byte value);
+  
+  void randomize();
 
   void updateMenu();
   void toggleMenu();

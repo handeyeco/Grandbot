@@ -16,6 +16,8 @@ struct Setting {
   void (&valueTransform)(Setting& self, byte output[4]);
   // handle setting value with buttons
   byte (&stepTransform)(byte value, bool stepUp, bool shift);
+  // callback to randomize setting
+  byte (&randomizeValue)();
 
  public:
   Setting(byte defaultValue,
@@ -24,6 +26,7 @@ struct Setting {
           byte secondDisplayChar,
           void (&valueTransform)(Setting& self, byte output[4]),
           byte (&setValueStepped)(byte value, bool stepUp, bool shift),
+          byte (&randomizeValue)(),
           bool usesColon = true);
 
   static bool convertCCToBool(byte cc);
@@ -41,6 +44,7 @@ struct Setting {
   byte getValue();
   void setValue(byte nextValue);
   void step(bool stepUp, bool shift);
+  void randomize();
   bool roll();
   bool getValueAsBool();
 };
