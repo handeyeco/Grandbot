@@ -12,7 +12,7 @@ Light::Light() {
  * @param {byte} rVal - red color value
  * @param {byte} gVal - green color value
  * @param {byte} bVal - blue color value
-*/
+ */
 void Light::write(byte rVal, byte gVal, byte bVal) {
   analogWrite(RGB_R_PIN, rVal);
   analogWrite(RGB_G_PIN, gVal);
@@ -23,7 +23,7 @@ void Light::write(byte rVal, byte gVal, byte bVal) {
  * Set color to animate to
  *
  * @param {int} mood - enum for emotional state as defined in Grandbot.h
-*/
+ */
 void Light::setColor(int mood) {
   prevR = nextR;
   prevG = nextG;
@@ -55,10 +55,10 @@ void Light::setColor(int mood) {
 
 /**
  * Store a local copy of mood
- * #TODO remove redundancy 
+ * #TODO remove redundancy
  *
  * @param {int} mood - enum for emotional state as defined in Grandbot.h
-*/
+ */
 void Light::setMood(int mood) {
   this->mood = mood;
 }
@@ -69,7 +69,7 @@ void Light::setMood(int mood) {
  * #TODO move this
  *
  * @param {bool} even - whether we're on an odd/even quarter note
-*/
+ */
 void Light::midiBeat(bool even) {
   byte r = even ? 0 : 255;
   byte g = even ? 255 : 0;
@@ -80,9 +80,10 @@ void Light::midiBeat(bool even) {
 /**
  * Update to be called during the Arduino update cycle.
  * Handles animating the LED.
-*/
+ */
 void Light::update() {
-  if (!animating) return;
+  if (!animating)
+    return;
 
   unsigned long now = millis();
   if (now - startTween > tweenLength) {
@@ -98,7 +99,7 @@ void Light::update() {
   }
 
   int elapsed = now - startTween;
-  float progress = min((float) elapsed / (float) tweenLength, 1);
+  float progress = min((float)elapsed / (float)tweenLength, 1);
 
   int rDelta = nextR - prevR;
   int gDelta = nextG - prevG;

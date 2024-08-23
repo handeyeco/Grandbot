@@ -1,8 +1,8 @@
 #include <Arduino.h>
-#include <ButtonManager.h>
-#include <Grandbot.h>
 #include <Arp.h>
+#include <ButtonManager.h>
 #include <Expressions.h>
+#include <Grandbot.h>
 #include <Setting.h>
 #include <SettingManager.h>
 
@@ -12,8 +12,6 @@ Arp arp = Arp(&gb);
 void setup() {
   gb.setup();
   arp.setup();
-
-  Serial.begin(9600);
 }
 
 void loop() {

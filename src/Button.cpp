@@ -6,7 +6,7 @@ Button::Button(int _pin) : pin(_pin) {
 
 /**
  * Read and update button state
-*/
+ */
 void Button::read() {
   // active LOW
   bool isPressed = !digitalRead(pin);

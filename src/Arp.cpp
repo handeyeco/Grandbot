@@ -2,7 +2,9 @@
 
 // Initialize MIDI library
 // MIDI_CREATE_DEFAULT_INSTANCE(); // uncomment for #NANO
-MIDI_CREATE_INSTANCE(HardwareSerial, Serial1, MIDI); // uncomment for #NANO_EVERY
+MIDI_CREATE_INSTANCE(HardwareSerial,
+                     Serial1,
+                     MIDI);  // uncomment for #NANO_EVERY
 
 Arp::Arp(Grandbot* gb) {
   this->gb = gb;
@@ -17,14 +19,14 @@ Arp::Arp(Grandbot* gb) {
 }
 
 const byte possibleNoteLengths[] = {
-  // used in random note selection
-  1, // 16th
-  2, // 8th
-  4, // quarter
-  // not used in random note selection
-  8, // half
-  16, // whole
-  32 // double whole note
+    // used in random note selection
+    1,  // 16th
+    2,  // 8th
+    4,  // quarter
+    // not used in random note selection
+    8,   // half
+    16,  // whole
+    32   // double whole note
 };
 
 /**
@@ -36,26 +38,24 @@ const byte possibleNoteLengths[] = {
  * @param {byte} noteLength - how long the step is
  * @param {uint16_t} startPosition - where the step starts (in pulses)
  * @returns {uint16_t} where the step ends (in pulses)
-*/
-uint16_t Arp::addStep(
-  byte stepIndex,
-  byte noteInterval,
-  int8_t noteOffset,
-  byte noteLength,
-  uint16_t startPosition
-) {
-    sequenceIntervals[stepIndex] = noteInterval;
-    sequenceOffset[stepIndex] = noteOffset;
-    sequenceStartPositions[stepIndex] = startPosition;
+ */
+uint16_t Arp::addStep(byte stepIndex,
+                      byte noteInterval,
+                      int8_t noteOffset,
+                      byte noteLength,
+                      uint16_t startPosition) {
+  sequenceIntervals[stepIndex] = noteInterval;
+  sequenceOffset[stepIndex] = noteOffset;
+  sequenceStartPositions[stepIndex] = startPosition;
 
-    return startPosition + noteLength;
+  return startPosition + noteLength;
 }
 
 /**
  * Dice roll for MIDI CC values
  *
  * @returns {byte} random number between 0-127
-*/
+ */
 byte Arp::ccRoll() {
   return random(128);
 }
@@ -64,7 +64,7 @@ byte Arp::ccRoll() {
  * Maps ccBaseNoteLength (0-127) to note lengths
  *
  * @returns {byte} number of 16ths for note
-*/
+ */
 byte Arp::getNoteLength() {
   byte value = settings->baseNoteLength->getValue();
   byte index = Stepper::getSteppedIndex(value, 7);
@@ -82,7 +82,7 @@ byte Arp::getNoteLength() {
  * Maps ccSequenceLength (0-127) to sequence lengths
  *
  * @returns {byte} number between 1-8
-*/
+ */
 byte Arp::getSequenceLength() {
   byte ccSequenceLength = settings->sequenceLength->getValue();
   byte index = Stepper::getSteppedIndex(ccSequenceLength, 9);
@@ -100,16 +100,17 @@ byte Arp::getSequenceLength() {
 /**
  * Slip sequence runs through the existing sequence and
  * randomly switches steps (randomness based on ccSlipChance)
-*/
+ */
 void Arp::slipSequence() {
-  if (!settings->slipChance->getValue()) return;
+  if (!settings->slipChance->getValue())
+    return;
 
   for (byte i = 0; i < totalSequenceSteps - 1; i++) {
     if (settings->slipChance->roll()) {
-      byte tmpInterval = sequenceIntervals[i+1];
-      int8_t tmpOffset = sequenceOffset[i+1];
-      sequenceIntervals[i+1] = sequenceIntervals[i];
-      sequenceOffset[i+1] = sequenceOffset[i];
+      byte tmpInterval = sequenceIntervals[i + 1];
+      int8_t tmpOffset = sequenceOffset[i + 1];
+      sequenceIntervals[i + 1] = sequenceIntervals[i];
+      sequenceOffset[i + 1] = sequenceOffset[i];
       sequenceIntervals[i] = tmpInterval;
       sequenceOffset[i] = tmpOffset;
     }
@@ -118,7 +119,7 @@ void Arp::slipSequence() {
 
 /**
  * Generate a new sequence
-*/
+ */
 void Arp::generateSequence() {
   // This is the length in number of pulses
   // (random number of bars between 1-8)
@@ -139,7 +140,8 @@ void Arp::generateSequence() {
   // this could result in number of steps not filling the sequence
   // (which makes the end of the sequence one long note)
   // #TODO handle this better
-  while (newSequenceLength < newTotalSequenceLength && stepIndex < MAX_STEPS_IN_SEQ) {
+  while (newSequenceLength < newTotalSequenceLength &&
+         stepIndex < MAX_STEPS_IN_SEQ) {
     // Due to adding note length variation
     // this particular step might not stay the same
     // length as other steps
@@ -155,32 +157,30 @@ void Arp::generateSequence() {
     // Random transposition; since they affect the same value (offset)
     // there's some interplay between them with a bias
     // towards single octave intervals
-    if (
-      settings->octaveOneUpChance->getValue() ||
-      settings->octaveOneDownChance->getValue() ||
-      settings->octaveTwoUpChance->getValue() ||
-      settings->octaveTwoDownChance->getValue() ||
-      settings->fifthChance->getValue() ||
-      settings->randomNoteChance->getValue()
-    ) {
+    if (settings->octaveOneUpChance->getValue() ||
+        settings->octaveOneDownChance->getValue() ||
+        settings->octaveTwoUpChance->getValue() ||
+        settings->octaveTwoDownChance->getValue() ||
+        settings->fifthChance->getValue() ||
+        settings->randomNoteChance->getValue()) {
       if (settings->octaveOneUpChance->roll()) {
-          // one oct up
-          noteOffset = 12;
+        // one oct up
+        noteOffset = 12;
       } else if (settings->octaveOneDownChance->roll()) {
-          // one oct down
-          noteOffset = -12;
+        // one oct down
+        noteOffset = -12;
       } else if (settings->octaveTwoUpChance->roll()) {
-          // two oct up
-          noteOffset = 24;
+        // two oct up
+        noteOffset = 24;
       } else if (settings->octaveTwoDownChance->roll()) {
-          // two oct down
-          noteOffset = -24;
+        // two oct down
+        noteOffset = -24;
       } else if (settings->fifthChance->roll()) {
-          // fifth up
-          noteOffset = 7;
+        // fifth up
+        noteOffset = 7;
       } else if (settings->randomNoteChance->roll()) {
-          // chaos between two octaves (exclusive)
-          noteOffset = random(-11, 12);
+        // chaos between two octaves (exclusive)
+        noteOffset = random(-11, 12);
       }
     }
 
@@ -197,39 +197,26 @@ void Arp::generateSequence() {
     // Note length variation; since they affect the same value (length)
     // there's some interplay between them with a bias
     // towards ratchets
-    if (
-      settings->ratchetChance->getValue() ||
-      settings->halfLengthChance->getValue() ||
-      settings->doubleLengthChance->getValue() ||
-      settings->runChance->getValue()
-    ) {
+    if (settings->ratchetChance->getValue() ||
+        settings->halfLengthChance->getValue() ||
+        settings->doubleLengthChance->getValue() ||
+        settings->runChance->getValue()) {
       if (settings->ratchetChance->roll()) {
         noteLength = noteLength / 2;
-        newSequenceLength = addStep(
-          stepIndex,
-          randomNoteInterval,
-          noteOffset,
-          noteLength,
-          newSequenceLength
-        );
+        newSequenceLength = addStep(stepIndex, randomNoteInterval, noteOffset,
+                                    noteLength, newSequenceLength);
         stepIndex++;
-      }
-      else if ((stepIndex + 4 < MAX_STEPS_IN_SEQ) && (settings->runChance->roll())) {
+      } else if ((stepIndex + 4 < MAX_STEPS_IN_SEQ) &&
+                 (settings->runChance->roll())) {
         for (int i = 0; i < 4; i++) {
-          newSequenceLength = addStep(
-            stepIndex,
-            i % MAX_NOTES,
-            noteOffset,
-            PULSES_PER_SIXTEENTH_NOTE / 2,
-            newSequenceLength
-          );
+          newSequenceLength =
+              addStep(stepIndex, i % MAX_NOTES, noteOffset,
+                      PULSES_PER_SIXTEENTH_NOTE / 2, newSequenceLength);
           stepIndex++;
         }
-      }
-      else if (settings->halfLengthChance->roll()) {
+      } else if (settings->halfLengthChance->roll()) {
         noteLength = noteLength / 2;
-      }
-      else if (settings->doubleLengthChance->roll()) {
+      } else if (settings->doubleLengthChance->roll()) {
         noteLength = noteLength * 2;
       }
     }
@@ -244,17 +231,13 @@ void Arp::generateSequence() {
     }
 
     // take all this variation and add a step to the sequence
-    newSequenceLength = addStep(
-      stepIndex,
-      randomNoteInterval,
-      noteOffset,
-      noteLength,
-      newSequenceLength
-    );
+    newSequenceLength = addStep(stepIndex, randomNoteInterval, noteOffset,
+                                noteLength, newSequenceLength);
     stepIndex++;
   }
 
-  byte collapseIndex = Stepper::getSteppedIndex(settings->collapseNotes->getValue(), 3);
+  byte collapseIndex =
+      Stepper::getSteppedIndex(settings->collapseNotes->getValue(), 3);
   // move rests to the end
   if (collapseIndex == 1) {
     byte count = 0;
@@ -279,10 +262,10 @@ void Arp::generateSequence() {
 
     for (int i = end - 1; i >= 0; i--) {
       if (sequenceIntervals[i] != 255) {
-          byte tmp = sequenceIntervals[i];
-          sequenceIntervals[i] = sequenceIntervals[end];
-          sequenceIntervals[end] = tmp;
-          end--;
+        byte tmp = sequenceIntervals[i];
+        sequenceIntervals[i] = sequenceIntervals[end];
+        sequenceIntervals[end] = tmp;
+        end--;
       }
     }
   }
@@ -299,7 +282,7 @@ void Arp::generateSequence() {
  * @param {byte} channel - MIDI channel to send to
  * @param {byte} note - MIDI note to send
  * @param {byte} velocity - MIDI velocity to send
-*/
+ */
 void Arp::sendNoteOn(byte channel, byte note, byte velocity) {
   // if midiChannelOut is 0, we use whatever channel was provided,
   // otherwise use the channel set in midiChannelOut
@@ -320,7 +303,7 @@ void Arp::sendNoteOn(byte channel, byte note, byte velocity) {
  * @param {byte} channel - MIDI channel to send to
  * @param {byte} note - MIDI note to send
  * @param {byte} velocity - MIDI velocity to send
-*/
+ */
 void Arp::sendNoteOff(byte channel, byte note, byte velocity) {
   // if midiChannelOut is 0, we use whatever channel was provided,
   // otherwise use the channel set in midiChannelOut
@@ -334,29 +317,28 @@ byte Arp::ccToMidiCh(byte value) {
   return Stepper::getSteppedIndex(value, 17);
 }
 
-int Arp::insert(byte arr[], int arrLen, byte value, int capacity) { 
-    // cap at capacity
-    if (arrLen >= capacity) {
+int Arp::insert(byte arr[], int arrLen, byte value, int capacity) {
+  // cap at capacity
+  if (arrLen >= capacity) {
+    return arrLen;
+  }
+
+  // deduplicate
+  for (int i = 0; i < arrLen; i++) {
+    if (arr[i] == value) {
       return arrLen;
     }
+  }
 
-    // deduplicate
-    for (int i = 0; i < arrLen; i++) {
-      if (arr[i] == value) {
-        return arrLen;
-      }
-    }
-  
-    arr[arrLen] = value;
-    return arrLen + 1; 
-} 
-
+  arr[arrLen] = value;
+  return arrLen + 1;
+}
 
 void Arp::sort(byte arr[], int arrLen) {
   for (int i = 1; i < arrLen; i++) {
-    for (int j = i; j > 0 && arr[j-1] > arr[j]; j--) {
-      byte tmp = arr[j-1];
-      arr[j-1] = arr[j];
+    for (int j = i; j > 0 && arr[j - 1] > arr[j]; j--) {
+      byte tmp = arr[j - 1];
+      arr[j - 1] = arr[j];
       arr[j] = tmp;
     }
   }
@@ -368,7 +350,7 @@ void Arp::sort(byte arr[], int arrLen) {
  * @param {byte} channel - MIDI channel received on
  * @param {byte} note - MIDI note received
  * @param {byte} velocity - MIDI velocity received
-*/
+ */
 void Arp::handleNoteOn(byte channel, byte note, byte velocity) {
   // if we're not listening on this channel, ignore message
   if (!correctInChannel(channel)) {
@@ -407,7 +389,7 @@ void Arp::handleNoteOn(byte channel, byte note, byte velocity) {
  * @param {byte} channel - MIDI channel received on
  * @param {byte} note - MIDI note received
  * @param {byte} velocity - MIDI velocity received
-*/
+ */
 void Arp::handleNoteOff(byte channel, byte note, byte velocity) {
   // if we're not listening on this channel, ignore message
   if (!correctInChannel(channel)) {
@@ -421,11 +403,11 @@ void Arp::handleNoteOff(byte channel, byte note, byte velocity) {
     if (pressedNotes[i] == note) {
       noteIndex = i;
     }
-    
+
     // MAX_NOTES - 2 because at index 14 we can move index 15 over
     // but at index 15 there's nothing to the right to move over
     if (noteIndex >= 0 && i >= noteIndex && i < MAX_NOTES - 2) {
-      pressedNotes[i] = pressedNotes[i+1];
+      pressedNotes[i] = pressedNotes[i + 1];
     }
   }
 
@@ -439,7 +421,7 @@ void Arp::handleNoteOff(byte channel, byte note, byte velocity) {
  *
  * @param {uint16_t} pulse - clock pulse step should be on
  * @returns {int} step index (or -1 if not found)
-*/
+ */
 int Arp::findStepIndexForPulse(uint16_t pulse) {
   for (int i = 0; i < totalSequenceSteps; ++i) {
     if (pulse == sequenceStartPositions[i]) {
@@ -461,7 +443,7 @@ int Arp::findStepIndexForPulse(uint16_t pulse) {
  *
  * @param {byte} note - MIDI note to check
  * @returns {bool} if note is between 23 (B0) and 110 (D8)
-*/
+ */
 bool Arp::noteInBounds(byte note) {
   return note >= 23 && note <= 110;
 }
@@ -471,7 +453,7 @@ bool Arp::noteInBounds(byte note) {
  *
  * @param {String} input - unpadded string
  * @returns {String} padded string
-*/
+ */
 String Arp::padded(String input) {
   int len = input.length();
   if (len < 2) {
@@ -487,7 +469,7 @@ String Arp::padded(String input) {
  *
  * @param {byte} value - CC value
  * @returns {String} padded and mapped string representation
-*/
+ */
 String Arp::convertCCToString(byte value) {
   byte mappedValue = map(value, 0, 127, 0, 99);
   String valueStr = String(mappedValue);
@@ -499,7 +481,7 @@ String Arp::convertCCToString(byte value) {
  *
  * @param {byte} channel - MIDI channel in question
  * @returns {bool} if we care about that channel
-*/
+ */
 bool Arp::correctInChannel(byte channel) {
   // 0 is the magic number to represent "all channels are okay"
   // otherwise we only care about the channel set in midiChannelIn
@@ -514,9 +496,9 @@ bool Arp::correctInChannel(byte channel) {
 /**
  * Goes through every note on every channel
  * sending a "note off" message
- * 
+ *
  * TODO should it also send CC123 "all notes off"?
-*/
+ */
 void Arp::panic() {
   byte fullDisplay[4];
   fullDisplay[0] = CHAR_A;
@@ -529,7 +511,7 @@ void Arp::panic() {
 
   for (byte ch = 0; ch < 16; ch++) {
     for (byte note = 0; note < 128; note++) {
-      MIDI.sendNoteOff(note, 64, ch+1);
+      MIDI.sendNoteOff(note, 64, ch + 1);
     }
   }
 }
@@ -543,7 +525,7 @@ void Arp::panic() {
  * @param {byte} channel - MIDI channel received on
  * @param {byte} cc - MIDI CC received
  * @param {byte} value - MIDI value received
-*/
+ */
 void Arp::handleCommandChange(byte channel, byte cc, byte value) {
   bool isOn = Setting::convertCCToBool(value);
 
@@ -559,7 +541,8 @@ void Arp::handleCommandChange(byte channel, byte cc, byte value) {
     }
   }
 
-  if (!correctInChannel(channel)) return;
+  if (!correctInChannel(channel))
+    return;
 
   // Queue a new sequence
   if (cc == CC_GENERATE_SEQUENCE) {
@@ -583,7 +566,7 @@ void Arp::handleCommandChange(byte channel, byte cc, byte value) {
  * Handle changing step in sequence
  *
  * @param {int} stepIndex - index of step in sequence
-*/
+ */
 void Arp::handleStep(int stepIndex) {
   // Turn current note off if there is one
   // (0 means there is no note)
@@ -609,7 +592,8 @@ void Arp::handleStep(int stepIndex) {
   byte nextNote = activeNotes[newNoteIndex];
 
   // check to make sure we can safely apply note/octave offset
-  if (sequenceOffset[stepIndex] && noteInBounds(nextNote + sequenceOffset[stepIndex])) {
+  if (sequenceOffset[stepIndex] &&
+      noteInBounds(nextNote + sequenceOffset[stepIndex])) {
     nextNote = nextNote + sequenceOffset[stepIndex];
   }
 
@@ -620,7 +604,7 @@ void Arp::handleStep(int stepIndex) {
 
 /**
  * Handle a new MIDI clock pulse
-*/
+ */
 void Arp::handleClock(unsigned long now) {
   // If we hit the start of a new bar
   // and the button has been pressed, regenerate sequence
@@ -650,8 +634,11 @@ void Arp::handleClock(unsigned long now) {
       // This is all to handle swing if we need to.
       // First we check if we're on even (2 of 2) 16ths
       byte ccSwing = settings->swing->getValue();
-      if (ccSwing > 0 && (pulseCount + PULSES_PER_SIXTEENTH_NOTE) % PULSES_PER_EIGHTH_NOTE == 0) {
-        // Swing is between 0 and 2 clock pulses in length, so we need to know how long that is
+      if (ccSwing > 0 &&
+          (pulseCount + PULSES_PER_SIXTEENTH_NOTE) % PULSES_PER_EIGHTH_NOTE ==
+              0) {
+        // Swing is between 0 and 2 clock pulses in length, so we need to know
+        // how long that is
         unsigned long twoClockPulses = (now - lastClockPulse) * 2;
         swingDelay = map(ccSwing, 0, 127, 0, twoClockPulses);
         // Stash what the note was and when it should have played
@@ -678,7 +665,7 @@ void Arp::handleClock(unsigned long now) {
 
 /**
  * Reset sequence progress
-*/
+ */
 void Arp::reset() {
   pulseCount = 0;
   currNote = 0;
@@ -689,9 +676,9 @@ void Arp::reset() {
  * Handle start and continue MIDI signals
  *
  * @param {bool} resetSeq - whether to reset progress
- * 
+ *
  * TODO should this play the current note when continuing?
-*/
+ */
 void Arp::handleStartContinue(bool resetSeq) {
   if (resetSeq || settings->clock->getValueAsBool()) {
     reset();
@@ -707,7 +694,7 @@ void Arp::handleStartContinue(bool resetSeq) {
 
 /**
  * Handle stop MIDI signal
-*/
+ */
 void Arp::handleStop() {
   running = false;
   sendNoteOff(1, currNote, 64);
@@ -715,7 +702,7 @@ void Arp::handleStop() {
 
 /**
  * Initialize Arp
-*/
+ */
 void Arp::setup() {
   MIDI.begin(MIDI_CHANNEL_OMNI);
   MIDI.turnThruOff();
@@ -723,8 +710,9 @@ void Arp::setup() {
 
 /**
  * Go through and respond to button presses
- * 
- * @param {bool} useInternalClock - whether or not we're using an internal clock/transport
+ *
+ * @param {bool} useInternalClock - whether or not we're using an internal
+ * clock/transport
  */
 void Arp::handleButtons(bool useInternalClock) {
   if (!(buttons->anyPressed || buttons->anyReleased)) {
@@ -777,7 +765,7 @@ void Arp::handleButtons(bool useInternalClock) {
  * Reads MIDI messages and tries to handle them.
  *
  * @returns {bool} whether a MIDI message was read
-*/
+ */
 bool Arp::update() {
   // TODO might be best to switch this all to micros
   unsigned long now = millis();
@@ -796,8 +784,8 @@ bool Arp::update() {
   // the originalSwungNoteTime will be off
   if (swungStepIndex > -1) {
     if (now - originalSwungNoteTime > swingDelay) {
-        handleStep(swungStepIndex);
-        swungStepIndex = -1;
+      handleStep(swungStepIndex);
+      swungStepIndex = -1;
     }
   }
 
@@ -807,8 +795,10 @@ bool Arp::update() {
 
     // TODO this could be optimized by only calculating values on BPM change
     byte bpm = settings->bpm->getValue() + BPM_OFFSET;
-    unsigned long timeBetweenInternalClockPulses = 60000000L / (PULSES_PER_QUARTER_NOTE * bpm);
-    if (nowMicros - lastInternalClockPulseTime > timeBetweenInternalClockPulses) {
+    unsigned long timeBetweenInternalClockPulses =
+        60000000L / (PULSES_PER_QUARTER_NOTE * bpm);
+    if (nowMicros - lastInternalClockPulseTime >
+        timeBetweenInternalClockPulses) {
       lastInternalClockPulseTime = nowMicros;
       handleClock(now);
       MIDI.sendClock();
@@ -817,7 +807,7 @@ bool Arp::update() {
 
   if (MIDI.read()) {
     readMidi = true;
-    switch(MIDI.getType()) {
+    switch (MIDI.getType()) {
       case midi::Clock:
         if (running && !useInternalClock) {
           handleClock(now);
@@ -868,8 +858,7 @@ bool Arp::update() {
   if (readMidi) {
     midiMode = true;
     lastMidiMessage = now;
-  }
-  else if (midiMode) {
+  } else if (midiMode) {
     if (now - lastMidiMessage > 1000) {
       midiMode = false;
     }

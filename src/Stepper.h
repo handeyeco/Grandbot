@@ -18,15 +18,12 @@ struct Stepper {
    *    - getSteppedIndex(60, 4) == 1
    *    - getSteppedIndex(70, 4) == 2
    *    - getSteppedIndex(127, 4) == 3
-   * 
+   *
    * @param {byte} value - the MIDI CC value
    * @param {byte} steps - the number of discrete steps to map
    * @return {byte} the index of the value mapped to the number of steps
    */
-  byte static getSteppedIndex(
-    byte value,
-    byte steps
-  ) {
+  byte static getSteppedIndex(byte value, byte steps) {
     float step = 127.0f / steps;
 
     for (byte i = 0; i < steps; i++) {
@@ -39,24 +36,18 @@ struct Stepper {
     return 255;
   }
 
-
   /**
    * Move up/down through discrete steps in a MIDI CC range.
    * Finds the current index, determines a delta, finds the new index,
    * and maps the new index to 0-127
-   * 
+   *
    * @param {byte} value - the MIDI CC value
    * @param {byte} steps - total number of discrete steps
    * @param {bool} up - movement direction: increment (true), decrement (false)
    * @param {byte} stride - number of steps to move
    * @return {byte} the new value after stepping/clamping
    */
-  byte static stepIndex(
-    byte value,
-    byte steps,
-    bool up,
-    byte stride = 1
-  ) {
+  byte static stepIndex(byte value, byte steps, bool up, byte stride = 1) {
     float step = 127.0f / steps;
     float halfstep = step / 2.0f;
     int dirStride = stride * (up ? 1 : -1);
@@ -71,7 +62,7 @@ struct Stepper {
     } else if (nextIndex == steps - 1) {
       return 127;
     }
-    
+
     float result = (nextIndex * step) + halfstep;
     float rounded = round(result);
     rounded = min(rounded, 127);

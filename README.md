@@ -1,4 +1,4 @@
-![Grandbot smiling](grandbot.JPG)
+![Grandbot smiling](grandbot-vanilla.jpg)
 
 # Grandbot
 
