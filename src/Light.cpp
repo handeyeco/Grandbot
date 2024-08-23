@@ -59,7 +59,9 @@ void Light::setColor(int mood) {
  *
  * @param {int} mood - enum for emotional state as defined in Grandbot.h
  */
-void Light::setMood(int mood) { this->mood = mood; }
+void Light::setMood(int mood) {
+  this->mood = mood;
+}
 
 /**
  * Light show (for Arp)

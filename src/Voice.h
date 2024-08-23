@@ -6,7 +6,7 @@
 #define VOICE_INCL_GUARD
 
 class Voice {
-private:
+ private:
   // A selection of notes to make melodies out of
   // (represented as MIDI notes)
   static const byte singingNotes[];
@@ -33,7 +33,7 @@ private:
 
   void play(int playLength);
 
-public:
+ public:
   Voice();
   void emote(int mood, byte esteem);
   void update();

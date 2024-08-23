@@ -20,13 +20,13 @@
  * Manages all settings
  */
 struct SettingManager {
-private:
+ private:
   // 4D7S display manager
-  Expressions *expr;
-  ButtonManager *buttons;
+  Expressions* expr;
+  ButtonManager* buttons;
 
-  Setting *sequenceSettings[SEQUENCE_SETTING_COUNT];
-  Setting *generalSettings[GENERAL_SETTING_COUNT];
+  Setting* sequenceSettings[SEQUENCE_SETTING_COUNT];
+  Setting* generalSettings[GENERAL_SETTING_COUNT];
 
   // 0 = no menu
   // 1 = submenu select
@@ -36,35 +36,35 @@ private:
   byte menuIndex = 0;
   void writeMenu();
 
-public:
-  SettingManager(Expressions *expr, ButtonManager *buttons);
+ public:
+  SettingManager(Expressions* expr, ButtonManager* buttons);
 
-  Setting *collapseNotes;
-  Setting *sequenceLength;
-  Setting *baseNoteLength;
-  Setting *octaveOneUpChance;
-  Setting *octaveOneDownChance;
-  Setting *octaveTwoUpChance;
-  Setting *octaveTwoDownChance;
-  Setting *halfLengthChance;
-  Setting *doubleLengthChance;
-  Setting *ratchetChance;
-  Setting *restChance;
-  Setting *runChance;
-  Setting *fifthChance;
-  Setting *randomNoteChance;
-  Setting *randomLengthChance;
-  Setting *slipChance;
+  Setting* collapseNotes;
+  Setting* sequenceLength;
+  Setting* baseNoteLength;
+  Setting* octaveOneUpChance;
+  Setting* octaveOneDownChance;
+  Setting* octaveTwoUpChance;
+  Setting* octaveTwoDownChance;
+  Setting* halfLengthChance;
+  Setting* doubleLengthChance;
+  Setting* ratchetChance;
+  Setting* restChance;
+  Setting* runChance;
+  Setting* fifthChance;
+  Setting* randomNoteChance;
+  Setting* randomLengthChance;
+  Setting* slipChance;
 
-  Setting *clock;
-  Setting *bpm;
-  Setting *swing;
-  Setting *useSpeaker;
-  Setting *sort;
-  Setting *midiChannelIn;
-  Setting *midiChannelOut;
+  Setting* clock;
+  Setting* bpm;
+  Setting* swing;
+  Setting* useSpeaker;
+  Setting* sort;
+  Setting* midiChannelIn;
+  Setting* midiChannelOut;
 
-  Setting *getSettingByCC(byte cc);
+  Setting* getSettingByCC(byte cc);
   bool usesCC(byte cc);
   void handleCC(byte cc, byte value);
 

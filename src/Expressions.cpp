@@ -1,6 +1,6 @@
 #include <Expressions.h>
 
-Expressions::Expressions(LedControl *_lc, Light *_light) {
+Expressions::Expressions(LedControl* _lc, Light* _light) {
   this->lc = _lc;
   this->light = _light;
 }
@@ -45,7 +45,8 @@ void Expressions::handleChangeExpressionState(int mood) {
  * (like setting changes)
  * @param {bool} colon - whether or not to light the colon on the display
  */
-void Expressions::writeToDisplay(byte *data, bool delayUpdate = true,
+void Expressions::writeToDisplay(byte* data,
+                                 bool delayUpdate = true,
                                  bool colon = false) {
   // Skip if we're currently displaying text
   // (for the Arp)
@@ -69,7 +70,7 @@ void Expressions::writeToDisplay(byte *data, bool delayUpdate = true,
  */
 void Expressions::writeExpression(bool delayUpdate = true) {
   Expression expr = *expression;
-  byte *data;
+  byte* data;
   if (isBlinking) {
     data = expr.getBlinking();
   } else {
@@ -96,28 +97,28 @@ void Expressions::setExpression(int mood) {
  * @param {int} mood - enum for emotional state as defined in Grandbot.h
  * @returns random expression based on mood
  */
-Expression *Expressions::getExpression(int mood) {
+Expression* Expressions::getExpression(int mood) {
   int i = 0;
 
   switch (mood) {
-  // Sleeping
-  case 0:
-    i = random(0, ExpressionSets::sleepingLength);
-    return &ExpressionSets::sleepingExpressions[i];
-  // Happy
-  case 1:
-    i = random(0, ExpressionSets::happyLength);
-    return &ExpressionSets::happyExpressions[i];
-  // Neutral
-  case 2:
-    i = random(0, ExpressionSets::neutralLength);
-    return &ExpressionSets::neutralExpressions[i];
-  // Unhappy
-  case 3:
-    i = random(0, ExpressionSets::unhappyLength);
-    return &ExpressionSets::unhappyExpressions[i];
-  default:
-    return &ExpressionSets::unhappyExpressions[0];
+    // Sleeping
+    case 0:
+      i = random(0, ExpressionSets::sleepingLength);
+      return &ExpressionSets::sleepingExpressions[i];
+    // Happy
+    case 1:
+      i = random(0, ExpressionSets::happyLength);
+      return &ExpressionSets::happyExpressions[i];
+    // Neutral
+    case 2:
+      i = random(0, ExpressionSets::neutralLength);
+      return &ExpressionSets::neutralExpressions[i];
+    // Unhappy
+    case 3:
+      i = random(0, ExpressionSets::unhappyLength);
+      return &ExpressionSets::unhappyExpressions[i];
+    default:
+      return &ExpressionSets::unhappyExpressions[0];
   }
 }
 
@@ -179,7 +180,7 @@ bool Expressions::isShowingControl() {
  * be written
  * @param {bool} colon - whether or not to light the colon on the display
  */
-void Expressions::writeText(byte *digits, bool colon = true) {
+void Expressions::writeText(byte* digits, bool colon = true) {
   lastControlChange = millis();
 
   writeToDisplay(digits, false, colon);

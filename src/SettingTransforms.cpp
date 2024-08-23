@@ -3,7 +3,7 @@
 /**
  * Most settings are displayed as `nn:vv`, so this gets the name part sorted
  */
-void SettingTransforms::populateName(Setting &self, byte output[4]) {
+void SettingTransforms::populateName(Setting& self, byte output[4]) {
   output[0] = self.nameDisplay[0];
   output[1] = self.nameDisplay[1];
 }
@@ -13,7 +13,7 @@ void SettingTransforms::populateName(Setting &self, byte output[4]) {
  * Since MIDI CC is 0-127 but we only have two digits for the value we map 0-127
  * to 0-99
  */
-void SettingTransforms::ccValueTransform(Setting &self, byte output[4]) {
+void SettingTransforms::ccValueTransform(Setting& self, byte output[4]) {
   populateName(self, output);
   byte index = Stepper::getSteppedIndex(self.getValue(), 100);
 
@@ -41,7 +41,7 @@ byte SettingTransforms::ccStepTransform(byte value, bool stepUp, bool shift) {
 /**
  * Value transform for on/off settings
  */
-void SettingTransforms::onOffValueTransform(Setting &self, byte output[4]) {
+void SettingTransforms::onOffValueTransform(Setting& self, byte output[4]) {
   populateName(self, output);
   output[2] = CHAR_O;
 
@@ -55,7 +55,8 @@ void SettingTransforms::onOffValueTransform(Setting &self, byte output[4]) {
 /**
  * Step transform for on/off settings
  */
-byte SettingTransforms::onOffStepTransform(byte value, bool stepUp,
+byte SettingTransforms::onOffStepTransform(byte value,
+                                           bool stepUp,
                                            bool shift) {
   return stepUp ? 127 : 0;
 }
@@ -64,7 +65,7 @@ byte SettingTransforms::onOffStepTransform(byte value, bool stepUp,
  * Value transform for MIDI clock
  * (since MIDI 0-127 gets mapped to external / internal)
  */
-void SettingTransforms::clockValueTransform(Setting &self, byte output[4]) {
+void SettingTransforms::clockValueTransform(Setting& self, byte output[4]) {
   populateName(self, output);
   // external clock
   if (self.getValue() < 64) {
@@ -82,7 +83,7 @@ void SettingTransforms::clockValueTransform(Setting &self, byte output[4]) {
  * Value transform for BPM
  * (since MIDI 0-127 gets mapped to 73-200)
  */
-void SettingTransforms::bpmValueTransform(Setting &self, byte output[4]) {
+void SettingTransforms::bpmValueTransform(Setting& self, byte output[4]) {
   output[0] = CHAR_B;
 
   // TODO: this should use BPM_OFFSET
@@ -116,7 +117,7 @@ byte SettingTransforms::bpmStepTransform(byte value, bool stepUp, bool shift) {
  * Value transform for swing
  * (since MIDI 0-127 gets mapped to 50-67)
  */
-void SettingTransforms::swingValueTransform(Setting &self, byte output[4]) {
+void SettingTransforms::swingValueTransform(Setting& self, byte output[4]) {
   populateName(self, output);
   byte index = Stepper::getSteppedIndex(self.getValue(), 18);
   byte mapped = index + 50;
@@ -130,7 +131,8 @@ void SettingTransforms::swingValueTransform(Setting &self, byte output[4]) {
  *
  * TODO consolidate these transformers that are basically doing the same thing
  */
-byte SettingTransforms::swingStepTransform(byte value, bool stepUp,
+byte SettingTransforms::swingStepTransform(byte value,
+                                           bool stepUp,
                                            bool shift) {
   if (shift) {
     return stepUp ? 127 : 0;
@@ -143,7 +145,7 @@ byte SettingTransforms::swingStepTransform(byte value, bool stepUp,
  * Value transform for MIDI channel
  * (since MIDI 0-127 gets mapped to all, 1-16)
  */
-void SettingTransforms::midiChValueTransform(Setting &self, byte output[4]) {
+void SettingTransforms::midiChValueTransform(Setting& self, byte output[4]) {
   populateName(self, output);
   byte index = Stepper::getSteppedIndex(self.getValue(), 17);
 
@@ -169,7 +171,8 @@ void SettingTransforms::midiChValueTransform(Setting &self, byte output[4]) {
  *
  * TODO consolidate these transformers that are basically doing the same thing
  */
-byte SettingTransforms::midiChStepTransform(byte value, bool stepUp,
+byte SettingTransforms::midiChStepTransform(byte value,
+                                            bool stepUp,
                                             bool shift) {
   if (shift) {
     return stepUp ? 127 : 0;
@@ -182,7 +185,7 @@ byte SettingTransforms::midiChStepTransform(byte value, bool stepUp,
  * Value transform for note length
  * (since MIDI 0-127 gets mapped to various different note lengths)
  */
-void SettingTransforms::noteLengthValueTransform(Setting &self,
+void SettingTransforms::noteLengthValueTransform(Setting& self,
                                                  byte output[4]) {
   populateName(self, output);
   byte index = Stepper::getSteppedIndex(self.getValue(), 7);
@@ -223,7 +226,8 @@ void SettingTransforms::noteLengthValueTransform(Setting &self,
  *
  * TODO consolidate these transformers that are basically doing the same thing
  */
-byte SettingTransforms::noteLenthStepTransform(byte value, bool stepUp,
+byte SettingTransforms::noteLenthStepTransform(byte value,
+                                               bool stepUp,
                                                bool shift) {
   if (shift) {
     return stepUp ? 127 : 0;
@@ -236,7 +240,7 @@ byte SettingTransforms::noteLenthStepTransform(byte value, bool stepUp,
  * Value transform for sequence length
  * (since MIDI 0-127 gets mapped to random, 1-8)
  */
-void SettingTransforms::sequenceLengthValueTransform(Setting &self,
+void SettingTransforms::sequenceLengthValueTransform(Setting& self,
                                                      byte output[4]) {
   populateName(self, output);
   byte index = Stepper::getSteppedIndex(self.getValue(), 9);
@@ -257,7 +261,8 @@ void SettingTransforms::sequenceLengthValueTransform(Setting &self,
  *
  * TODO consolidate these transformers that are basically doing the same thing
  */
-byte SettingTransforms::sequenceLenthStepTransform(byte value, bool stepUp,
+byte SettingTransforms::sequenceLenthStepTransform(byte value,
+                                                   bool stepUp,
                                                    bool shift) {
   if (shift) {
     return stepUp ? 127 : 0;
@@ -270,7 +275,7 @@ byte SettingTransforms::sequenceLenthStepTransform(byte value, bool stepUp,
  * Value transform for collapse notes
  * (since MIDI 0-127 gets mapped to none, start, or end)
  */
-void SettingTransforms::collapseNotesValueTransform(Setting &self,
+void SettingTransforms::collapseNotesValueTransform(Setting& self,
                                                     byte output[4]) {
   populateName(self, output);
   byte index = Stepper::getSteppedIndex(self.getValue(), 3);
@@ -297,7 +302,8 @@ void SettingTransforms::collapseNotesValueTransform(Setting &self,
  *
  * TODO consolidate these transformers that are basically doing the same thing
  */
-byte SettingTransforms::collapseNotesStepTransform(byte value, bool stepUp,
+byte SettingTransforms::collapseNotesStepTransform(byte value,
+                                                   bool stepUp,
                                                    bool shift) {
   if (shift) {
     return stepUp ? 127 : 0;

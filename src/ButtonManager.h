@@ -9,13 +9,13 @@
  * State manager for all buttons
  */
 struct ButtonManager {
-private:
-  Button *allButtons[7];
+ private:
+  Button* allButtons[7];
 
-public:
+ public:
   ButtonManager();
   void read();
-  bool combo(Button &b1, Button &b2);
+  bool combo(Button& b1, Button& b2);
 
   bool anyPressed;
   bool anyReleased;

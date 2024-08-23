@@ -17,13 +17,13 @@
  * along with all Arp logic, from Grandbot logic.
  */
 class Expressions {
-private:
+ private:
   // Library for the 4D7S
-  LedControl *lc;
+  LedControl* lc;
   // Controls the RGB LED
-  Light *light;
+  Light* light;
   // Getters for the different faces
-  Expression *expression;
+  Expression* expression;
 
   // Is it actively blinking
   bool isBlinking = false;
@@ -38,9 +38,9 @@ private:
   // Time between expression changes
   unsigned long expressionChangeDelay;
   void handleChangeExpressionState(int mood);
-  Expression *getExpression(int state);
+  Expression* getExpression(int state);
 
-  void writeToDisplay(byte *data, bool delayUpdate, bool colon);
+  void writeToDisplay(byte* data, bool delayUpdate, bool colon);
   void writeExpression(bool delayUpdate);
 
   // ARP STUFF #TODO move this
@@ -49,15 +49,15 @@ private:
   bool inMenu;
   bool isShowingControl();
 
-public:
-  Expressions(LedControl *_lc, Light *_light);
+ public:
+  Expressions(LedControl* _lc, Light* _light);
   void init();
   void update(int mood);
   void setExpression(int mood);
 
   // ARP STUFF #TODO move this
   void midiBeat(bool beat);
-  void writeText(byte *digits, bool colon = true);
+  void writeText(byte* digits, bool colon = true);
 
   void setMenu(bool menu);
 };

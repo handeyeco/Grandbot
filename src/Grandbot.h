@@ -10,7 +10,7 @@
 #define GRANDBOT_INCL_GUARD
 
 class Grandbot {
-private:
+ private:
   ButtonManager buttons;
   // The voice manager
   Voice voice;
@@ -56,15 +56,15 @@ private:
   // How long Grandbot has to be ignored before his esteem drops
   static const unsigned long ignoreThresh = 7200000LL;
 
-public:
+ public:
   Grandbot();
   void play();
   void setup();
   void read();
   void update();
-  ButtonManager *getButtonManagerPointer();
-  Expressions *getExpressionPointer();
-  Light *getLightPointer();
+  ButtonManager* getButtonManagerPointer();
+  Expressions* getExpressionPointer();
+  Light* getLightPointer();
 };
 
 #endif

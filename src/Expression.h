@@ -12,15 +12,15 @@
  * each byte controls a segment (7 lines, plus a dot)
  */
 struct Expression {
-private:
+ private:
   byte (&m_regular)[4];
   byte (&m_blinking)[4];
 
-public:
+ public:
   Expression(byte (&regular)[4], byte (&blinking)[4]);
   Expression(byte (*regular)[4], byte (*blinking)[4]);
-  byte *getRegular();
-  byte *getBlinking();
+  byte* getRegular();
+  byte* getBlinking();
 };
 
 #endif

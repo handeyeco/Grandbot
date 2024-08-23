@@ -2,10 +2,11 @@
 
 // Initialize MIDI library
 // MIDI_CREATE_DEFAULT_INSTANCE(); // uncomment for #NANO
-MIDI_CREATE_INSTANCE(HardwareSerial, Serial1,
-                     MIDI); // uncomment for #NANO_EVERY
+MIDI_CREATE_INSTANCE(HardwareSerial,
+                     Serial1,
+                     MIDI);  // uncomment for #NANO_EVERY
 
-Arp::Arp(Grandbot *gb) {
+Arp::Arp(Grandbot* gb) {
   this->gb = gb;
   this->buttons = gb->getButtonManagerPointer();
   this->expr = gb->getExpressionPointer();
@@ -19,13 +20,13 @@ Arp::Arp(Grandbot *gb) {
 
 const byte possibleNoteLengths[] = {
     // used in random note selection
-    1, // 16th
-    2, // 8th
-    4, // quarter
+    1,  // 16th
+    2,  // 8th
+    4,  // quarter
     // not used in random note selection
-    8,  // half
-    16, // whole
-    32  // double whole note
+    8,   // half
+    16,  // whole
+    32   // double whole note
 };
 
 /**
@@ -38,8 +39,11 @@ const byte possibleNoteLengths[] = {
  * @param {uint16_t} startPosition - where the step starts (in pulses)
  * @returns {uint16_t} where the step ends (in pulses)
  */
-uint16_t Arp::addStep(byte stepIndex, byte noteInterval, int8_t noteOffset,
-                      byte noteLength, uint16_t startPosition) {
+uint16_t Arp::addStep(byte stepIndex,
+                      byte noteInterval,
+                      int8_t noteOffset,
+                      byte noteLength,
+                      uint16_t startPosition) {
   sequenceIntervals[stepIndex] = noteInterval;
   sequenceOffset[stepIndex] = noteOffset;
   sequenceStartPositions[stepIndex] = startPosition;
@@ -52,7 +56,9 @@ uint16_t Arp::addStep(byte stepIndex, byte noteInterval, int8_t noteOffset,
  *
  * @returns {byte} random number between 0-127
  */
-byte Arp::ccRoll() { return random(128); }
+byte Arp::ccRoll() {
+  return random(128);
+}
 
 /**
  * Maps ccBaseNoteLength (0-127) to note lengths
@@ -307,7 +313,9 @@ void Arp::sendNoteOff(byte channel, byte note, byte velocity) {
   noTone(BUZZER_PIN);
 }
 
-byte Arp::ccToMidiCh(byte value) { return Stepper::getSteppedIndex(value, 17); }
+byte Arp::ccToMidiCh(byte value) {
+  return Stepper::getSteppedIndex(value, 17);
+}
 
 int Arp::insert(byte arr[], int arrLen, byte value, int capacity) {
   // cap at capacity
@@ -436,7 +444,9 @@ int Arp::findStepIndexForPulse(uint16_t pulse) {
  * @param {byte} note - MIDI note to check
  * @returns {bool} if note is between 23 (B0) and 110 (D8)
  */
-bool Arp::noteInBounds(byte note) { return note >= 23 && note <= 110; }
+bool Arp::noteInBounds(byte note) {
+  return note >= 23 && note <= 110;
+}
 
 /**
  * Pads a string with a leading space if it's under 2 chars long
@@ -798,50 +808,50 @@ bool Arp::update() {
   if (MIDI.read()) {
     readMidi = true;
     switch (MIDI.getType()) {
-    case midi::Clock:
-      if (running && !useInternalClock) {
-        handleClock(now);
-      } else {
-        readMidi = false;
-      }
-      break;
-    case midi::NoteOn:
-      handleNoteOn(MIDI.getChannel(), MIDI.getData1(), MIDI.getData2());
-      break;
-    case midi::NoteOff:
-      handleNoteOff(MIDI.getChannel(), MIDI.getData1(), MIDI.getData2());
-      break;
-    case midi::Start:
-      handleStartContinue(true);
-      break;
-    case midi::Continue:
-      handleStartContinue(false);
-      break;
-    case midi::Stop:
-      handleStop();
-      break;
-    case midi::ControlChange: {
-      byte channel = MIDI.getChannel();
-      byte cc = MIDI.getData1();
-      byte value = MIDI.getData2();
+      case midi::Clock:
+        if (running && !useInternalClock) {
+          handleClock(now);
+        } else {
+          readMidi = false;
+        }
+        break;
+      case midi::NoteOn:
+        handleNoteOn(MIDI.getChannel(), MIDI.getData1(), MIDI.getData2());
+        break;
+      case midi::NoteOff:
+        handleNoteOff(MIDI.getChannel(), MIDI.getData1(), MIDI.getData2());
+        break;
+      case midi::Start:
+        handleStartContinue(true);
+        break;
+      case midi::Continue:
+        handleStartContinue(false);
+        break;
+      case midi::Stop:
+        handleStop();
+        break;
+      case midi::ControlChange: {
+        byte channel = MIDI.getChannel();
+        byte cc = MIDI.getData1();
+        byte value = MIDI.getData2();
 
-      // #TODO, these three callbacks could be merged
-      // MIDI setup
-      if (settings->usesCC(cc)) {
-        // TODO filter in channel
-        settings->handleCC(cc, value);
-        return;
-      }
-      // Special controls
-      else if (cc >= 102) {
-        handleCommandChange(channel, cc, value);
-      }
-    } break;
-    default:
-      // if we don't know what MIDI message this is,
-      // just pretend like we didn't receive one
-      readMidi = false;
-      break;
+        // #TODO, these three callbacks could be merged
+        // MIDI setup
+        if (settings->usesCC(cc)) {
+          // TODO filter in channel
+          settings->handleCC(cc, value);
+          return;
+        }
+        // Special controls
+        else if (cc >= 102) {
+          handleCommandChange(channel, cc, value);
+        }
+      } break;
+      default:
+        // if we don't know what MIDI message this is,
+        // just pretend like we didn't receive one
+        readMidi = false;
+        break;
     }
   }
 

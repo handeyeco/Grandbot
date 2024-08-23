@@ -1,6 +1,8 @@
 #include <Button.h>
 
-Button::Button(int _pin) : pin(_pin) { pinMode(_pin, INPUT_PULLUP); }
+Button::Button(int _pin) : pin(_pin) {
+  pinMode(_pin, INPUT_PULLUP);
+}
 
 /**
  * Read and update button state

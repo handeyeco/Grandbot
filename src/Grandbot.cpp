@@ -1,15 +1,23 @@
 #include <Grandbot.h>
 
 Grandbot::Grandbot()
-    : buttons(), voice(), light(),
+    : buttons(),
+      voice(),
+      light(),
       lc(SERIAL_DATA_PIN, SERIAL_CLOCK_PIN, SERIAL_LOAD_PIN, 1),
       expr(&lc, &light) {}
 
-ButtonManager *Grandbot::getButtonManagerPointer() { return &buttons; }
+ButtonManager* Grandbot::getButtonManagerPointer() {
+  return &buttons;
+}
 
-Expressions *Grandbot::getExpressionPointer() { return &expr; }
+Expressions* Grandbot::getExpressionPointer() {
+  return &expr;
+}
 
-Light *Grandbot::getLightPointer() { return &light; }
+Light* Grandbot::getLightPointer() {
+  return &light;
+}
 
 /**
  * Determine mood based on esteem (a finer resolution mood);
@@ -113,7 +121,9 @@ void Grandbot::setup() {
  * into read/update. That way we can read buttons, Arp can do its thing,
  * and then we come back to finish GB's update.
  */
-void Grandbot::read() { getButtonManagerPointer()->read(); }
+void Grandbot::read() {
+  getButtonManagerPointer()->read();
+}
 
 /**
  * Update to be called during the Arduino update cycle.

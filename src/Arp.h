@@ -34,7 +34,7 @@
 // 8 (bars) * 16th (notes)
 // #define MAX_STEPS_IN_SEQ 8 * 16 // uncomment for #NANO
 // 8 (bars) * 32nd (notes)
-#define MAX_STEPS_IN_SEQ 8 * 16 * 2 // uncomment for #NANO_EVERY
+#define MAX_STEPS_IN_SEQ 8 * 16 * 2  // uncomment for #NANO_EVERY
 
 // =====================
 // MIDI CCs to listen to
@@ -43,18 +43,18 @@
 // TODO these probably need to move to SettingManager with the other CCs
 // Special controls
 #define CC_SLIP 116
-#define CC_PANIC 117 // WARNING we listen to this CC regardless of channel
+#define CC_PANIC 117  // WARNING we listen to this CC regardless of channel
 #define CC_GENERATE_SEQUENCE 118
 
 class Arp {
-private:
-  Grandbot *gb;
-  SettingManager *settings;
-  ButtonManager *buttons;
+ private:
+  Grandbot* gb;
+  SettingManager* settings;
+  ButtonManager* buttons;
   // 4D7S display manager
-  Expressions *expr;
+  Expressions* expr;
   // RGB LED manager
-  Light *light;
+  Light* light;
 
   // Track whether we're in "MIDI mode"
   // ie we've received a MIDI message recently
@@ -136,8 +136,11 @@ private:
   void handleStop();
   void handleStep(int stepIndex);
   void handleButtons(bool useInternalClock);
-  uint16_t addStep(byte stepIndex, byte noteInterval, int8_t noteOffset,
-                   byte noteLength, uint16_t startPosition);
+  uint16_t addStep(byte stepIndex,
+                   byte noteInterval,
+                   int8_t noteOffset,
+                   byte noteLength,
+                   uint16_t startPosition);
   byte getNoteLength();
   byte getSequenceLength();
   void generateSequence();
@@ -152,8 +155,8 @@ private:
   byte ccToMidiCh(byte cc);
   void panic();
 
-public:
-  Arp(Grandbot *gb);
+ public:
+  Arp(Grandbot* gb);
   void setup();
   bool update();
 };

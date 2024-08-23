@@ -119,27 +119,27 @@ Expression ExpressionSets::midiBeatExpressions[] = {
  */
 byte ExpressionSets::convertNumberToByte(byte num) {
   switch (num) {
-  case 0:
-    return CHAR_0;
-  case 1:
-    return CHAR_1;
-  case 2:
-    return CHAR_2;
-  case 3:
-    return CHAR_3;
-  case 4:
-    return CHAR_4;
-  case 5:
-    return CHAR_5;
-  case 6:
-    return CHAR_6;
-  case 7:
-    return CHAR_7;
-  case 8:
-    return CHAR_8;
-  case 9:
-    return CHAR_9;
-  default:
-    return CHAR_BLANK;
+    case 0:
+      return CHAR_0;
+    case 1:
+      return CHAR_1;
+    case 2:
+      return CHAR_2;
+    case 3:
+      return CHAR_3;
+    case 4:
+      return CHAR_4;
+    case 5:
+      return CHAR_5;
+    case 6:
+      return CHAR_6;
+    case 7:
+      return CHAR_7;
+    case 8:
+      return CHAR_8;
+    case 9:
+      return CHAR_9;
+    default:
+      return CHAR_BLANK;
   }
 }

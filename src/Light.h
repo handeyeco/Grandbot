@@ -5,7 +5,7 @@
 #define LIGHT_INCL_GUARD
 
 class Light {
-private:
+ private:
   // copy of the mood
   // #TODO remove redundancy
   int mood;
@@ -29,7 +29,7 @@ private:
 
   void write(byte rVal, byte gVal, byte bVal);
 
-public:
+ public:
   Light();
   void update();
   void setColor(int mood);

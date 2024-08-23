@@ -1,12 +1,17 @@
 #include <Setting.h>
 
-Setting::Setting(byte _defaultValue, byte _midiCC, byte firstDisplayChar,
+Setting::Setting(byte _defaultValue,
+                 byte _midiCC,
+                 byte firstDisplayChar,
                  byte secondDisplayChar,
-                 void (&_valueTransform)(Setting &self, byte output[4]),
+                 void (&_valueTransform)(Setting& self, byte output[4]),
                  byte (&_stepTransform)(byte value, bool stepUp, bool shift),
                  bool _usesColon)
-    : value(_defaultValue), defaultValue(_defaultValue), midiCC(_midiCC),
-      valueTransform(_valueTransform), stepTransform(_stepTransform),
+    : value(_defaultValue),
+      defaultValue(_defaultValue),
+      midiCC(_midiCC),
+      valueTransform(_valueTransform),
+      stepTransform(_stepTransform),
       usesColon(_usesColon) {
   // TODO ideally this would be passed in as an array,
   // but I couldn't figure it out because C++ is big brain programming
@@ -31,13 +36,21 @@ bool Setting::convertCCToBool(byte cc) {
  *
  * @param {byte[]} output - MIDI channel in question
  */
-void Setting::getDisplay(byte output[4]) { valueTransform(*this, output); }
+void Setting::getDisplay(byte output[4]) {
+  valueTransform(*this, output);
+}
 
-byte Setting::getValue() { return value; }
+byte Setting::getValue() {
+  return value;
+}
 
-bool Setting::getValueAsBool() { return convertCCToBool(value); };
+bool Setting::getValueAsBool() {
+  return convertCCToBool(value);
+};
 
-void Setting::setValue(byte nextValue) { value = nextValue; }
+void Setting::setValue(byte nextValue) {
+  value = nextValue;
+}
 
 /**
  * Update the setting using buttons (rather than MIDI CC).
@@ -59,4 +72,6 @@ void Setting::step(bool stepUp, bool shift) {
  *
  * @returns {bool} whether the roll was successful
  */
-bool Setting::roll() { return random(128) < getValue(); }
+bool Setting::roll() {
+  return random(128) < getValue();
+}

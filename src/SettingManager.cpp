@@ -1,6 +1,6 @@
 #include <SettingManager.h>
 
-SettingManager::SettingManager(Expressions *_expr, ButtonManager *_buttons)
+SettingManager::SettingManager(Expressions* _expr, ButtonManager* _buttons)
     : expr(_expr), buttons(_buttons) {
   // Settings sorted by MIDI CC
   // available CC: 3, 9, 14-15, 20-31, 85-87, 89-90, 102-119
@@ -150,7 +150,7 @@ SettingManager::SettingManager(Expressions *_expr, ButtonManager *_buttons)
  * @returns {Setting* | NULL} returns a pointer to the setting if found;
  * otherwise NULL
  */
-Setting *SettingManager::getSettingByCC(byte cc) {
+Setting* SettingManager::getSettingByCC(byte cc) {
   for (int i = 0; i < SEQUENCE_SETTING_COUNT; i++) {
     if (sequenceSettings[i]->midiCC == cc) {
       return sequenceSettings[i];
@@ -174,7 +174,7 @@ Setting *SettingManager::getSettingByCC(byte cc) {
  * @returns {bool} whether we care about the CC or not
  */
 bool SettingManager::usesCC(byte cc) {
-  Setting *needle = getSettingByCC(cc);
+  Setting* needle = getSettingByCC(cc);
 
   return needle != NULL;
 }
@@ -187,7 +187,7 @@ bool SettingManager::usesCC(byte cc) {
  * @param {byte} value - the incoming value
  */
 void SettingManager::handleCC(byte cc, byte value) {
-  Setting *setting = getSettingByCC(cc);
+  Setting* setting = getSettingByCC(cc);
 
   if (setting == NULL)
     return;
@@ -213,7 +213,7 @@ void SettingManager::updateMenu() {
   }
   // Increment/decrement focused setting when in a submenu
   else if (menuStage > 1 && (buttons->up.released || buttons->down.released)) {
-    Setting *setting = menuStage == 2 ? sequenceSettings[menuIndex]
+    Setting* setting = menuStage == 2 ? sequenceSettings[menuIndex]
                                       : generalSettings[menuIndex];
 
     setting->step(buttons->up.released, buttons->forward.held);
@@ -268,7 +268,9 @@ void SettingManager::toggleMenu() {
  *
  * @returns {bool} whether we're in the menu
  */
-bool SettingManager::inMenu() { return menuStage > 0; }
+bool SettingManager::inMenu() {
+  return menuStage > 0;
+}
 
 /**
  * Write the current state of the menu to the display
@@ -297,7 +299,7 @@ void SettingManager::writeMenu() {
   }
   // Handle sub menus
   else {
-    Setting *setting = menuStage == 2 ? sequenceSettings[menuIndex]
+    Setting* setting = menuStage == 2 ? sequenceSettings[menuIndex]
                                       : generalSettings[menuIndex];
 
     setting->getDisplay(dis);

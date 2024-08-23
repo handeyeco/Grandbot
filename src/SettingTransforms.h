@@ -21,29 +21,29 @@
  */
 namespace SettingTransforms {
 // helpers
-void populateName(Setting &self, byte output[4]);
+void populateName(Setting& self, byte output[4]);
 
 // shared
-void ccValueTransform(Setting &self, byte output[4]);
+void ccValueTransform(Setting& self, byte output[4]);
 byte ccStepTransform(byte value, bool stepUp, bool shift);
-void onOffValueTransform(Setting &self, byte output[4]);
+void onOffValueTransform(Setting& self, byte output[4]);
 byte onOffStepTransform(byte value, bool stepUp, bool shift);
 
 // specialized
 // TODO a lot of these could be consolidated
-void clockValueTransform(Setting &self, byte output[4]);
-void bpmValueTransform(Setting &self, byte output[4]);
+void clockValueTransform(Setting& self, byte output[4]);
+void bpmValueTransform(Setting& self, byte output[4]);
 byte bpmStepTransform(byte value, bool stepUp, bool shift);
-void swingValueTransform(Setting &self, byte output[4]);
+void swingValueTransform(Setting& self, byte output[4]);
 byte swingStepTransform(byte value, bool stepUp, bool shift);
-void midiChValueTransform(Setting &self, byte output[4]);
+void midiChValueTransform(Setting& self, byte output[4]);
 byte midiChStepTransform(byte value, bool stepUp, bool shift);
-void noteLengthValueTransform(Setting &self, byte output[4]);
+void noteLengthValueTransform(Setting& self, byte output[4]);
 byte noteLenthStepTransform(byte value, bool stepUp, bool shift);
-void sequenceLengthValueTransform(Setting &self, byte output[4]);
+void sequenceLengthValueTransform(Setting& self, byte output[4]);
 byte sequenceLenthStepTransform(byte value, bool stepUp, bool shift);
-void collapseNotesValueTransform(Setting &self, byte output[4]);
+void collapseNotesValueTransform(Setting& self, byte output[4]);
 byte collapseNotesStepTransform(byte value, bool stepUp, bool shift);
-}; // namespace SettingTransforms
+};  // namespace SettingTransforms
 
 #endif

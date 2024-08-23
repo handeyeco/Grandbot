@@ -7,20 +7,22 @@
  * An individual setting
  */
 struct Setting {
-private:
+ private:
   // current value
   byte value = 0;
   // start / reset value
   byte defaultValue = 0;
   // value transform (map name/value to display)
-  void (&valueTransform)(Setting &self, byte output[4]);
+  void (&valueTransform)(Setting& self, byte output[4]);
   // handle setting value with buttons
   byte (&stepTransform)(byte value, bool stepUp, bool shift);
 
-public:
-  Setting(byte defaultValue, byte midiCC, byte firstDisplayChar,
+ public:
+  Setting(byte defaultValue,
+          byte midiCC,
+          byte firstDisplayChar,
           byte secondDisplayChar,
-          void (&valueTransform)(Setting &self, byte output[4]),
+          void (&valueTransform)(Setting& self, byte output[4]),
           byte (&setValueStepped)(byte value, bool stepUp, bool shift),
           bool usesColon = true);
 

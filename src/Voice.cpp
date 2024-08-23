@@ -1,10 +1,10 @@
 #include <Voice.h>
 
 const byte Voice::singingNotes[27] = {
-    84, // C6
+    84,  // C6
     85,  86, 87,  88,  89,  90,  91,  92,  93,  94,  95,  96,  97,
     98,  99, 100, 101, 102, 103, 104, 105, 106, 107, 108, 109,
-    110, // D8
+    110,  // D8
 };
 
 Voice::Voice() {}
@@ -20,10 +20,10 @@ Voice::Voice() {}
 int Voice::setMajor7th(int startIndex, int root) {
   int len = 4;
 
-  byte notes[len] = {singingNotes[root],       // Root
-                     singingNotes[root + 4],   // Major 3rd
-                     singingNotes[root + 7],   // Fifth
-                     singingNotes[root + 11]}; // Major 7th
+  byte notes[len] = {singingNotes[root],        // Root
+                     singingNotes[root + 4],    // Major 3rd
+                     singingNotes[root + 7],    // Fifth
+                     singingNotes[root + 11]};  // Major 7th
 
   for (int i = 0; i < len; i++) {
     melody[startIndex + i] = notes[i];
@@ -46,9 +46,9 @@ int Voice::setTriad(int startIndex, int root, bool major) {
   // Set the 3rd to a major or minor 3rd
   byte third = major ? 4 : 3;
 
-  byte notes[len] = {singingNotes[root],         // Root
-                     singingNotes[root + third], // 3rd
-                     singingNotes[root + 7]};    // Fifth
+  byte notes[len] = {singingNotes[root],          // Root
+                     singingNotes[root + third],  // 3rd
+                     singingNotes[root + 7]};     // Fifth
 
   byte noteLenFlip = random(0, 4);
   int noteLen = (noteLenFlip * 100) + 100;
@@ -137,23 +137,23 @@ void Voice::emote(int mood, byte esteem) {
   int len = 0;
 
   switch (mood) {
-  // Sleeping - Major 7th sequence
-  case 0:
-    len = setMajor7th(0, random(0, 12));
-    break;
-  // Happy - a song based on a major scale
-  case 1:
-    len = setSong();
-    break;
-  // Neutral - random sequence with a length
-  // based on his esteem
-  case 2:
-    len = setRandomSequence(esteem);
-    break;
-  // Unhappy - ho-hum sequence
-  case 3:
-    len = setUnhappy();
-    break;
+    // Sleeping - Major 7th sequence
+    case 0:
+      len = setMajor7th(0, random(0, 12));
+      break;
+    // Happy - a song based on a major scale
+    case 1:
+      len = setSong();
+      break;
+    // Neutral - random sequence with a length
+    // based on his esteem
+    case 2:
+      len = setRandomSequence(esteem);
+      break;
+    // Unhappy - ho-hum sequence
+    case 3:
+      len = setUnhappy();
+      break;
   }
 
   play(len);

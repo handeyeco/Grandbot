@@ -43,7 +43,7 @@
  * sorted by their emotion state
  */
 struct ExpressionSets {
-public:
+ public:
   static Expression errorExpressions[];
   static int errorLength;
   static Expression sleepingExpressions[];

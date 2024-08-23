@@ -7,11 +7,11 @@
  * State manager for an individual button
  */
 struct Button {
-private:
+ private:
   int pin;
   bool prevPressed;
 
-public:
+ public:
   Button(int pin);
   void read();
 
