@@ -39,9 +39,9 @@ byte swingStepTransform(byte value, bool stepUp, bool shift);
 void midiChValueTransform(Setting& self, byte output[4]);
 byte midiChStepTransform(byte value, bool stepUp, bool shift);
 void noteLengthValueTransform(Setting& self, byte output[4]);
-byte noteLenthStepTransform(byte value, bool stepUp, bool shift);
+byte noteLengthStepTransform(byte value, bool stepUp, bool shift);
 void sequenceLengthValueTransform(Setting& self, byte output[4]);
-byte sequenceLenthStepTransform(byte value, bool stepUp, bool shift);
+byte sequenceLengthStepTransform(byte value, bool stepUp, bool shift);
 void collapseNotesValueTransform(Setting& self, byte output[4]);
 byte collapseNotesStepTransform(byte value, bool stepUp, bool shift);
 };  // namespace SettingTransforms

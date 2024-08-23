@@ -226,7 +226,7 @@ void SettingTransforms::noteLengthValueTransform(Setting& self,
  *
  * TODO consolidate these transformers that are basically doing the same thing
  */
-byte SettingTransforms::noteLenthStepTransform(byte value,
+byte SettingTransforms::noteLengthStepTransform(byte value,
                                                bool stepUp,
                                                bool shift) {
   if (shift) {
@@ -261,7 +261,7 @@ void SettingTransforms::sequenceLengthValueTransform(Setting& self,
  *
  * TODO consolidate these transformers that are basically doing the same thing
  */
-byte SettingTransforms::sequenceLenthStepTransform(byte value,
+byte SettingTransforms::sequenceLengthStepTransform(byte value,
                                                    bool stepUp,
                                                    bool shift) {
   if (shift) {

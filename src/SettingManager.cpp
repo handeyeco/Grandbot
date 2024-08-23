@@ -26,12 +26,12 @@ SettingManager::SettingManager(Expressions* _expr, ButtonManager* _buttons)
   // step) options are: random, 1/16, 1/8, 1/4, 1/2, 1 (whole note), 2
   baseNoteLength = new Setting(0, 20, CHAR_N, CHAR_L,
                                SettingTransforms::noteLengthValueTransform,
-                               SettingTransforms::noteLenthStepTransform);
+                               SettingTransforms::noteLengthStepTransform);
   // The length of the generated sequence
   // options are: random, 1-8 bars
   sequenceLength = new Setting(0, 21, CHAR_S, CHAR_L,
                                SettingTransforms::sequenceLengthValueTransform,
-                               SettingTransforms::sequenceLenthStepTransform);
+                               SettingTransforms::sequenceLengthStepTransform);
 
   // Chance a step will be transposed one octave up
   octaveOneUpChance = new Setting(10, 22, B01100011, B01000000,
