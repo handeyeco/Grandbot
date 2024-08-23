@@ -605,6 +605,14 @@ void Arp::handleCommandChange(byte channel, byte cc, byte value) {
       }
     }
   }
+  // Randomize generation parameters
+  else if (cc == CC_RANDOMIZE_CHANCES) {
+    bool wasOff = !Setting::convertCCToBool(ccRandomChances);
+    ccRandomChances = value;
+    if (wasOff && isOn) {
+      settings->randomize();
+    }
+  }
 }
 
 /**
