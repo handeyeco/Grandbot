@@ -29,7 +29,9 @@ void ccValueTransform(Setting& self, byte output[4]);
 byte ccStepTransform(byte value, bool stepUp, bool shift);
 void onOffValueTransform(Setting& self, byte output[4]);
 byte onOffStepTransform(byte value, bool stepUp, bool shift);
+byte lowChance();
 byte mediumChance();
+byte highChance();
 
 // specialized
 // TODO a lot of these could be consolidated

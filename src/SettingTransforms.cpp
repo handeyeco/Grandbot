@@ -4,12 +4,26 @@ byte SettingTransforms::noRandomize() {
   return 0;
 }
 
+byte SettingTransforms::lowChance() {
+  // 25% chance to have any value
+  if (random(4) == 0) {
+    return random(0, 64);
+  } else {
+    return 0;
+  }
+}
+
 byte SettingTransforms::mediumChance() {
+  // 50% chance to have any value
   if (random(2)) {
     return random(0, 128);
   } else {
     return 0;
   }
+}
+
+byte SettingTransforms::highChance() {
+  return random(0, 128);
 }
 
 /**

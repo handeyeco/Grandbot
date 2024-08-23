@@ -25,19 +25,19 @@ SettingManager::SettingManager(Expressions* _expr, ButtonManager* _buttons)
   collapseNotes = new Setting(0, 19, CHAR_C, CHAR_O,
                               SettingTransforms::collapseNotesValueTransform,
                               SettingTransforms::collapseNotesStepTransform,
-                              SettingTransforms::mediumChance);
+                              SettingTransforms::lowChance);
   // Default note length in a sequence (gets transformed by other parameters per
   // step) options are: random, 1/16, 1/8, 1/4, 1/2, 1 (whole note), 2
   baseNoteLength = new Setting(0, 20, CHAR_N, CHAR_L,
                                SettingTransforms::noteLengthValueTransform,
                                SettingTransforms::noteLengthStepTransform,
-                               SettingTransforms::mediumChance);
+                               SettingTransforms::highChance);
   // The length of the generated sequence
   // options are: random, 1-8 bars
   sequenceLength = new Setting(0, 21, CHAR_S, CHAR_L,
                                SettingTransforms::sequenceLengthValueTransform,
                                SettingTransforms::sequenceLengthStepTransform,
-                               SettingTransforms::mediumChance);
+                               SettingTransforms::highChance);
 
   // Chance a step will be transposed one octave up
   octaveOneUpChance = new Setting(
@@ -50,19 +50,19 @@ SettingManager::SettingManager(Expressions* _expr, ButtonManager* _buttons)
   // Chance a step will be transposed two octaves up
   octaveTwoUpChance = new Setting(
       5, 24, B01100011, B01000001, SettingTransforms::ccValueTransform,
-      SettingTransforms::ccStepTransform, SettingTransforms::mediumChance);
+      SettingTransforms::ccStepTransform, SettingTransforms::lowChance);
   // Chance a step will be transposed two octaves down
   octaveTwoDownChance = new Setting(
       5, 25, B00011101, B00001001, SettingTransforms::ccValueTransform,
-      SettingTransforms::ccStepTransform, SettingTransforms::mediumChance);
+      SettingTransforms::ccStepTransform, SettingTransforms::lowChance);
   // Chance a step's length will change to double length
   doubleLengthChance = new Setting(
       0, 26, CHAR_D, CHAR_L, SettingTransforms::ccValueTransform,
-      SettingTransforms::ccStepTransform, SettingTransforms::mediumChance);
+      SettingTransforms::ccStepTransform, SettingTransforms::lowChance);
   // Chance a step's length will change to half length
   halfLengthChance = new Setting(
       0, 27, CHAR_H, CHAR_L, SettingTransforms::ccValueTransform,
-      SettingTransforms::ccStepTransform, SettingTransforms::mediumChance);
+      SettingTransforms::ccStepTransform, SettingTransforms::lowChance);
   // Chance a step will be a ratchet (two half-length steps of the same note)
   ratchetChance = new Setting(
       10, 28, CHAR_R, CHAR_A, SettingTransforms::ccValueTransform,
@@ -74,7 +74,7 @@ SettingManager::SettingManager(Expressions* _expr, ButtonManager* _buttons)
   // Chance a step will be a run (4 quick, different notes)
   runChance = new Setting(
       0, 30, CHAR_R, CHAR_U, SettingTransforms::ccValueTransform,
-      SettingTransforms::ccStepTransform, SettingTransforms::mediumChance);
+      SettingTransforms::ccStepTransform, SettingTransforms::lowChance);
   // Chance a step will be transposed a fifth up
   fifthChance = new Setting(
       0, 85, CHAR_F, CHAR_T, SettingTransforms::ccValueTransform,
