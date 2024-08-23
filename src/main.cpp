@@ -12,8 +12,6 @@ Arp arp = Arp(&gb);
 void setup() {
   gb.setup();
   arp.setup();
-
-  Serial.begin(9600);
 }
 
 void loop() {
