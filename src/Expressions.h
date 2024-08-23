@@ -56,7 +56,7 @@ class Expressions {
   void setExpression(int mood);
 
   // ARP STUFF #TODO move this
-  void midiBeat(bool beat, bool changeQueued);
+  void midiBeat(bool beat, bool showChangeQueued);
   void writeText(byte* digits, bool colon = true);
 
   void setMenu(bool menu);

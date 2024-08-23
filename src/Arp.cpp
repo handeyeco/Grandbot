@@ -97,10 +97,12 @@ byte Arp::getSequenceLength() {
   }
 }
 
-void Arp::queueSlip() {
+void Arp::queueSlip(bool setDrift) {
   if (regenerateQueued) {
     regenerateQueued = false;
   }
+
+  drift = setDrift;
 
   if (running) {
     slipQueued = true;
@@ -115,6 +117,10 @@ void Arp::queueSlip() {
  * randomly switches steps (randomness based on ccSlipChance)
  */
 void Arp::slipSequence() {
+  if (!drift) {
+    slipQueued = false;
+  }
+
   if (!settings->slipChance->getValue())
     return;
 
@@ -131,7 +137,7 @@ void Arp::slipSequence() {
 }
 
 void Arp::queueRegenerate() {
-  if (slipQueued) {
+  if (!drift && slipQueued) {
     slipQueued = false;
   }
 
@@ -583,7 +589,20 @@ void Arp::handleCommandChange(byte channel, byte cc, byte value) {
     bool wasOff = !Setting::convertCCToBool(ccSlip);
     ccSlip = value;
     if (wasOff && isOn) {
-      queueSlip();
+      queueSlip(false);
+    }
+  }
+  // Toggle drift mode
+  else if (cc == CC_DRIFT) {
+    bool wasOff = !Setting::convertCCToBool(ccDrift);
+    ccDrift = value;
+    if (wasOff && isOn) {
+      if (drift) {
+        drift = false;
+        slipQueued = false;
+      } else {
+        queueSlip(true);
+      }
     }
   }
 }
@@ -644,7 +663,6 @@ void Arp::handleClock(unsigned long now) {
 
     // If we triggered a slip, update the sequence
     if (slipQueued) {
-      slipQueued = false;
       slipSequence();
     }
   }
@@ -677,7 +695,7 @@ void Arp::handleClock(unsigned long now) {
       quarterFlipFlop = !quarterFlipFlop;
 
       // dance
-      expr->midiBeat(quarterFlipFlop, regenerateQueued || slipQueued);
+      expr->midiBeat(quarterFlipFlop, !settings->inMenu() && (regenerateQueued || slipQueued));
       // light show
       light->midiBeat(quarterFlipFlop);
     }
@@ -712,7 +730,7 @@ void Arp::handleStartContinue(bool resetSeq) {
   lastInternalClockPulseTime = millis();
 
   // trigger dance / light show again
-  expr->midiBeat(quarterFlipFlop, regenerateQueued || slipQueued);
+  expr->midiBeat(quarterFlipFlop, !settings->inMenu() && (regenerateQueued || slipQueued));
   light->midiBeat(quarterFlipFlop);
 }
 
@@ -721,6 +739,10 @@ void Arp::handleStartContinue(bool resetSeq) {
  */
 void Arp::handleStop() {
   running = false;
+  regenerateQueued = false;
+  drift = false;
+  slipQueued = false;
+
   sendNoteOff(1, currNote, 64);
 }
 
@@ -754,6 +776,16 @@ void Arp::handleButtons(bool useInternalClock) {
       panic();
       return;
     }
+    // Toggle drift mode
+    else if (buttons->combo(buttons->forward, buttons->down)) {
+      if (drift) {
+        drift = false;
+        slipQueued = false;
+      } else {
+        queueSlip(true);
+      }
+      return;
+    }
     // Up || Play triggers sequence generation
     else if (buttons->play.released || buttons->up.released) {
       queueRegenerate();
@@ -761,7 +793,7 @@ void Arp::handleButtons(bool useInternalClock) {
     }
     // Down triggers sequence slip
     else if (buttons->down.released) {
-      queueSlip();
+      queueSlip(false);
       return;
     }
     // Left triggers GB play sequence (unrelated to the Arp)
@@ -867,7 +899,7 @@ bool Arp::update() {
           return;
         }
         // Special controls
-        else if (cc >= 102) {
+        else {
           handleCommandChange(channel, cc, value);
         }
       } break;

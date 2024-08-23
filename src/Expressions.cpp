@@ -155,11 +155,11 @@ void Expressions::update(int mood) {
  *
  * @param {bool} even - whether we're on an even or odd quarter note
  */
-void Expressions::midiBeat(bool even, bool changeQueued) {
+void Expressions::midiBeat(bool even, bool showChangeQueued) {
   Expression e = ExpressionSets::midiBeatExpressions[even];
   writeToDisplay(e.getRegular());
 
-  if (changeQueued) {
+  if (showChangeQueued) {
     setLed(4, 1, true);
   }
 }

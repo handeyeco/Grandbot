@@ -42,6 +42,7 @@
 
 // TODO these probably need to move to SettingManager with the other CCs
 // Special controls
+#define CC_DRIFT 3
 #define CC_SLIP 116
 #define CC_PANIC 117  // WARNING we listen to this CC regardless of channel
 #define CC_GENERATE_SEQUENCE 118
@@ -70,6 +71,9 @@ class Arp {
 
   // Whether we should trigger a sequence regeneration
   bool regenerateQueued = false;
+
+  // Drift keeps slip queued so it continuously changes
+  bool drift = false;
   // Whether we should trigger a sequence "slip"
   bool slipQueued = false;
 
@@ -123,6 +127,7 @@ class Arp {
   byte ccPanic = 0;
   byte ccGenerate = 0;
   byte ccSlip = 0;
+  byte ccDrift = 0;
 
   void reset();
   byte ccRoll();
@@ -155,7 +160,7 @@ class Arp {
   byte ccToMidiCh(byte cc);
   void panic();
   void queueRegenerate();
-  void queueSlip();
+  void queueSlip(bool setDrift);
 
  public:
   Arp(Grandbot* gb);

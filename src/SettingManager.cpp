@@ -5,6 +5,8 @@ SettingManager::SettingManager(Expressions* _expr, ButtonManager* _buttons)
   // Settings sorted by MIDI CC
   // available CC: 3, 9, 14-15, 20-31, 85-87, 89-90, 102-119
 
+  // CC_DRIFT 3
+
   // MIDI channel to listen to (respected by most things except panic and
   // midiChannelIn itself) options are: 0 = all channels / 1-16 = channels 1-16
   midiChannelIn = new Setting(0, 14, CHAR_I, CHAR_N,
@@ -110,6 +112,11 @@ SettingManager::SettingManager(Expressions* _expr, ButtonManager* _buttons)
   swing = new Setting(0, 115, CHAR_S, CHAR_G,
                       SettingTransforms::swingValueTransform,
                       SettingTransforms::swingStepTransform);
+
+  // CC_SLIP 116
+  // CC_PANIC 117
+  // CC_GENERATE_SEQUENCE 118
+
   // Whether to play the sequence through GB's speaker or not
   useSpeaker = new Setting(0, 119, CHAR_S, CHAR_P,
                            SettingTransforms::onOffValueTransform,
