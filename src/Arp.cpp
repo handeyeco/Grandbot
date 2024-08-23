@@ -97,6 +97,19 @@ byte Arp::getSequenceLength() {
   }
 }
 
+void Arp::queueSlip() {
+  if (regenerateQueued) {
+    regenerateQueued = false;
+  }
+
+  if (running) {
+    slipQueued = true;
+    expr->setLed(4, 1, true);
+  } else {
+    slipSequence();
+  }
+}
+
 /**
  * Slip sequence runs through the existing sequence and
  * randomly switches steps (randomness based on ccSlipChance)
@@ -114,6 +127,19 @@ void Arp::slipSequence() {
       sequenceIntervals[i] = tmpInterval;
       sequenceOffset[i] = tmpOffset;
     }
+  }
+}
+
+void Arp::queueRegenerate() {
+  if (slipQueued) {
+    slipQueued = false;
+  }
+
+  if (running) {
+    regenerateQueued = true;
+    expr->setLed(4, 1, true);
+  } else {
+    generateSequence();
   }
 }
 
@@ -549,7 +575,7 @@ void Arp::handleCommandChange(byte channel, byte cc, byte value) {
     bool wasOff = !Setting::convertCCToBool(ccGenerate);
     ccGenerate = value;
     if (wasOff && isOn) {
-      regenerateQueued = true;
+      queueRegenerate();
     }
   }
   // Queue a sequence slip
@@ -557,7 +583,7 @@ void Arp::handleCommandChange(byte channel, byte cc, byte value) {
     bool wasOff = !Setting::convertCCToBool(ccSlip);
     ccSlip = value;
     if (wasOff && isOn) {
-      slipQueued = true;
+      queueSlip();
     }
   }
 }
@@ -606,17 +632,15 @@ void Arp::handleStep(int stepIndex) {
  * Handle a new MIDI clock pulse
  */
 void Arp::handleClock(unsigned long now) {
-  // If we hit the start of a new bar
-  // and the button has been pressed, regenerate sequence
-  if ((pulseCount % PULSES_PER_BAR == 0) && regenerateQueued) {
-    regenerateQueued = false;
-    generateSequence();
-    pulseCount = 0;
-  }
-
   // End of the sequence
   if (pulseCount >= totalSequenceLength) {
     pulseCount = 0;
+
+    // Regenerate sequence if queued
+    if (regenerateQueued) {
+      regenerateQueued = false;
+      generateSequence();
+    }
 
     // If we triggered a slip, update the sequence
     if (slipQueued) {
@@ -653,7 +677,7 @@ void Arp::handleClock(unsigned long now) {
       quarterFlipFlop = !quarterFlipFlop;
 
       // dance
-      expr->midiBeat(quarterFlipFlop);
+      expr->midiBeat(quarterFlipFlop, regenerateQueued || slipQueued);
       // light show
       light->midiBeat(quarterFlipFlop);
     }
@@ -688,7 +712,7 @@ void Arp::handleStartContinue(bool resetSeq) {
   lastInternalClockPulseTime = millis();
 
   // trigger dance / light show again
-  expr->midiBeat(quarterFlipFlop);
+  expr->midiBeat(quarterFlipFlop, regenerateQueued || slipQueued);
   light->midiBeat(quarterFlipFlop);
 }
 
@@ -732,12 +756,12 @@ void Arp::handleButtons(bool useInternalClock) {
     }
     // Up || Play triggers sequence generation
     else if (buttons->play.released || buttons->up.released) {
-      regenerateQueued = true;
+      queueRegenerate();
       return;
     }
     // Down triggers sequence slip
     else if (buttons->down.released) {
-      slipQueued = true;
+      queueSlip();
       return;
     }
     // Left triggers GB play sequence (unrelated to the Arp)

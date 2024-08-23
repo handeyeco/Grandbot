@@ -56,10 +56,11 @@ class Expressions {
   void setExpression(int mood);
 
   // ARP STUFF #TODO move this
-  void midiBeat(bool beat);
+  void midiBeat(bool beat, bool changeQueued);
   void writeText(byte* digits, bool colon = true);
 
   void setMenu(bool menu);
+  void setLed(int digit, int ledIndex, boolean state);
 };
 
 #endif

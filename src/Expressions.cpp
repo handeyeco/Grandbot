@@ -155,9 +155,13 @@ void Expressions::update(int mood) {
  *
  * @param {bool} even - whether we're on an even or odd quarter note
  */
-void Expressions::midiBeat(bool even) {
+void Expressions::midiBeat(bool even, bool changeQueued) {
   Expression e = ExpressionSets::midiBeatExpressions[even];
   writeToDisplay(e.getRegular());
+
+  if (changeQueued) {
+    setLed(4, 1, true);
+  }
 }
 
 /**
@@ -199,4 +203,8 @@ void Expressions::setMenu(bool menu) {
   if (!menu) {
     writeExpression(false);
   }
+}
+
+void Expressions::setLed(int digit, int ledIndex, boolean state) {
+  lc->setLed(0, digit, ledIndex, state);
 }
