@@ -91,7 +91,7 @@ SettingManager::SettingManager(Expressions* _expr, ButtonManager* _buttons)
   // sequence generation)
   slipChance = new Setting(
       10, 89, CHAR_S, CHAR_C, SettingTransforms::ccValueTransform,
-      SettingTransforms::ccStepTransform, SettingTransforms::mediumChance);
+      SettingTransforms::ccStepTransform, SettingTransforms::highChance);
 
   // Whether to use an external (Et) or internal (In) clock
   clock = new Setting(

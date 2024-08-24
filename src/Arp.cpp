@@ -97,13 +97,22 @@ byte Arp::getSequenceLength() {
   }
 }
 
+/**
+ * Handles queueing slip and enabling drift
+ *
+ * @param {bool} setDrift - whether to enable drift
+ */
 void Arp::queueSlip(bool setDrift) {
+  // having slip and regenerate happen at
+  // the same time doesn't make sense
   if (regenerateQueued) {
     regenerateQueued = false;
   }
 
   drift = setDrift;
 
+  // if the arp is running, delay slip;
+  // otherwise do it right away
   if (running) {
     slipQueued = true;
     expr->setLed(4, 1, true);
@@ -117,12 +126,18 @@ void Arp::queueSlip(bool setDrift) {
  * randomly switches steps (randomness based on ccSlipChance)
  */
 void Arp::slipSequence() {
+  // no point slipping/drifting if there's no slipChance
+  if (!settings->slipChance->getValue()) {
+    slipQueued = false;
+    drift = false;
+    return;
+  }
+
+  // drift is endless slip, so only unqueue
+  // slip if drift is not enabled
   if (!drift) {
     slipQueued = false;
   }
-
-  if (!settings->slipChance->getValue())
-    return;
 
   for (byte i = 0; i < totalSequenceSteps - 1; i++) {
     if (settings->slipChance->roll()) {
@@ -136,11 +151,18 @@ void Arp::slipSequence() {
   }
 }
 
+/**
+ * Handles queueing sequence regeneration
+ */
 void Arp::queueRegenerate() {
+  // having slip and regenerate happen at
+  // the same time doesn't make sense
   if (!drift && slipQueued) {
     slipQueued = false;
   }
 
+  // if the arp is running, delay generation;
+  // otherwise do it right away
   if (running) {
     regenerateQueued = true;
     expr->setLed(4, 1, true);
@@ -153,6 +175,8 @@ void Arp::queueRegenerate() {
  * Generate a new sequence
  */
 void Arp::generateSequence() {
+  regenerateQueued = false;
+
   // This is the length in number of pulses
   // (random number of bars between 1-8)
   uint16_t newTotalSequenceLength = getSequenceLength() * PULSES_PER_BAR;
@@ -665,7 +689,6 @@ void Arp::handleClock(unsigned long now) {
 
     // Regenerate sequence if queued
     if (regenerateQueued) {
-      regenerateQueued = false;
       generateSequence();
     }
 
@@ -703,8 +726,9 @@ void Arp::handleClock(unsigned long now) {
       quarterFlipFlop = !quarterFlipFlop;
 
       // dance
-      expr->midiBeat(quarterFlipFlop,
-                     !settings->inMenu() && (regenerateQueued || slipQueued));
+      // TODO, need to find a better way to handle screen state
+      bool showQueueDot = !settings->inMenu() && (regenerateQueued || slipQueued);
+      expr->midiBeat(quarterFlipFlop, showQueueDot);
       // light show
       light->midiBeat(quarterFlipFlop);
     }
@@ -739,8 +763,9 @@ void Arp::handleStartContinue(bool resetSeq) {
   lastInternalClockPulseTime = millis();
 
   // trigger dance / light show again
-  expr->midiBeat(quarterFlipFlop,
-                 !settings->inMenu() && (regenerateQueued || slipQueued));
+  // TODO, need to find a better way to handle screen state
+  bool showQueueDot = !settings->inMenu() && (regenerateQueued || slipQueued);
+  expr->midiBeat(quarterFlipFlop, showQueueDot);
   light->midiBeat(quarterFlipFlop);
 }
 

@@ -56,7 +56,7 @@ There's endless potential just doing that. If you'd like more control, there are
 | Collapse notes                  | 19      | Co      |
 | **» Generate / Slip**           |
 | Queue sequence generation       | 118     |         | \*     |
-| Randomize parameter values      | 9       |         | \*     |
+| Randomize sequence params       | 9       |         | \*     |
 | Slip chance                     | 89      | SC      |
 | Queue sequence slip             | 116     |         | \*     |
 | Toggle drift (endless slip)     | 3       |         | \*     |
