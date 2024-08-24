@@ -68,6 +68,8 @@ struct SettingManager {
   bool usesCC(byte cc);
   void handleCC(byte cc, byte value);
 
+  void randomize();
+
   void updateMenu();
   void toggleMenu();
   bool inMenu();
