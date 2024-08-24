@@ -727,7 +727,8 @@ void Arp::handleClock(unsigned long now) {
 
       // dance
       // TODO, need to find a better way to handle screen state
-      bool showQueueDot = !settings->inMenu() && (regenerateQueued || slipQueued);
+      bool showQueueDot =
+          !settings->inMenu() && (regenerateQueued || slipQueued);
       expr->midiBeat(quarterFlipFlop, showQueueDot);
       // light show
       light->midiBeat(quarterFlipFlop);
