@@ -3,26 +3,24 @@
 #ifndef BUTTON_INCL_GUARD
 #define BUTTON_INCL_GUARD
 
+#define BUTTON_MASK 0b11000111
+
 /**
  * State manager for an individual button
  */
 struct Button {
  private:
   int pin;
-  bool prevPressed;
 
  public:
   Button(int pin);
-  void read();
+  uint8_t history;
+  bool ignoreRelease = false;
 
-  // did it just get pressed
   bool pressed;
-  // did it just get released
-  bool released;
-  // are we between a press and a release
   bool held;
-  // disable release after a combo or press event
-  bool ignoreRelease;
+  bool released;
+  void update();
 };
 
 #endif

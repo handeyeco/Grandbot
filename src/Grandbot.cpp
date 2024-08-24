@@ -135,7 +135,8 @@ void Grandbot::update() {
   }
 
   unsigned long now = millis();
-  int lightRead = analogRead(LIGHT_SENSOR_PIN);
+  // int lightRead = analogRead(LIGHT_SENSOR_PIN);
+  int lightRead = 500;
   bool awake = lightRead > wakeThresh;
   bool asleep = lightRead < sleepThresh;
 

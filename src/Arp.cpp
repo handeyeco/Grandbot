@@ -797,7 +797,7 @@ void Arp::setup() {
  * clock/transport
  */
 void Arp::handleButtons(bool useInternalClock) {
-  if (!(buttons->anyPressed || buttons->anyReleased)) {
+  if (!(buttons->anyPressed || buttons->anyReleased || buttons->anyHeld)) {
     return;
   }
 

@@ -19,7 +19,7 @@ void ButtonManager::read() {
   anyHeld = false;
 
   for (byte i = 0; i < 7; i++) {
-    allButtons[i]->read();
+    allButtons[i]->update();
 
     if (allButtons[i]->pressed) {
       anyPressed = true;
