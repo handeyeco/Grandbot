@@ -15,13 +15,14 @@
  *    - "bpm: 127" would get mapped to "b200"
  * step transforms: mapping 0-127 CC to discrete steps (for buttons). Ex:
  *    - for on/off settings, we want to step between 0 (off) and 127 (off)
- * immediately
+ *      immediately
  *    - for other settings, we might want to move by 1 or move by 10 when shift
- * is held
+ *      is held
+ * randomize transforms: callbacks when randomizing sequence gen params
  */
 namespace SettingTransforms {
 // helpers
-byte noRandomize();
+byte noRandomizeTransform();
 void populateName(Setting& self, byte output[4]);
 
 // shared
@@ -29,9 +30,9 @@ void ccValueTransform(Setting& self, byte output[4]);
 byte ccStepTransform(byte value, bool stepUp, bool shift);
 void onOffValueTransform(Setting& self, byte output[4]);
 byte onOffStepTransform(byte value, bool stepUp, bool shift);
-byte lowChance();
-byte mediumChance();
-byte highChance();
+byte lowRandomizeTransform();
+byte mediumRandomizeTransform();
+byte highRandomizeTransform();
 
 // specialized
 // TODO a lot of these could be consolidated

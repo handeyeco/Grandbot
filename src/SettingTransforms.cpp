@@ -1,29 +1,50 @@
 #include <SettingTransforms.h>
 
-byte SettingTransforms::noRandomize() {
+/**
+ * Placeholder for things we don't want to change during randomization
+ * or for things that should never have a value when randomized
+ * (because they're too chaotic)
+ */
+byte SettingTransforms::noRandomizeTransform() {
   return 0;
 }
 
-byte SettingTransforms::lowChance() {
+/**
+ * Low chance, for things that we only want a hint of
+ * during randomization
+ */
+byte SettingTransforms::lowRandomizeTransform() {
   // 25% chance to have any value
   if (random(4) == 0) {
-    return random(0, 64);
+    return random(64);
   } else {
     return 0;
   }
 }
 
-byte SettingTransforms::mediumChance() {
+/**
+ * Medium chance, normal amount of randomization
+ */
+byte SettingTransforms::mediumRandomizeTransform() {
   // 50% chance to have any value
   if (random(2)) {
-    return random(0, 128);
+    return random(128);
   } else {
     return 0;
   }
 }
 
-byte SettingTransforms::highChance() {
-  return random(0, 128);
+/**
+ * High chance, we always want some value
+ * (still has a bias towards low values)
+ */
+byte SettingTransforms::highRandomizeTransform() {
+  // 75% chance of a scoped range
+  if (random(4) != 0) {
+    return random(20, 64);
+  } else {
+    return random(10, 128);
+  }
 }
 
 /**
