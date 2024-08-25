@@ -103,6 +103,20 @@ void Grandbot::play() {
 void Grandbot::setup() {
   randomSeed(analogRead(RANDOM_PIN));
 
+  // Read all analog pins as an attempt
+  // to reduce the burden on the ADC
+  // since there were problems with buttons
+  // not being read
+  // https://forum.arduino.cc/t/analog-i-o-port-interference/148909/5
+  // don't do A0, because that's the light sensor
+  digitalRead(A1);
+  digitalRead(A2);
+  digitalRead(A3);
+  digitalRead(A4);
+  digitalRead(A5);
+  digitalRead(A6);
+  digitalRead(A7);
+
   // Wake up Max7219
   lc.shutdown(0, false);
   // Set the brightness
