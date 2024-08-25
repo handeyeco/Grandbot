@@ -6,8 +6,6 @@ Button::Button(int _pin) : pin(_pin) {
 
 /**
  * Read and update button state
- * 
- * TODO debounce
  */
 void Button::read() {
   bool read = digitalRead(pin);
