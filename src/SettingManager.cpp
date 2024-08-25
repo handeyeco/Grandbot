@@ -107,6 +107,11 @@ SettingManager::SettingManager(Expressions* _expr, ButtonManager* _buttons)
       new Setting(10, 89, CHAR_S, CHAR_C, SettingTransforms::ccValueTransform,
                   SettingTransforms::ccStepTransform,
                   SettingTransforms::highRandomizeTransform);
+  // If active, hold notes through rests
+  latch = new Setting(10, 90, CHAR_L, CHAR_A,
+                      SettingTransforms::onOffValueTransform,
+                      SettingTransforms::onOffStepTransform,
+                      SettingTransforms::noRandomizeTransform);
 
   // Whether to use an external (Et) or internal (In) clock
   clock = new Setting(0, 112, CHAR_C, CHAR_L,
@@ -165,12 +170,13 @@ SettingManager::SettingManager(Expressions* _expr, ButtonManager* _buttons)
   sequenceSettings[15] = collapseNotes;
 
   generalSettings[0] = swing;
-  generalSettings[1] = useSpeaker;
-  generalSettings[2] = midiChannelIn;
-  generalSettings[3] = midiChannelOut;
-  generalSettings[4] = sort;
-  generalSettings[5] = clock;
-  generalSettings[6] = bpm;
+  generalSettings[1] = latch;
+  generalSettings[2] = useSpeaker;
+  generalSettings[3] = midiChannelIn;
+  generalSettings[4] = midiChannelOut;
+  generalSettings[5] = sort;
+  generalSettings[6] = clock;
+  generalSettings[7] = bpm;
 }
 
 /**

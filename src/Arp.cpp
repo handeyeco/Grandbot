@@ -361,6 +361,11 @@ void Arp::sendNoteOn(byte channel, byte note, byte velocity) {
  * @param {byte} velocity - MIDI velocity to send
  */
 void Arp::sendNoteOff(byte channel, byte note, byte velocity) {
+  // note 0 means no current note, so nothing to do
+  if (note == 0) {
+    return;
+  }
+
   // if midiChannelOut is 0, we use whatever channel was provided,
   // otherwise use the channel set in midiChannelOut
   byte outCh = ccToMidiCh(settings->midiChannelOut->getValue());
@@ -645,19 +650,30 @@ void Arp::handleCommandChange(byte channel, byte cc, byte value) {
  * @param {int} stepIndex - index of step in sequence
  */
 void Arp::handleStep(int stepIndex) {
-  // Turn current note off if there is one
-  // (0 means there is no note)
-  if (currNote > 0) {
-    sendNoteOff(1, currNote, 64);
-  }
-
   byte stepInterval = sequenceIntervals[stepIndex];
 
   // use 255 to indicate rest
   // #TODO fix this, it's hacky
+  // (also currNote = 0 is no note and stepInterval = 255 is rest,
+  // which is confusing)
   if (stepInterval == 255) {
-    currNote = 0;
-    return;
+    // if the next note is a rest and latch is enabled,
+    // do nothing
+    if (settings->latch->getValueAsBool()) {
+      return;
+    }
+    // if the next note is a rest and latch is disabled,
+    // send note off and rest
+    else {
+      sendNoteOff(1, currNote, 64);
+      currNote = 0;
+      return;
+    }
+  }
+  // if the next note is not a rest,
+  // send note off for the current note
+  else {
+    sendNoteOff(1, currNote, 64);
   }
 
   // This is where the magic happens!
