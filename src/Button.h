@@ -14,13 +14,18 @@ struct Button {
 
  public:
   Button(int pin);
-  uint8_t history;
-  bool ignoreRelease = false;
-
-  bool pressed;
-  bool held;
-  bool released;
   void read();
+
+  // used to debounce
+  uint8_t history;
+  // did it just get pressed
+  bool pressed;
+  // did it just get released
+  bool released;
+  // are we between a press and a release
+  bool held;
+  // disable release after a combo or press event
+  bool ignoreRelease;
 };
 
 #endif
