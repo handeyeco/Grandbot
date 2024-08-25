@@ -250,6 +250,16 @@ void Arp::generateSequence() {
       }
     }
 
+    // this needs to happen before ratchets, or else 100% rest chance still has notes
+    if (settings->restChance->getValue()) {
+      // Random rest
+      if (settings->restChance->roll()) {
+        // use 255 to indicate rest
+        // TODO fix this, it's hacky
+        randomNoteInterval = 255;
+      }
+    }
+
     // Note length variation; since they affect the same value (length)
     // there's some interplay between them with a bias
     // towards ratchets
@@ -274,15 +284,6 @@ void Arp::generateSequence() {
         noteLength = noteLength / 2;
       } else if (settings->doubleLengthChance->roll()) {
         noteLength = noteLength * 2;
-      }
-    }
-
-    if (settings->restChance->getValue()) {
-      // Random rest
-      if (settings->restChance->roll()) {
-        // use 255 to indicate rest
-        // TODO fix this, it's hacky
-        randomNoteInterval = 255;
       }
     }
 

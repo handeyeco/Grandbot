@@ -79,5 +79,5 @@ void Setting::randomize() {
  * @returns {bool} whether the roll was successful
  */
 bool Setting::roll() {
-  return random(128) < getValue();
+  return random(127) < getValue();
 }
