@@ -7,10 +7,6 @@ Button::Button(int _pin) : pin(_pin) {
 void Button::update() {
   bool read = digitalRead(pin);
 
-  if (read == 0) {
-    Serial.println(pin);
-  }
-
   history = history << 1;
   history |= (read == 0);
 
