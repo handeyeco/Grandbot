@@ -20,7 +20,7 @@ struct Button {
   bool pressed;
   bool held;
   bool released;
-  void update();
+  void read();
 };
 
 #endif

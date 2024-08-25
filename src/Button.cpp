@@ -4,7 +4,12 @@ Button::Button(int _pin) : pin(_pin) {
   pinMode(_pin, INPUT_PULLUP);
 }
 
-void Button::update() {
+/**
+ * Read and update button state
+ * 
+ * TODO debounce
+ */
+void Button::read() {
   bool read = digitalRead(pin);
 
   history = history << 1;
