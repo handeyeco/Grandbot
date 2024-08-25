@@ -108,6 +108,7 @@ void Grandbot::setup() {
   // since there were problems with buttons
   // not being read
   // https://forum.arduino.cc/t/analog-i-o-port-interference/148909/5
+  // don't do A0, because that's the light sensor
   digitalRead(A1);
   digitalRead(A2);
   digitalRead(A3);
