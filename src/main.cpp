@@ -25,6 +25,8 @@ void loop() {
 
 // NO ARP OPTION
 // =============
+// TODO this doesn't build without modifying Arp.cpp
+// and it shouldn't be using that file at all
 // #include <Arduino.h>
 // #include <Grandbot.h>
 
