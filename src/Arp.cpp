@@ -861,14 +861,14 @@ void Arp::handleButtons(bool useInternalClock) {
     }
     // Play / Pause
     else if (useInternalClock && buttons->forward.released && !running) {
-      MIDI.sendStart();
       handleStartContinue(true);
+      MIDI.sendStart();
       return;
     }
     // Stop
     else if (useInternalClock && buttons->backward.released && running) {
-      MIDI.sendStop();
       handleStop();
+      MIDI.sendStop();
       return;
     }
   }
@@ -925,6 +925,7 @@ bool Arp::update() {
       case midi::Clock:
         if (running && !useInternalClock) {
           handleClock(now);
+          MIDI.sendClock();
         } else {
           readMidi = false;
         }
@@ -937,12 +938,15 @@ bool Arp::update() {
         break;
       case midi::Start:
         handleStartContinue(true);
+        MIDI.sendStart();
         break;
       case midi::Continue:
         handleStartContinue(false);
+        MIDI.sendContinue();
         break;
       case midi::Stop:
         handleStop();
+        MIDI.sendStop();
         break;
       case midi::ControlChange: {
         byte channel = MIDI.getChannel();
