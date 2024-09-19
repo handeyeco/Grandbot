@@ -54,7 +54,7 @@ class Grandbot {
   // mood
   static const unsigned long playThresh = 30000LL;
   // How long Grandbot has to be ignored before his esteem drops
-  static const unsigned long ignoreThresh = 7200000LL;
+  static const unsigned long ignoreThresh = 14200000LL;
 
  public:
   Grandbot();
