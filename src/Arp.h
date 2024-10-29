@@ -44,6 +44,7 @@
 // Special controls
 #define CC_DRIFT 3
 #define CC_RANDOMIZE_CHANCES 9
+#define CC_RESET_CHANCES 90
 #define CC_SLIP 116
 #define CC_PANIC 117  // WARNING we listen to this CC regardless of channel
 #define CC_GENERATE_SEQUENCE 118
@@ -136,6 +137,7 @@ class Arp {
   byte ccSlip = 0;
   byte ccDrift = 0;
   byte ccRandomChances = 0;
+  byte ccResetChances = 0;
 
   void reset();
   byte ccRoll();

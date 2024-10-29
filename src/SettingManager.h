@@ -71,6 +71,7 @@ struct SettingManager {
   void handleCC(byte cc, byte value);
 
   void randomize();
+  void reset();
 
   void updateMenu();
   void toggleMenu();

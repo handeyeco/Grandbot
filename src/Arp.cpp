@@ -652,6 +652,14 @@ void Arp::handleCommandChange(byte channel, byte cc, byte value) {
       settings->randomize();
     }
   }
+  // Randomize generation parameters
+  else if (cc == CC_RESET_CHANCES) {
+    bool wasOff = !Setting::convertCCToBool(ccResetChances);
+    ccResetChances = value;
+    if (wasOff && isOn) {
+      settings->reset();
+    }
+  }
 }
 
 /**
@@ -859,6 +867,11 @@ void Arp::handleButtons(bool useInternalClock) {
     // Randomize sequence settings
     else if (buttons->combo(buttons->forward, buttons->up)) {
       settings->randomize();
+      return;
+    }
+    // Reset sequence settings
+    else if (buttons->combo(buttons->forward, buttons->right)) {
+      settings->reset();
       return;
     }
     // Up || Play triggers sequence generation

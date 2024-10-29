@@ -215,6 +215,12 @@ void SettingManager::randomize() {
   }
 }
 
+void SettingManager::reset() {
+  for (int i = 0; i < SEQUENCE_SETTING_COUNT; i++) {
+    sequenceSettings[i]->reset();
+  }
+}
+
 /**
  * Go through all of the settings and see if we're using
  * a given MIDI CC

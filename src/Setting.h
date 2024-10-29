@@ -45,6 +45,7 @@ struct Setting {
   void setValue(byte nextValue);
   void step(bool stepUp, bool shift);
   void randomize();
+  void reset();
   bool roll();
   bool getValueAsBool();
 };

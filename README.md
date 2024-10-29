@@ -56,20 +56,59 @@ There's endless potential just doing that. If you'd like more control, there are
 | **» Post Generate**             |
 | Collapse notes                  | 19      | Co      |
 | **» Generate / Slip**           |
-| Queue sequence generation       | 118     |         | \*     |
-| Randomize sequence params       | 9       |         | \*     |
+| Queue sequence generation       | 118     |         | UP                 |
+| Randomize sequence params       | 9       |         | SHIFT + UP         |
+| Reset sequence params           | 90      |         | SHIFT + RIGHT      |
+| Queue sequence slip             | 116     |         | DOWN               |
+| Toggle drift (endless slip)     | 3       |         | SHIFT + DOWN       |
 | Slip chance                     | 89      | SC      |
-| Queue sequence slip             | 116     |         | \*     |
-| Toggle drift (endless slip)     | 3       |         | \*     |
 | **» Utilities**                 |
 | Swing (50-67%)                  | 115     | SG      |
 | Note sort                       | 114     | So      |
 | Select MIDI channel in          | 14      | In      |
 | Select MIDI channel out         | 15      | ot      |
-| Panic / all notes off           | 117     | AH      | \*     |
 | Toggle internal speaker for arp | 119     | SP      |
 | Clock: external or internal     | 112     | CL      |
 | BPM for internal clock (73-200) | 113     | b       |
+| Panic / all notes off           | 117     | AH      | SHIFT + LEFT       |
+| Play (internal clock)           |         |         | FORWARD            |
+| Stop (internal clock)           |         |         | BACKWARD           |
+| Enter menu                      |         |         | FORWARD + BACKWARD |
+
+### Button Combos
+
+With the optional control board, six buttons are added for controlling the Arp settings.
+
+Buttons:
+- `˄`: UP
+- `˃`: RIGHT
+- `˅`: DOWN
+- `˂`: LEFT
+- `˃˃`: FORWARD (SHIFT)
+- `˂˂`: BACKWARD
+
+When outside the menu:
+- UP: queue sequence generation
+- SHIFT + UP: randomize sequence settings
+- DOWN: queue slip
+- SHIFT + DOWN: enable drift (endless slip)
+- LEFT: play with Grandbot (not related to the Arp)
+- SHIFT + LEFT: panic
+- SHIFT + RIGHT: reset sequence settings to default
+- FORWARD: play (when using internal clock)
+- BACKWARD: stop (when using internal clock)
+- SHIFT + BACKWARD: enter menu
+
+When inside the menu:
+- UP: increment current setting
+- SHIFT + UP: increment current setting (fast)
+- DOWN: decrement current setting
+- SHIFT + DOWN: decrement current setting (fast)
+- LEFT: select current setting
+- RIGHT: select current setting
+- FORWARD: enter sub-menu
+- BACKWARD: exit sub-menu
+- SHIFT + BACKWARD: exit menu
 
 ### Additional Notes
 
