@@ -98,11 +98,17 @@ class Arp {
 
   // Note currently being played
   byte currNote = 0;
+  // For legato, we hold two notes
+  byte legatoNote = 0;
 
   // #TODO this is poorly named, it's not really an "interval"
   // it's an index for accessing a note from `activeNotes`
   // so it's a sequence of array indexes modulo'd by `numActiveNotes`
   byte sequenceIntervals[MAX_STEPS_IN_SEQ] = {1, 3, 5, 3};
+
+  // For 303-mode, determine which steps in a sequence
+  // need to overlap (to trigger external legato)
+  bool sequenceStepLegato[MAX_STEPS_IN_SEQ] = {0, 0, 1, 0};
 
   // Offset the note at this step (like for octaves)
   // 0=no offset; 12=+1 oct; -24=-2oct
@@ -147,7 +153,8 @@ class Arp {
                    byte noteInterval,
                    int8_t noteOffset,
                    byte noteLength,
-                   uint16_t startPosition);
+                   uint16_t startPosition,
+                   bool legato);
   byte getNoteLength();
   byte getSequenceLength();
   void generateSequence();

@@ -50,6 +50,7 @@ There's endless potential just doing that. If you'd like more control, there are
 | Double length chance            | 26      | dL      |
 | Half length chance              | 27      | HL      |
 | Ratchet (double note) chance    | 28      | rA      |
+| Legato/slide chance             | 31      | LE      |
 | Random length chance            | 87      | rL      |
 | Note run chance                 | 30      | ru      |
 | **» Post Generate**             |
@@ -70,7 +71,7 @@ There's endless potential just doing that. If you'd like more control, there are
 | Clock: external or internal     | 112     | CL      |
 | BPM for internal clock (73-200) | 113     | b       |
 
-**Additional Notes**
+### Additional Notes
 
 - Things marked as buttons have to go low (CC 0) before going high (CC 127) to trigger
 - Defaults
