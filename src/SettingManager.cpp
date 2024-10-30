@@ -114,6 +114,7 @@ SettingManager::SettingManager(Expressions* _expr, ButtonManager* _buttons)
                       SettingTransforms::noRandomizeTransform);
 
   // Whether to use an external (Et) or internal (In) clock
+  // TODO: should the default be internal?
   clock = new Setting(0, 112, CHAR_C, CHAR_L,
                       SettingTransforms::clockValueTransform,
                       SettingTransforms::onOffStepTransform,

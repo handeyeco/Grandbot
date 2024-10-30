@@ -560,6 +560,8 @@ bool Arp::correctInChannel(byte channel) {
  * sending a "note off" message
  *
  * TODO should it also send CC123 "all notes off"?
+ * 
+ * TODO it should also stop the internal clock
  */
 void Arp::panic() {
   byte fullDisplay[4];
@@ -666,6 +668,8 @@ void Arp::handleStep(int stepIndex) {
     // if the next note is a rest and latch is disabled,
     // send note off and rest
     else {
+      // TODO: why do we have an "all" MIDI out setting if
+      // we just default to channel 1?
       sendNoteOff(1, currNote, 64);
       currNote = 0;
       return;
@@ -674,6 +678,8 @@ void Arp::handleStep(int stepIndex) {
   // if the next note is not a rest,
   // send note off for the current note
   else {
+    // TODO: why do we have an "all" MIDI out setting if
+    // we just default to channel 1?
     sendNoteOff(1, currNote, 64);
   }
 
