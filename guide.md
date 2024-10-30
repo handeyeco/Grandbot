@@ -2,9 +2,18 @@
 
 ## Arp
 
-Grandbot is a generative sequencer. This means you don't tell Grandbot what to play, but rather how Grandbot will decide what to play. For the most part, this is done by setting chance percentages for different options.
+Grandbot is a generative sequencer. This means you don't tell Grandbot what to play, but rather how Grandbot should decide what to play. For the most part, this is done by setting chance percentages for different options.
 
 For a technical overview of the Arp, check out [this blog post](https://handeyeco.github.io/tech-blog/grandbot-update-arp/).
+
+### Menus
+
+When using the optional Grandbot controller board, there are two sub-menus:
+
+- Sequence (`SEqu`): these are options that come into effect when generating a new sequence
+- Settings (`SEtt`): these are options that affect different things immediately
+
+To enter or exit the menu press FORWARD and BACKWARD at the same time.
 
 ### Settings
 
@@ -18,21 +27,21 @@ For a technical overview of the Arp, check out [this blog post](https://handeyec
 
 #### Base note length
 
- - Submenu: Sequence (`SEqu`)
+ - Submenu: Sequence
  - MIDI CC: 20
  - Display: `nL`
  - Options: Random (`rA`), 16th (`16`), 8th (`8`), quarter (` 1`), half (`HA`), whole (`1-`), double whole (`2-`)
  - Default: Random
 
-The starting note length for each step in the sequence. This can be modified by difference settings like double length chance, half length chance, and ratchet chance.
+The starting note length for each step in the sequence. This can be modified by different settings like double length chance, half length chance, and ratchet chance.
 
-When set to random, the different base length is picked (between 16th, 8th, and quarter) when generating a new sequence.
+When set to random, a different base length is picked (between 16th, 8th, and quarter) each time a new sequence is generated.
 
 ---
 
 #### Sequence length
 
-- Submenu: Sequence (`SEqu`)
+- Submenu: Sequence
 - MIDI CC: 21
 - Display: `SL`
 - Options: Random (`rA`), 1-8 bars
@@ -40,13 +49,13 @@ When set to random, the different base length is picked (between 16th, 8th, and 
 
 The length of the full sequence.
 
-When set to random, the different Sequence length is picked (between 1-8) when generating a new sequence.
+When set to random, a different Sequence length is picked (between 1-8) each time a new sequence is generated.
 
 ---
 
 #### One octave up chance
 
-- Submenu: Sequence (`SEqu`)
+- Submenu: Sequence
 - MIDI CC: 22
 - Display: `o-`
 - Range: 0-99%
@@ -58,7 +67,7 @@ The percent chance that a step will be transposed one octave up.
 
 #### One octave down chance
 
-- Submenu: Sequence (`SEqu`)
+- Submenu: Sequence
 - MIDI CC: 23
 - Display: `o-`
 - Range: 0-99%
@@ -70,7 +79,7 @@ The percent chance that a step will be transposed one octave down.
 
 #### Two octave up chance
 
-- Submenu: Sequence (`SEqu`)
+- Submenu: Sequence
 - MIDI CC: 24
 - Display: `o=`
 - Range: 0-99%
@@ -82,7 +91,7 @@ The percent chance that a step will be transposed two octaves up.
 
 #### Two octave down chance
 
-- Submenu: Sequence (`SEqu`)
+- Submenu: Sequence
 - MIDI CC: 25
 - Display: `o=`
 - Range: 0-99%
@@ -94,7 +103,7 @@ The percent chance that a step will be transposed two octaves down.
 
 #### Fifth up chance
 
-- Submenu: Sequence (`SEqu`)
+- Submenu: Sequence
 - MIDI CC: 85
 - Display: `Ft`
 - Range: 0-99%
@@ -106,7 +115,7 @@ The percent chance that a step will be transposed one fifth (7 semitones) up.
 
 #### Random transposition chance
 
-- Submenu: Sequence (`SEqu`)
+- Submenu: Sequence
 - MIDI CC: 86
 - Display: `rn`
 - Range: 0-99%
@@ -118,7 +127,7 @@ The percent chance that a step will be transposed randomly between -11 and +11 s
 
 #### Rest chance
 
-- Submenu: Sequence (`SEqu`)
+- Submenu: Sequence
 - MIDI CC: 29
 - Display: `rE`
 - Range: 0-99%
@@ -130,7 +139,7 @@ The percent chance that a step will be a rest (no note played).
 
 #### Double length chance
 
-- Submenu: Sequence (`SEqu`)
+- Submenu: Sequence
 - MIDI CC: 26
 - Display: `dL`
 - Range: 0-99%
@@ -142,7 +151,7 @@ The percent chance that a step will twice the length as the base note length.
 
 #### Half length chance
 
-- Submenu: Sequence (`SEqu`)
+- Submenu: Sequence
 - MIDI CC: 27
 - Display: `HL`
 - Range: 0-99%
@@ -154,7 +163,7 @@ The percent chance that a step will half the length as the base note length.
 
 #### Ratchet chance
 
-- Submenu: Sequence (`SEqu`)
+- Submenu: Sequence
 - MIDI CC: 28
 - Display: `rA`
 - Range: 0-99%
@@ -166,7 +175,7 @@ The percent chance that a step will split into a ratchet. A ratchet is a note pl
 
 #### Random length chance
 
-- Submenu: Sequence (`SEqu`)
+- Submenu: Sequence
 - MIDI CC: 87
 - Display: `rL`
 - Range: 0-99%
@@ -178,7 +187,7 @@ The percent chance that a step will have a random length.
 
 #### Note run chance
 
-- Submenu: Sequence (`SEqu`)
+- Submenu: Sequence
 - MIDI CC: 30
 - Display: `ru`
 - Range: 0-99%
@@ -190,7 +199,7 @@ The percent chance that a step will be a run. A run is a quick succession of not
 
 #### Collapse notes
 
-- Submenu: Sequence (`SEqu`)
+- Submenu: Sequence
 - MIDI CC: 19
 - Display: `Co`
 - Options: None (`no`), start (`St`), end (`En`)
@@ -228,7 +237,7 @@ It tries to be clever by only adjusting some settings and to different degrees d
 
 #### Slip chance
 
-- Submenu: Sequence (`SEqu`)
+- Submenu: Sequence
 - MIDI CC: 89
 - Display: `SC`
 - Range: 0-99%
@@ -266,7 +275,7 @@ Drift mode is an endless slip mode. Each time the sequence reaches the end, the 
 
 #### Latch
 
-- Submenu: Settings (`SEtt`)
+- Submenu: Settings
 - MIDI CC: 90
 - Display: `LA`
 - Options: Off - On
@@ -278,7 +287,7 @@ When latch is enabled, current notes are held when a rest is encountered.
 
 #### Swing
 
-- Submenu: Settings (`SEtt`)
+- Submenu: Settings
 - MIDI CC: 115
 - Display: `SG`
 - Range: 50-67%
@@ -290,7 +299,7 @@ Swing makes every other 16th note start later to create a more natural rhythm.
 
 #### Note sort
 
-- Submenu: Settings (`SEtt`)
+- Submenu: Settings
 - MIDI CC: 114
 - Display: `So`
 - Options: Off - On
@@ -302,7 +311,7 @@ Whether incoming notes are sorted; on leads to more predictable sequences when p
 
 #### Select MIDI channel in
 
-- Submenu: Settings (`SEtt`)
+- Submenu: Settings
 - MIDI CC: 14
 - Display: `In`
 - Options: All (`AL`), 1-16
@@ -317,7 +326,7 @@ What MIDI channel to listen to for incoming MIDI notes and CC messages. When set
 
 #### Select MIDI channel out
 
-- Submenu: Settings (`SEtt`)
+- Submenu: Settings
 - MIDI CC: 15
 - Display: `ot`
 - Options: All (`AL`), 1-16
@@ -341,7 +350,7 @@ In case of an emergency, panic tries to stop everything and tells all connected 
 
 #### Toggle internal speaker
 
-- Submenu: Settings (`SEtt`)
+- Submenu: Settings
 - MIDI CC: 119
 - Display: `SP`
 - Options: Off - On
@@ -353,7 +362,7 @@ Whether or not the Arp sequence should play through the internal speaker.
 
 #### Clock source
 
-- Submenu: Settings (`SEtt`)
+- Submenu: Settings
 - MIDI CC: 112
 - Display: `CL`
 - Options: External (`Et`) - Internal (`In`)
@@ -365,7 +374,7 @@ To be able to play the sequence, there needs to be a clock source. When set to e
 
 #### BPM
 
-- Submenu: Settings (`SEtt`)
+- Submenu: Settings
 - MIDI CC: 113
 - Display: `b`
 - Range: 73-200

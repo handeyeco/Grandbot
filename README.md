@@ -73,15 +73,6 @@ There's endless potential just doing that. If you'd like more control, there are
 
 [Full guide](guide.md)
 
-**Additional Notes**
-
-- Generate / Slip / Drift
-  - Generate uses chance to generate a new sequence
-  - Generate triggers at the end of the sequence
-  - Slip randomly swaps notes in a sequence based on slip chance
-  - Slip triggers at the end of the sequence
-  - Drift continuously slips the sequence at the end of each bar
-
 ## Tools
 
 - [Tool to control the arp via MIDI CC](https://handeyeco.github.io/grandbot-web-controller/) ([Source](https://github.com/handeyeco/grandbot-web-controller))
