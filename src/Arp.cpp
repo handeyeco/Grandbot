@@ -654,7 +654,7 @@ void Arp::handleCommandChange(byte channel, byte cc, byte value) {
       settings->randomize();
     }
   }
-  // Randomize generation parameters
+  // Reset generation parameters to defaults
   else if (cc == CC_RESET_CHANCES) {
     bool wasOff = !Setting::convertCCToBool(ccResetChances);
     ccResetChances = value;
@@ -700,7 +700,7 @@ void Arp::handleStep(int stepIndex) {
     }
   }
   // if the next note is not a rest, send note off for the current note
-  // unless we're holding if for legato
+  // unless we're holding it for legato
   else if (!stepLegato) {
     // TODO: why do we have an "all" MIDI out setting if
     // we just default to channel 1?

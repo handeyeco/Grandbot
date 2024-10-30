@@ -44,7 +44,7 @@
 // Special controls
 #define CC_DRIFT 3
 #define CC_RANDOMIZE_CHANCES 9
-#define CC_RESET_CHANCES 90
+#define CC_RESET_CHANCES 102
 #define CC_SLIP 116
 #define CC_PANIC 117  // WARNING we listen to this CC regardless of channel
 #define CC_GENERATE_SEQUENCE 118
@@ -109,7 +109,7 @@ class Arp {
 
   // For 303-mode, determine which steps in a sequence
   // need to overlap (to trigger external legato)
-  bool sequenceStepLegato[MAX_STEPS_IN_SEQ] = {0, 0, 1, 0};
+  bool sequenceStepLegato[MAX_STEPS_IN_SEQ] = {0, 0, 0, 0};
 
   // Offset the note at this step (like for octaves)
   // 0=no offset; 12=+1 oct; -24=-2oct

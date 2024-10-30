@@ -58,7 +58,7 @@ There's endless potential just doing that. If you'd like more control, there are
 | **» Generate / Slip**           |
 | Queue sequence generation       | 118     |         | UP                 |
 | Randomize sequence params       | 9       |         | SHIFT + UP         |
-| Reset sequence params           | 90      |         | SHIFT + RIGHT      |
+| Reset sequence params           | 102     |         | SHIFT + RIGHT      |
 | Queue sequence slip             | 116     |         | DOWN               |
 | Toggle drift (endless slip)     | 3       |         | SHIFT + DOWN       |
 | Slip chance                     | 89      | SC      |
