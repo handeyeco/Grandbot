@@ -135,6 +135,9 @@ The percent chance that a step will be transposed randomly between -11 and +11 s
 
 The percent chance that a step will be a rest (no note played).
 
+> [!WARNING]
+> When latch is enabled, notes are held through all rests.
+
 ---
 
 #### Double length chance
@@ -145,7 +148,7 @@ The percent chance that a step will be a rest (no note played).
 - Range: 0-99%
 - Default: 0%
 
-The percent chance that a step will twice the length as the base note length.
+The percent chance that a step will be twice the length as the base note length.
 
 ---
 
@@ -157,7 +160,7 @@ The percent chance that a step will twice the length as the base note length.
 - Range: 0-99%
 - Default: 0%
 
-The percent chance that a step will half the length as the base note length.
+The percent chance that a step will be half the length as the base note length.
 
 ---
 
@@ -169,7 +172,7 @@ The percent chance that a step will half the length as the base note length.
 - Range: 0-99%
 - Default: 7%
 
-The percent chance that a step will split into a ratchet. A ratchet is a note played twice, each half the length as the base note length. This transforms one step into two.
+The percent chance that a step will be split into a ratchet. A ratchet is a note played twice, each half the length as the base note length. This transforms one step into two.
 
 ---
 
@@ -181,7 +184,7 @@ The percent chance that a step will split into a ratchet. A ratchet is a note pl
 - Range: 0-99%
 - Default: 0%
 
-The percent chance that a step will have a random length.
+The percent chance that a step will have a random length (16th, 8th, or quarter length).
 
 ---
 
@@ -193,7 +196,7 @@ The percent chance that a step will have a random length.
 - Range: 0-99%
 - Default: 0%
 
-The percent chance that a step will be a run. A run is a quick succession of notes which, unlike ratchets, can be different. This transforms one step into several.
+The percent chance that a step will be a run. A run is a quick succession of notes which, unlike ratchets, can be different. This transforms one step into several steps.
 
 ---
 
@@ -205,7 +208,7 @@ The percent chance that a step will be a run. A run is a quick succession of not
 - Options: None (`no`), start (`St`), end (`En`)
 - Default: None
 
-When rests are present in a new sequence, collapse shifts all of the played notes to either the beginning or the end of the sequence.
+When rests are present in a new sequence, collapse shifts all of the non-rest notes to either the beginning or the end of the sequence.
 
 ---
 
@@ -221,7 +224,7 @@ When the sequence is not running, it generates a new sequence. When the sequence
 
 ---
 
-#### Randomize sequence params
+#### Randomize sequence parameters
 
 - MIDI CC: 9
 - Button: SHIFT + UP
@@ -293,7 +296,7 @@ When latch is enabled, current notes are held when a rest is encountered.
 - Range: 50-67%
 - Default: 50% (no swing)
 
-Swing makes every other 16th note start later to create a more natural rhythm.
+Swing makes every other 16th note start later to create a more natural sounding rhythm. 50-67% is the percent distance a 16th note is moved between its surrounding notes.
 
 ---
 
@@ -305,7 +308,7 @@ Swing makes every other 16th note start later to create a more natural rhythm.
 - Options: Off - On
 - Default: Off
 
-Whether incoming notes are sorted; on leads to more predictable sequences when playing chords, but are less exciting due to less variation.
+Whether incoming notes are sorted by pitch; it leads to more predictable sequences when playing chords, but the sequences are less exciting due to less variation.
 
 ---
 
@@ -341,7 +344,7 @@ What MIDI channel to send notes to. When set to "All", Grandbot will send notes 
 - MIDI CC: 117
 - Button: SHIFT + LEFT
 
-In case of an emergency, panic tries to stop everything and tells all connected devices to stop everything.
+In the case of an emergency, panic tries to stop everything and tells all connected devices to stop everything.
 
 > [!TIP]
 > When controlled with MIDI CC, CC needs to go below 64 before going above 64.
@@ -356,7 +359,7 @@ In case of an emergency, panic tries to stop everything and tells all connected 
 - Options: Off - On
 - Default: Off
 
-Whether or not the Arp sequence should play through the internal speaker.
+Whether or not the Arp sequence should play through Grandbot's internal speaker.
 
 ---
 
