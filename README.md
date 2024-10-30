@@ -31,7 +31,7 @@ The simplest use:
 - Start the MIDI clock and play some notes
 - Press the button to generate a new sequence
 
-There's endless potential just doing that. If you'd like more control, there are additional parameters that can be changed using MIDI CC:
+There's endless potential just doing that. If you'd like more control, there are additional parameters that can be changed using MIDI CC or the optional Grandbot control board:
 
 | Description                     | MIDI CC | Display | Button |
 | ------------------------------- | ------- | ------- | ------ |
@@ -70,6 +70,8 @@ There's endless potential just doing that. If you'd like more control, there are
 | Toggle internal speaker for arp | 119     | SP      |
 | Clock: external or internal     | 112     | CL      |
 | BPM for internal clock (73-200) | 113     | b       |
+
+[Full guide](guide.md)
 
 **Additional Notes**
 
