@@ -61,6 +61,7 @@ There's endless potential just doing that. If you'd like more control, there are
 | Queue sequence slip             | 116     |         | \*     |
 | Toggle drift (endless slip)     | 3       |         | \*     |
 | **» Utilities**                 |
+| Latch                           | 90      | LA      |
 | Swing (50-67%)                  | 115     | SG      |
 | Note sort                       | 114     | So      |
 | Select MIDI channel in          | 14      | In      |
@@ -72,25 +73,12 @@ There's endless potential just doing that. If you'd like more control, there are
 
 **Additional Notes**
 
-- Things marked as buttons have to go low (CC 0) before going high (CC 127) to trigger
-- Defaults
-  - MIDI in: listen to all channels
-  - MIDI out: send on channel 1
-  - Base note length: random
-  - Base sequence length: random
-  - Speaker: off
-  - Chances have sensible defaults depending on what they do
-- Generate / Slip
+- Generate / Slip / Drift
   - Generate uses chance to generate a new sequence
-  - Generate triggers at the end of the bar
+  - Generate triggers at the end of the sequence
   - Slip randomly swaps notes in a sequence based on slip chance
   - Slip triggers at the end of the sequence
-
-> [!TIP]
-> Changing variation chances only affects new sequences, not the current sequence. Press the button after making changes to hear the effects.
-
-> [!WARNING]
-> Pretty much all of these are only affected if the commands happen on the selected MIDI in channel (by default Grandbot listens to all channels). However CC 14 (MIDI in selector) and CC 117 (Panic) listen for changes on all channels all the time.
+  - Drift continuously slips the sequence at the end of each bar
 
 ## Tools
 
