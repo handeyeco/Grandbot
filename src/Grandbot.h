@@ -16,8 +16,6 @@ class Grandbot {
   Voice voice;
   // The RGB LED manager
   Light light;
-  // The LedControl library
-  LedControl lc;
   // The Expressions manager
   Expressions expr;
 

@@ -3,6 +3,7 @@
 #include <LedControl.h>
 #include <Light.h>
 #include <Setting.h>
+#include <pin_defs.h>
 
 #ifndef EXPRESSIONS_INCL_GUARD
 #define EXPRESSIONS_INCL_GUARD
@@ -19,11 +20,16 @@
 class Expressions {
  private:
   // Library for the 4D7S
-  LedControl* lc;
+  LedControl lc;
   // Controls the RGB LED
   Light* light;
   // Getters for the different faces
   Expression* expression;
+
+  // The current display intensity
+  byte currIntensity = 14;
+  void maxIntensity();
+  void minIntensity();
 
   // Is it actively blinking
   bool isBlinking = false;
@@ -41,7 +47,6 @@ class Expressions {
   Expression* getExpression(int state);
 
   void writeToDisplay(byte* data, bool delayUpdate, bool colon);
-  void writeExpression(bool delayUpdate);
 
   // ARP STUFF #TODO move this
   // When we last wrote text to the screen
@@ -50,10 +55,11 @@ class Expressions {
   bool isShowingControl();
 
  public:
-  Expressions(LedControl* _lc, Light* _light);
+  Expressions(Light* _light);
   void init();
   void update(int mood);
   void setExpression(int mood);
+  void writeExpression(bool delayUpdate);
 
   // ARP STUFF #TODO move this
   void midiBeat(bool beat, bool showChangeQueued);

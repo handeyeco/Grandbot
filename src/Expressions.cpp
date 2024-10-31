@@ -1,14 +1,44 @@
 #include <Expressions.h>
 
-Expressions::Expressions(LedControl* _lc, Light* _light) {
-  this->lc = _lc;
+Expressions::Expressions(Light* _light) : lc(SERIAL_DATA_PIN, SERIAL_CLOCK_PIN, SERIAL_LOAD_PIN, 1) {
   this->light = _light;
 }
 
 void Expressions::init() {
+  // Wake up Max7219
+  lc.shutdown(0, false);
+  // Set the brightness
+  lc.setIntensity(0, currIntensity);
+  // Only scan 4 digits
+  lc.setScanLimit(0, 4);
+  // Clear the display
+  lc.clearDisplay(0);
+
   handleChangeBlinkState();
   handleChangeExpressionState(1);
   lastExpressionChange = millis();
+}
+
+/**
+ * Increase the intensity of the MAX7219 to the max
+ * without writing to it needlessly
+ */
+void Expressions::maxIntensity() {
+  if (currIntensity != 14) {
+    currIntensity = 14;
+    lc.setIntensity(0, currIntensity);
+  }
+}
+
+/**
+ * decrease the intensity of the MAX7219 to the min
+ * without writing to it needlessly
+ */
+void Expressions::minIntensity() {
+  if (currIntensity != 0) {
+    currIntensity = 0;
+    lc.setIntensity(0, currIntensity);
+  }
 }
 
 /**
@@ -55,11 +85,11 @@ void Expressions::writeToDisplay(byte* data,
   }
 
   for (int i = 0; i < 4; i++) {
-    lc->setRow(0, i, data[i]);
+    lc.setRow(0, i, data[i]);
   }
 
   // Set colon
-  lc->setRow(0, 4, colon ? B10000000 : B00000000);
+  lc.setRow(0, 4, colon ? B10000000 : B00000000);
 }
 
 /**
@@ -75,6 +105,14 @@ void Expressions::writeExpression(bool delayUpdate = true) {
     data = expr.getBlinking();
   } else {
     data = expr.getRegular();
+  }
+
+  if (expr.isSleep()) {
+    // sleep
+    minIntensity();
+  } else {
+    // awake
+    maxIntensity();
   }
 
   writeToDisplay(data, delayUpdate);
@@ -156,6 +194,7 @@ void Expressions::update(int mood) {
  * @param {bool} even - whether we're on an even or odd quarter note
  */
 void Expressions::midiBeat(bool even, bool showChangeQueued) {
+  maxIntensity();
   Expression e = ExpressionSets::midiBeatExpressions[even];
   writeToDisplay(e.getRegular());
 
@@ -185,6 +224,7 @@ bool Expressions::isShowingControl() {
  * @param {bool} colon - whether or not to light the colon on the display
  */
 void Expressions::writeText(byte* digits, bool colon = true) {
+  maxIntensity();
   lastControlChange = millis();
 
   writeToDisplay(digits, false, colon);
@@ -198,6 +238,7 @@ void Expressions::writeText(byte* digits, bool colon = true) {
  * @param {bool} menu - whether or not we're in the menu
  */
 void Expressions::setMenu(bool menu) {
+  maxIntensity();
   inMenu = menu;
 
   if (!menu) {
@@ -206,5 +247,5 @@ void Expressions::setMenu(bool menu) {
 }
 
 void Expressions::setLed(int digit, int ledIndex, boolean state) {
-  lc->setLed(0, digit, ledIndex, state);
+  lc.setLed(0, digit, ledIndex, state);
 }

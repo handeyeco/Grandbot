@@ -73,8 +73,8 @@ int ExpressionSets::errorLength =
     sizeof(ExpressionSets::errorExpressions) / sizeof(errorExpressions[0]);
 
 Expression ExpressionSets::sleepingExpressions[] = {
-    Expression(sleeping, sleeping), Expression(sleeping2, sleeping2),
-    Expression(sleeping3, sleeping3), Expression(sleeping4, sleeping4)};
+    Expression(sleeping, sleeping, true), Expression(sleeping2, sleeping2, true),
+    Expression(sleeping3, sleeping3, true), Expression(sleeping4, sleeping4, true)};
 int ExpressionSets::sleepingLength =
     sizeof(ExpressionSets::sleepingExpressions) /
     sizeof(sleepingExpressions[0]);

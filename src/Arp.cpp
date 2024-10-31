@@ -828,6 +828,8 @@ void Arp::handleStop() {
 
   sendNoteOff(1, currNote, 64);
   sendNoteOff(1, legatoNote, 64);
+
+  expr->writeExpression(true);
 }
 
 /**
