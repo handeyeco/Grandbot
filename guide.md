@@ -327,6 +327,18 @@ Swing makes every other 16th note start later to create a more natural sounding 
 
 ---
 
+#### Transpose
+
+- Submenu: Settings
+- Display: `t`
+- MIDI CC: 103
+- Range: -24 to +24
+- Default: 0
+
+Transposes outgoing notes by a fixed number of semitones. Good for changing base octave or key changes.
+
+---
+
 #### Note sort
 
 - Submenu: Settings

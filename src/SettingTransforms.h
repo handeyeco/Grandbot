@@ -39,6 +39,8 @@ byte highRandomizeTransform();
 void clockValueTransform(Setting& self, byte output[4]);
 void bpmValueTransform(Setting& self, byte output[4]);
 byte bpmStepTransform(byte value, bool stepUp, bool shift);
+void transposeValueTransform(Setting& self, byte output[4]);
+byte transposeStepTransform(byte value, bool stepUp, bool shift);
 void swingValueTransform(Setting& self, byte output[4]);
 byte swingStepTransform(byte value, bool stepUp, bool shift);
 void midiChValueTransform(Setting& self, byte output[4]);

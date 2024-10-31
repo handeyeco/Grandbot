@@ -142,7 +142,7 @@ class Arp {
   void reset();
   byte ccRoll();
   int findStepIndexForPulse(uint16_t pulse);
-  bool noteInBounds(byte note);
+  bool noteInBounds(int note);
   void handleCommandChange(byte channel, byte cc, byte value);
   void handleNoteOn(byte channel, byte pitch, byte velocity);
   void handleNoteOff(byte channel, byte pitch, byte velocity);

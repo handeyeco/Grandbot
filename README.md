@@ -65,6 +65,7 @@ There's endless potential just doing that. If you'd like more control, there are
 | **» Utilities**                 |
 | Latch                           | 90      | LA      |
 | Swing (50-67%)                  | 115     | SG      |
+| Transpose                       | 103     | t       |
 | Note sort                       | 114     | So      |
 | Select MIDI channel in          | 14      | In      |
 | Select MIDI channel out         | 15      | ot      |

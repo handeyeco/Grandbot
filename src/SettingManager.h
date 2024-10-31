@@ -11,7 +11,7 @@
 
 #define MAX_MENU_ITEM_INDEX 254
 #define SEQUENCE_SETTING_COUNT 17
-#define GENERAL_SETTING_COUNT 8
+#define GENERAL_SETTING_COUNT 9
 
 // used to map MIDI CC 0-127 to 73-200 BPM
 #define BPM_OFFSET 73
@@ -62,6 +62,7 @@ struct SettingManager {
   Setting* swing;
   Setting* useSpeaker;
   Setting* sort;
+  Setting* transpose;
   Setting* latch;
   Setting* midiChannelIn;
   Setting* midiChannelOut;
