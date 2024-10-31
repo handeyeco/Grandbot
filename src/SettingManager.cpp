@@ -76,6 +76,11 @@ SettingManager::SettingManager(Expressions* _expr, ButtonManager* _buttons)
       new Setting(10, 28, CHAR_R, CHAR_A, SettingTransforms::ccValueTransform,
                   SettingTransforms::ccStepTransform,
                   SettingTransforms::mediumRandomizeTransform);
+  // Chance a step will overlap with the previous step (for triggering legato)
+  legatoChance =
+      new Setting(0, 31, CHAR_L, CHAR_E, SettingTransforms::ccValueTransform,
+                  SettingTransforms::ccStepTransform,
+                  SettingTransforms::noRandomizeTransform);
   // Chance a step will be a rest
   restChance =
       new Setting(5, 29, CHAR_R, CHAR_E, SettingTransforms::ccValueTransform,
@@ -157,18 +162,19 @@ SettingManager::SettingManager(Expressions* _expr, ButtonManager* _buttons)
   sequenceSettings[1] = sequenceLength;
   sequenceSettings[2] = baseNoteLength;
   sequenceSettings[3] = ratchetChance;
-  sequenceSettings[4] = restChance;
-  sequenceSettings[5] = octaveOneUpChance;
-  sequenceSettings[6] = octaveOneDownChance;
-  sequenceSettings[7] = octaveTwoUpChance;
-  sequenceSettings[8] = octaveTwoDownChance;
-  sequenceSettings[9] = halfLengthChance;
-  sequenceSettings[10] = doubleLengthChance;
-  sequenceSettings[11] = runChance;
-  sequenceSettings[12] = fifthChance;
-  sequenceSettings[13] = randomNoteChance;
-  sequenceSettings[14] = randomLengthChance;
-  sequenceSettings[15] = collapseNotes;
+  sequenceSettings[4] = legatoChance;
+  sequenceSettings[5] = restChance;
+  sequenceSettings[6] = octaveOneUpChance;
+  sequenceSettings[7] = octaveOneDownChance;
+  sequenceSettings[8] = octaveTwoUpChance;
+  sequenceSettings[9] = octaveTwoDownChance;
+  sequenceSettings[10] = halfLengthChance;
+  sequenceSettings[11] = doubleLengthChance;
+  sequenceSettings[12] = runChance;
+  sequenceSettings[13] = fifthChance;
+  sequenceSettings[14] = randomNoteChance;
+  sequenceSettings[15] = randomLengthChance;
+  sequenceSettings[16] = collapseNotes;
 
   generalSettings[0] = swing;
   generalSettings[1] = latch;
@@ -207,6 +213,12 @@ Setting* SettingManager::getSettingByCC(byte cc) {
 void SettingManager::randomize() {
   for (int i = 0; i < SEQUENCE_SETTING_COUNT; i++) {
     sequenceSettings[i]->randomize();
+  }
+}
+
+void SettingManager::reset() {
+  for (int i = 0; i < SEQUENCE_SETTING_COUNT; i++) {
+    sequenceSettings[i]->reset();
   }
 }
 

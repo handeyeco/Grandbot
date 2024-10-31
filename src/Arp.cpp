@@ -43,10 +43,12 @@ uint16_t Arp::addStep(byte stepIndex,
                       byte noteInterval,
                       int8_t noteOffset,
                       byte noteLength,
-                      uint16_t startPosition) {
+                      uint16_t startPosition,
+                      bool legato) {
   sequenceIntervals[stepIndex] = noteInterval;
   sequenceOffset[stepIndex] = noteOffset;
   sequenceStartPositions[stepIndex] = startPosition;
+  sequenceStepLegato[stepIndex] = legato;
 
   return startPosition + noteLength;
 }
@@ -143,10 +145,13 @@ void Arp::slipSequence() {
     if (settings->slipChance->roll()) {
       byte tmpInterval = sequenceIntervals[i + 1];
       int8_t tmpOffset = sequenceOffset[i + 1];
+      bool tmpLegato = sequenceStepLegato[i + 1];
       sequenceIntervals[i + 1] = sequenceIntervals[i];
       sequenceOffset[i + 1] = sequenceOffset[i];
+      sequenceStepLegato[i + 1] = sequenceStepLegato[i];
       sequenceIntervals[i] = tmpInterval;
       sequenceOffset[i] = tmpOffset;
+      sequenceStepLegato[i] = tmpLegato;
     }
   }
 }
@@ -204,6 +209,7 @@ void Arp::generateSequence() {
     byte noteLength = baseNoteLength;
     // used for transposition variation
     int8_t noteOffset = 0;
+    bool legato = settings->legatoChance->roll();
 
     // which index in the activeNotes array to play
     // (gets wrapped by numActiveNotes)
@@ -257,6 +263,8 @@ void Arp::generateSequence() {
         // use 255 to indicate rest
         // TODO fix this, it's hacky
         randomNoteInterval = 255;
+        // no point in sliding from a note to a rest
+        legato = false;
       }
     }
 
@@ -268,16 +276,17 @@ void Arp::generateSequence() {
         settings->doubleLengthChance->getValue() ||
         settings->runChance->getValue()) {
       if (settings->ratchetChance->roll()) {
+        // TODO: do we need to handle legato differently for ratchets?
         noteLength = noteLength / 2;
         newSequenceLength = addStep(stepIndex, randomNoteInterval, noteOffset,
-                                    noteLength, newSequenceLength);
+                                    noteLength, newSequenceLength, legato);
         stepIndex++;
       } else if ((stepIndex + 4 < MAX_STEPS_IN_SEQ) &&
                  (settings->runChance->roll())) {
         for (int i = 0; i < 4; i++) {
           newSequenceLength =
               addStep(stepIndex, i % MAX_NOTES, noteOffset,
-                      PULSES_PER_SIXTEENTH_NOTE / 2, newSequenceLength);
+                      PULSES_PER_SIXTEENTH_NOTE / 2, newSequenceLength, legato);
           stepIndex++;
         }
       } else if (settings->halfLengthChance->roll()) {
@@ -289,7 +298,7 @@ void Arp::generateSequence() {
 
     // take all this variation and add a step to the sequence
     newSequenceLength = addStep(stepIndex, randomNoteInterval, noteOffset,
-                                noteLength, newSequenceLength);
+                                noteLength, newSequenceLength, legato);
     stepIndex++;
   }
 
@@ -645,6 +654,14 @@ void Arp::handleCommandChange(byte channel, byte cc, byte value) {
       settings->randomize();
     }
   }
+  // Reset generation parameters to defaults
+  else if (cc == CC_RESET_CHANCES) {
+    bool wasOff = !Setting::convertCCToBool(ccResetChances);
+    ccResetChances = value;
+    if (wasOff && isOn) {
+      settings->reset();
+    }
+  }
 }
 
 /**
@@ -654,6 +671,13 @@ void Arp::handleCommandChange(byte channel, byte cc, byte value) {
  */
 void Arp::handleStep(int stepIndex) {
   byte stepInterval = sequenceIntervals[stepIndex];
+  bool stepLegato = sequenceStepLegato[stepIndex];
+
+  if (legatoNote != 0) {
+    sendNoteOff(1, legatoNote, 64);
+  }
+
+  legatoNote = stepLegato ? currNote : 0;
 
   // use 255 to indicate rest
   // #TODO fix this, it's hacky
@@ -675,9 +699,9 @@ void Arp::handleStep(int stepIndex) {
       return;
     }
   }
-  // if the next note is not a rest,
-  // send note off for the current note
-  else {
+  // if the next note is not a rest, send note off for the current note
+  // unless we're holding it for legato
+  else if (!stepLegato) {
     // TODO: why do we have an "all" MIDI out setting if
     // we just default to channel 1?
     sendNoteOff(1, currNote, 64);
@@ -803,6 +827,7 @@ void Arp::handleStop() {
   slipQueued = false;
 
   sendNoteOff(1, currNote, 64);
+  sendNoteOff(1, legatoNote, 64);
 }
 
 /**
@@ -848,6 +873,11 @@ void Arp::handleButtons(bool useInternalClock) {
     // Randomize sequence settings
     else if (buttons->combo(buttons->forward, buttons->up)) {
       settings->randomize();
+      return;
+    }
+    // Reset sequence settings
+    else if (buttons->combo(buttons->forward, buttons->right)) {
+      settings->reset();
       return;
     }
     // Up || Play triggers sequence generation

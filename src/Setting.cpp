@@ -73,6 +73,10 @@ void Setting::randomize() {
   setValue(randomizeValue());
 }
 
+void Setting::reset() {
+  setValue(defaultValue);
+}
+
 /**
  * Dice roll for chance values
  *

@@ -28,8 +28,8 @@ To enter or exit the menu press FORWARD and BACKWARD at the same time.
 #### Base note length
 
  - Submenu: Sequence
- - MIDI CC: 20
  - Display: `nL`
+ - MIDI CC: 20
  - Options: Random (`rA`), 16th (`16`), 8th (`8`), quarter (` 1`), half (`HA`), whole (`1-`), double whole (`2-`)
  - Default: Random
 
@@ -42,8 +42,8 @@ When set to random, a different base length is picked (between 16th, 8th, and qu
 #### Sequence length
 
 - Submenu: Sequence
-- MIDI CC: 21
 - Display: `SL`
+- MIDI CC: 21
 - Options: Random (`rA`), 1-8 bars
 - Default: Random
 
@@ -56,8 +56,8 @@ When set to random, a different Sequence length is picked (between 1-8) each tim
 #### One octave up chance
 
 - Submenu: Sequence
-- MIDI CC: 22
 - Display: `o-`
+- MIDI CC: 22
 - Range: 0-99%
 - Default: 7%
 
@@ -68,8 +68,8 @@ The percent chance that a step will be transposed one octave up.
 #### One octave down chance
 
 - Submenu: Sequence
-- MIDI CC: 23
 - Display: `o-`
+- MIDI CC: 23
 - Range: 0-99%
 - Default: 7%
 
@@ -80,8 +80,8 @@ The percent chance that a step will be transposed one octave down.
 #### Two octave up chance
 
 - Submenu: Sequence
-- MIDI CC: 24
 - Display: `o=`
+- MIDI CC: 24
 - Range: 0-99%
 - Default: 3%
 
@@ -92,8 +92,8 @@ The percent chance that a step will be transposed two octaves up.
 #### Two octave down chance
 
 - Submenu: Sequence
-- MIDI CC: 25
 - Display: `o=`
+- MIDI CC: 25
 - Range: 0-99%
 - Default: 3%
 
@@ -104,8 +104,8 @@ The percent chance that a step will be transposed two octaves down.
 #### Fifth up chance
 
 - Submenu: Sequence
-- MIDI CC: 85
 - Display: `Ft`
+- MIDI CC: 85
 - Range: 0-99%
 - Default: 0%
 
@@ -116,8 +116,8 @@ The percent chance that a step will be transposed one fifth (7 semitones) up.
 #### Random transposition chance
 
 - Submenu: Sequence
-- MIDI CC: 86
 - Display: `rn`
+- MIDI CC: 86
 - Range: 0-99%
 - Default: 0%
 
@@ -128,8 +128,8 @@ The percent chance that a step will be transposed randomly between -11 and +11 s
 #### Rest chance
 
 - Submenu: Sequence
-- MIDI CC: 29
 - Display: `rE`
+- MIDI CC: 29
 - Range: 0-99%
 - Default: 3%
 
@@ -143,8 +143,8 @@ The percent chance that a step will be a rest (no note played).
 #### Double length chance
 
 - Submenu: Sequence
-- MIDI CC: 26
 - Display: `dL`
+- MIDI CC: 26
 - Range: 0-99%
 - Default: 0%
 
@@ -155,8 +155,8 @@ The percent chance that a step will be twice the length as the base note length.
 #### Half length chance
 
 - Submenu: Sequence
-- MIDI CC: 27
 - Display: `HL`
+- MIDI CC: 27
 - Range: 0-99%
 - Default: 0%
 
@@ -167,8 +167,8 @@ The percent chance that a step will be half the length as the base note length.
 #### Ratchet chance
 
 - Submenu: Sequence
-- MIDI CC: 28
 - Display: `rA`
+- MIDI CC: 28
 - Range: 0-99%
 - Default: 7%
 
@@ -176,11 +176,26 @@ The percent chance that a step will be split into a ratchet. A ratchet is a note
 
 ---
 
+#### Legato / slide chance
+
+- Submenu: Sequence
+- Display: `LE`
+- MIDI CC: 31
+- Range: 0-99%
+- Default: 0%
+
+Legato triggers 303 style slides in supported synths by overlapping the current note with the previous note. Example synth settings:
+
+- Bass Station II: set triggering to "Autoglide" and increase the "Glide Time"
+- Hydrasynth: select a mono/unison setting in "Polyphony", turn "Glide" on, turn "Glide Legato" on, and increase "Glide Time"
+
+---
+
 #### Random length chance
 
 - Submenu: Sequence
-- MIDI CC: 87
 - Display: `rL`
+- MIDI CC: 87
 - Range: 0-99%
 - Default: 0%
 
@@ -191,8 +206,8 @@ The percent chance that a step will have a random length (16th, 8th, or quarter 
 #### Note run chance
 
 - Submenu: Sequence
-- MIDI CC: 30
 - Display: `ru`
+- MIDI CC: 30
 - Range: 0-99%
 - Default: 0%
 
@@ -203,8 +218,8 @@ The percent chance that a step will be a run. A run is a quick succession of not
 #### Collapse notes
 
 - Submenu: Sequence
-- MIDI CC: 19
 - Display: `Co`
+- MIDI CC: 19
 - Options: None (`no`), start (`St`), end (`En`)
 - Default: None
 
@@ -238,11 +253,23 @@ It tries to be clever by only adjusting some settings and to different degrees d
 
 ---
 
+#### Reset sequence parameters
+
+- MIDI CC: 102
+- Button: SHIFT + RIGHT
+
+Resets all sequence generation parameters to their default settings.
+
+> [!TIP]
+> When controlled with MIDI CC, CC needs to go below 64 before going above 64.
+
+---
+
 #### Slip chance
 
 - Submenu: Sequence
-- MIDI CC: 89
 - Display: `SC`
+- MIDI CC: 89
 - Range: 0-99%
 - Default: 7%
 
@@ -279,8 +306,8 @@ Drift mode is an endless slip mode. Each time the sequence reaches the end, the 
 #### Latch
 
 - Submenu: Settings
-- MIDI CC: 90
 - Display: `LA`
+- MIDI CC: 90
 - Options: Off - On
 - Default: Off
 
@@ -291,8 +318,8 @@ When latch is enabled, current notes are held when a rest is encountered.
 #### Swing
 
 - Submenu: Settings
-- MIDI CC: 115
 - Display: `SG`
+- MIDI CC: 115
 - Range: 50-67%
 - Default: 50% (no swing)
 
@@ -303,8 +330,8 @@ Swing makes every other 16th note start later to create a more natural sounding 
 #### Note sort
 
 - Submenu: Settings
-- MIDI CC: 114
 - Display: `So`
+- MIDI CC: 114
 - Options: Off - On
 - Default: Off
 
@@ -315,8 +342,8 @@ Whether incoming notes are sorted by pitch; it leads to more predictable sequenc
 #### Select MIDI channel in
 
 - Submenu: Settings
-- MIDI CC: 14
 - Display: `In`
+- MIDI CC: 14
 - Options: All (`AL`), 1-16
 - Default: All
 
@@ -330,8 +357,8 @@ What MIDI channel to listen to for incoming MIDI notes and CC messages. When set
 #### Select MIDI channel out
 
 - Submenu: Settings
-- MIDI CC: 15
 - Display: `ot`
+- MIDI CC: 15
 - Options: All (`AL`), 1-16
 - Default: All
 
@@ -354,8 +381,8 @@ In the case of an emergency, panic tries to stop everything and tells all connec
 #### Toggle internal speaker
 
 - Submenu: Settings
-- MIDI CC: 119
 - Display: `SP`
+- MIDI CC: 119
 - Options: Off - On
 - Default: Off
 
@@ -366,8 +393,8 @@ Whether or not the Arp sequence should play through Grandbot's internal speaker.
 #### Clock source
 
 - Submenu: Settings
-- MIDI CC: 112
 - Display: `CL`
+- MIDI CC: 112
 - Options: External (`Et`) - Internal (`In`)
 - Default: External
 
@@ -378,8 +405,8 @@ To be able to play the sequence, there needs to be a clock source. When set to e
 #### BPM
 
 - Submenu: Settings
-- MIDI CC: 113
 - Display: `b`
+- MIDI CC: 113
 - Range: 73-200
 - Default: 120
 
