@@ -567,10 +567,6 @@ bool Arp::correctInChannel(byte channel) {
 /**
  * Goes through every note on every channel
  * sending a "note off" message
- *
- * TODO should it also send CC123 "all notes off"?
- * 
- * TODO it should also stop the internal clock
  */
 void Arp::panic() {
   byte fullDisplay[4];
@@ -580,9 +576,16 @@ void Arp::panic() {
   fullDisplay[3] = CHAR_H;
   expr->writeText(fullDisplay, false);
 
+  handleStop();
+
   noTone(BUZZER_PIN);
 
+  // For each MIDI channel
   for (byte ch = 0; ch < 16; ch++) {
+    // Sends "all notes off" command
+    MIDI.sendControlChange(123, 0, ch);
+
+    // Sends "note off" for each possible MIDI note
     for (byte note = 0; note < 128; note++) {
       MIDI.sendNoteOff(note, 64, ch + 1);
     }
@@ -828,6 +831,8 @@ void Arp::handleStop() {
 
   sendNoteOff(1, currNote, 64);
   sendNoteOff(1, legatoNote, 64);
+
+  expr->writeExpression(true);
 }
 
 /**

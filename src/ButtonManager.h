@@ -20,6 +20,7 @@ struct ButtonManager {
   bool anyPressed;
   bool anyReleased;
   bool anyHeld;
+  unsigned long lastInteraction;
 
   // Vanilla Grandbot button
   Button play;

@@ -4,8 +4,7 @@ Grandbot::Grandbot()
     : buttons(),
       voice(),
       light(),
-      lc(SERIAL_DATA_PIN, SERIAL_CLOCK_PIN, SERIAL_LOAD_PIN, 1),
-      expr(&lc, &light) {}
+      expr(&light) {}
 
 ButtonManager* Grandbot::getButtonManagerPointer() {
   return &buttons;
@@ -52,7 +51,6 @@ void Grandbot::updateMood() {
  * no mood, expression, or LED changes
  */
 void Grandbot::sleep() {
-  lc.setIntensity(0, 0);
   int lastMood = mood;
   mood = 0;
   expr.setExpression(mood);
@@ -73,7 +71,6 @@ void Grandbot::wakeup() {
   // So he doesn't wake up angry
   lastPlayTime = millis();
 
-  lc.setIntensity(0, 14);
   updateMood();
 }
 
@@ -116,15 +113,6 @@ void Grandbot::setup() {
   digitalRead(A5);
   digitalRead(A6);
   digitalRead(A7);
-
-  // Wake up Max7219
-  lc.shutdown(0, false);
-  // Set the brightness
-  lc.setIntensity(0, 14);
-  // Only scan 4 digits
-  lc.setScanLimit(0, 4);
-  // Clear the display
-  lc.clearDisplay(0);
 
   expr.init();
 }
