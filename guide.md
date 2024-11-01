@@ -30,7 +30,7 @@ To enter or exit the menu press FORWARD and BACKWARD at the same time.
  - Submenu: Sequence
  - Display: `nL`
  - MIDI CC: 20
- - Options: Random (`rA`), 16th (`16`), 8th (`8`), quarter (` 1`), half (`HA`), whole (`1-`), double whole (`2-`)
+ - Options: Random (`rA`), 16th (`16`), 8th (` 8`), quarter (` 4`), half (`HA`), whole (`1-`), double whole (`2-`)
  - Default: Random
 
 The starting note length for each step in the sequence. This can be modified by different settings like double length chance, half length chance, and ratchet chance.

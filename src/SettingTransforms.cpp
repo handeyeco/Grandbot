@@ -299,7 +299,7 @@ void SettingTransforms::noteLengthValueTransform(Setting& self,
   } else if (index == 3) {
     // quarter
     output[2] = CHAR_BLANK;
-    output[3] = CHAR_1;
+    output[3] = CHAR_4;
   } else if (index == 2) {
     // 8th
     output[2] = CHAR_BLANK;
