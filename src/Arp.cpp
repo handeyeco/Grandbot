@@ -512,10 +512,10 @@ int Arp::findStepIndexForPulse(uint16_t pulse) {
 /**
  * Is note within MIDI note range
  *
- * @param {byte} note - MIDI note to check
+ * @param {int} note - MIDI note to check
  * @returns {bool} if note is between 23 (B0) and 110 (D8)
  */
-bool Arp::noteInBounds(byte note) {
+bool Arp::noteInBounds(int note) {
   return note >= 23 && note <= 110;
 }
 
@@ -722,6 +722,21 @@ void Arp::handleStep(int stepIndex) {
   if (sequenceOffset[stepIndex] &&
       noteInBounds(nextNote + sequenceOffset[stepIndex])) {
     nextNote = nextNote + sequenceOffset[stepIndex];
+  }
+
+  byte transposeValue = settings->transpose->getValue();
+  int transposeOffset = Stepper::getSteppedIndex(transposeValue, 49) - 24;
+  if (transposeOffset != 0) {
+    // try to apply transpose,
+    if (noteInBounds(nextNote + transposeOffset)) {
+      nextNote = nextNote + transposeOffset;
+    }
+    // but if it's out of range treat it as a rest
+    else {
+      sendNoteOff(1, currNote, 64);
+      currNote = 0;
+      return;
+    }
   }
 
   currNote = nextNote;

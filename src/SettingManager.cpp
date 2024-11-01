@@ -139,6 +139,11 @@ SettingManager::SettingManager(Expressions* _expr, ButtonManager* _buttons)
                      SettingTransforms::onOffValueTransform,
                      SettingTransforms::onOffStepTransform,
                      SettingTransforms::noRandomizeTransform);
+  // How many semitones to transpose the output notes
+  transpose = new Setting(64, 103, CHAR_T, CHAR_BLANK,
+                     SettingTransforms::transposeValueTransform,
+                     SettingTransforms::transposeStepTransform,
+                     SettingTransforms::noRandomizeTransform, false);
   // Swing of sequence playback; delays every other 16th note when activated.
   // 50% = no swing; 67% max swing
   // TODO how hard would it be to support negative swing?
@@ -183,7 +188,8 @@ SettingManager::SettingManager(Expressions* _expr, ButtonManager* _buttons)
   generalSettings[4] = midiChannelOut;
   generalSettings[5] = sort;
   generalSettings[6] = clock;
-  generalSettings[7] = bpm;
+  generalSettings[7] = transpose;
+  generalSettings[8] = bpm;
 }
 
 /**

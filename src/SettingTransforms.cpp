@@ -161,6 +161,53 @@ byte SettingTransforms::bpmStepTransform(byte value, bool stepUp, bool shift) {
 }
 
 /**
+ * Value transform for BPM
+ * (since MIDI 0-127 gets mapped to 73-200)
+ */
+void SettingTransforms::transposeValueTransform(Setting& self, byte output[4]) {
+  output[0] = CHAR_T;
+  output[1] = CHAR_BLANK;
+  output[2] = CHAR_BLANK;
+  // two octaves down, two octaves up, 0 transpose
+  byte steps = 49;
+  byte index = Stepper::getSteppedIndex(self.getValue(), steps);
+
+  // no transform
+  if (index == 24) {
+    output[3] = CHAR_0;
+    return;
+  }
+
+  byte num = 0;
+
+  // negative transpose
+  if (index < 24) {
+    output[1] = CHAR_DASH;
+    num = 24 - index;
+  }
+  //positive transpose
+  else {
+    num = index - 24;
+  }
+
+
+  if (num < 10) {
+    output[3] = ExpressionSets::convertNumberToByte(num % 10);
+    return;
+  }
+
+  output[2] = ExpressionSets::convertNumberToByte((num / 10) % 10);
+  output[3] = ExpressionSets::convertNumberToByte(num % 10);
+}
+
+/**
+ * Step transfor for BPM
+ */
+byte SettingTransforms::transposeStepTransform(byte value, bool stepUp, bool shift) {
+  return Stepper::stepIndex(value, 49, stepUp, shift ? 12 : 1);
+}
+
+/**
  * Value transform for swing
  * (since MIDI 0-127 gets mapped to 50-67)
  */
