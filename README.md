@@ -79,6 +79,8 @@ There's endless potential just doing that. If you'd like more control, there are
 
 [Full guide](guide.md)
 
+![Grandbot with buttons](grandbot-buttons.jpg)
+
 ### Button Combos
 
 With the optional control board, six buttons are added for controlling the Arp settings.
@@ -129,6 +131,7 @@ Grandbot development is what I'm using to learn more about electronics and C++. 
 - [Grandbot: Light](https://handeyeco.github.io/tech-blog/grandbot-update-light/)
 - [Grandbot: MIDI & Misc](https://handeyeco.github.io/tech-blog/grandbot-update-midi/)
 - [Grandbot: Arp](https://handeyeco.github.io/tech-blog/grandbot-update-arp/)
+- [Grandbot: Buttons](https://handeyeco.github.io/tech-blog/grandbot-update-buttons/)
 - [Concurrent Arduino](https://handeyeco.github.io/tech-blog/concurrent-arduino/)
 - [4 Digit, 7 Segment Emoji](https://handeyeco.github.io/tech-blog/seven-segment-emoji/)
 - [Max7219 Emoji](https://handeyeco.github.io/tech-blog/max7219-emoji/)
