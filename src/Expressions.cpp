@@ -1,6 +1,7 @@
 #include <Expressions.h>
 
-Expressions::Expressions(Light* _light) : lc(SERIAL_DATA_PIN, SERIAL_CLOCK_PIN, SERIAL_LOAD_PIN, 1) {
+Expressions::Expressions(Light* _light)
+    : lc(SERIAL_DATA_PIN, SERIAL_CLOCK_PIN, SERIAL_LOAD_PIN, 1) {
   this->light = _light;
 }
 

@@ -141,9 +141,9 @@ SettingManager::SettingManager(Expressions* _expr, ButtonManager* _buttons)
                      SettingTransforms::noRandomizeTransform);
   // How many semitones to transpose the output notes
   transpose = new Setting(64, 103, CHAR_T, CHAR_BLANK,
-                     SettingTransforms::transposeValueTransform,
-                     SettingTransforms::transposeStepTransform,
-                     SettingTransforms::noRandomizeTransform, false);
+                          SettingTransforms::transposeValueTransform,
+                          SettingTransforms::transposeStepTransform,
+                          SettingTransforms::noRandomizeTransform, false);
   // Swing of sequence playback; delays every other 16th note when activated.
   // 50% = no swing; 67% max swing
   // TODO how hard would it be to support negative swing?

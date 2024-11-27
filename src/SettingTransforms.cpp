@@ -185,11 +185,10 @@ void SettingTransforms::transposeValueTransform(Setting& self, byte output[4]) {
     output[1] = CHAR_DASH;
     num = 24 - index;
   }
-  //positive transpose
+  // positive transpose
   else {
     num = index - 24;
   }
-
 
   if (num < 10) {
     output[3] = ExpressionSets::convertNumberToByte(num % 10);
@@ -203,7 +202,9 @@ void SettingTransforms::transposeValueTransform(Setting& self, byte output[4]) {
 /**
  * Step transfor for BPM
  */
-byte SettingTransforms::transposeStepTransform(byte value, bool stepUp, bool shift) {
+byte SettingTransforms::transposeStepTransform(byte value,
+                                               bool stepUp,
+                                               bool shift) {
   return Stepper::stepIndex(value, 49, stepUp, shift ? 12 : 1);
 }
 

@@ -1,10 +1,6 @@
 #include <Grandbot.h>
 
-Grandbot::Grandbot()
-    : buttons(),
-      voice(),
-      light(),
-      expr(&light) {}
+Grandbot::Grandbot() : buttons(), voice(), light(), expr(&light) {}
 
 ButtonManager* Grandbot::getButtonManagerPointer() {
   return &buttons;
