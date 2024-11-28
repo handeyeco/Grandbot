@@ -68,6 +68,9 @@ Full holds the note for the full note length. 66% and 33% hold it for a percent 
 > [!WARNING]
 > When latch is enabled, notes are held through full note length.
 
+> [!WARNING]
+> Legato notes are held through the following note regardless of their gate.
+
 ---
 
 #### One octave up chance

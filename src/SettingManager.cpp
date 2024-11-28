@@ -34,7 +34,7 @@ SettingManager::SettingManager(Expressions* _expr, ButtonManager* _buttons)
                               SettingTransforms::lowRandomizeTransform);
   // Default note length in a sequence (gets transformed by other parameters per
   // step) options are: random, 1/16, 1/8, 1/4, 1/2, 1 (whole note), 2
-  baseGateLength = new Setting(127, 104, CHAR_G, CHAR_L,
+  baseGateLength = new Setting(0, 104, CHAR_G, CHAR_L,
                                SettingTransforms::gateLengthValueTransform,
                                SettingTransforms::gateLengthStepTransform,
                                SettingTransforms::noRandomizeTransform);
@@ -120,7 +120,7 @@ SettingManager::SettingManager(Expressions* _expr, ButtonManager* _buttons)
   randomLengthChance =
       new Setting(0, 87, CHAR_R, CHAR_L, SettingTransforms::ccValueTransform,
                   SettingTransforms::ccStepTransform,
-                  SettingTransforms::noRandomizeTransform);
+                  SettingTransforms::lowRandomizeTransform);
   // Chance a step will be swapped with an adjacent step (during slips not
   // sequence generation)
   slipChance =

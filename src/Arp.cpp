@@ -830,7 +830,7 @@ void Arp::handleStartStep(int stepIndex) {
  */
 void Arp::handleClock(unsigned long now) {
   if (currStepIndex >= 0 &&
-      pulseCount == sequenceStartPositions[currStepIndex] +
+      pulseCount >= sequenceStartPositions[currStepIndex] +
                         sequenceStepGate[currStepIndex]) {
     handleStopStep();
   }
