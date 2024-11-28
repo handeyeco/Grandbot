@@ -97,7 +97,11 @@ class Arp {
   // Number of notes that are currently active
   byte numActiveNotes = 8;
 
+  // Which step is currently playing
+  int currStepIndex = -1;
   // Note currently being played
+  // (0 = no note)
+  // TODO: make 255 = no note
   byte currNote = 0;
   // For legato, we hold two notes
   byte legatoNote = 0;
@@ -105,7 +109,8 @@ class Arp {
   // #TODO this is poorly named, it's not really an "interval"
   // it's an index for accessing a note from `activeNotes`
   // so it's a sequence of array indexes modulo'd by `numActiveNotes`
-  byte sequenceIntervals[MAX_STEPS_IN_SEQ] = {1, 3, 5, 3};
+  // 255 = rest
+  byte sequenceIntervals[MAX_STEPS_IN_SEQ] = {1, 3, 5, 255};
 
   // Offset the note at this step (like for octaves)
   // 0=no offset; 12=+1 oct; -24=-2oct
@@ -114,14 +119,13 @@ class Arp {
   uint16_t sequenceStartPositions[MAX_STEPS_IN_SEQ] = {
       // WARNING manually changing these values can introduce a silent bug
       // value sum must be >= totalSequenceLength
-      PULSES_PER_QUARTER_NOTE * 0, PULSES_PER_QUARTER_NOTE * 1,
+      0, PULSES_PER_QUARTER_NOTE * 1,
       PULSES_PER_QUARTER_NOTE * 2, PULSES_PER_QUARTER_NOTE * 3};
 
   // How many pulses to hold the step for
   // 0 = legato (overlap step with the next step)
   uint16_t sequenceStepGate[MAX_STEPS_IN_SEQ] = {
-      PULSES_PER_QUARTER_NOTE, PULSES_PER_QUARTER_NOTE, PULSES_PER_QUARTER_NOTE,
-      PULSES_PER_QUARTER_NOTE};
+      0, PULSES_PER_QUARTER_NOTE / 2, PULSES_PER_QUARTER_NOTE / 4, PULSES_PER_QUARTER_NOTE / 2};
 
   // Total sequence length in discrete steps
   byte totalSequenceSteps = 4;
@@ -151,7 +155,8 @@ class Arp {
   void handleClock(unsigned long now);
   void handleStartContinue(bool reset);
   void handleStop();
-  void handleStep(int stepIndex);
+  void handleStopStep();
+  void handleStartStep(int stepIndex);
   void handleButtons(bool useInternalClock);
   uint16_t addStep(byte stepIndex,
                    byte stepInterval,

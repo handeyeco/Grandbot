@@ -266,7 +266,7 @@ uint16_t Arp::getStepGate(uint16_t stepLength) {
   }
 
   // TODO replace with gate length in pulses
-  return 1;
+  return stepLength;
 }
 
 /**
@@ -684,48 +684,73 @@ void Arp::handleCommandChange(byte channel, byte cc, byte value) {
   }
 }
 
+void Arp::handleStopStep() {
+  // don't do anything if there's not a current step
+  if (currStepIndex < 0) {
+    return;
+  }
+
+  // there's not a MIDI note to stop
+  if (!currNote) {
+    return;
+  }
+
+  // handle latched notes separately
+  if (settings->latch->getValueAsBool()) {
+    return;
+  }
+
+  // hold through legato notes
+  if (sequenceStepGate[currStepIndex] == 0) {
+    return;
+  }
+
+  if (legatoNote != 0) {
+    sendNoteOff(1, legatoNote, 64);
+    legatoNote = 0;
+  }
+
+  sendNoteOff(1, currNote, 64);
+  currNote = 0;
+  currStepIndex = -1;
+}
+
 /**
  * Handle changing step in sequence
  *
  * @param {int} stepIndex - index of step in sequence
  */
-void Arp::handleStep(int stepIndex) {
+void Arp::handleStartStep(int stepIndex) {
   byte stepInterval = sequenceIntervals[stepIndex];
   uint16_t stepGate = sequenceStepGate[stepIndex];
 
   if (legatoNote != 0) {
     sendNoteOff(1, legatoNote, 64);
+    legatoNote = 0;
   }
 
-  bool stepLegato = stepGate == 0;
-  legatoNote = stepLegato ? currNote : 0;
+  // last step was legato, so hold it through this step
+  if (currStepIndex >= 0 && sequenceStepGate[currStepIndex] == 0) {
+    legatoNote = currNote;
+  }
 
-  // use 255 to indicate rest
-  // #TODO fix this, it's hacky
-  // (also currNote = 0 is no note and stepInterval = 255 is rest,
-  // which is confusing)
-  if (stepInterval == 255) {
-    // if the next note is a rest and latch is enabled,
-    // do nothing
-    if (settings->latch->getValueAsBool()) {
+  // we have to wait to handle ending latched notes,
+  // since by definition they're held until the next note starts
+  if (settings->latch->getValueAsBool()) {
+    if (stepInterval == 255) {
       return;
     }
-    // if the next note is a rest and latch is disabled,
-    // send note off and rest
-    else {
-      // TODO: why do we have an "all" MIDI out setting if
-      // we just default to channel 1?
+    // handle latch + legato
+    else if (legatoNote == 0) {
       sendNoteOff(1, currNote, 64);
       currNote = 0;
-      return;
     }
   }
-  // if the next note is not a rest, send note off for the current note
-  // unless we're holding it for legato
-  else if (!stepLegato) {
-    // TODO: why do we have an "all" MIDI out setting if
-    // we just default to channel 1?
+  // handle regular rests
+  else if (stepInterval == 255) {
     sendNoteOff(1, currNote, 64);
+    currNote = 0;
+    return;
   }
 
   // This is where the magic happens!
@@ -758,6 +783,7 @@ void Arp::handleStep(int stepIndex) {
   }
 
   currNote = nextNote;
+  currStepIndex = stepIndex;
   // #TODO could we do something more interesting with velocity
   sendNoteOn(1, currNote, 100);
 }
@@ -766,6 +792,10 @@ void Arp::handleStep(int stepIndex) {
  * Handle a new MIDI clock pulse
  */
 void Arp::handleClock(unsigned long now) {
+  if (currStepIndex >= 0 && pulseCount == sequenceStartPositions[currStepIndex] + sequenceStepGate[currStepIndex]) {
+    handleStopStep();
+  }
+
   // End of the sequence
   if (pulseCount >= totalSequenceLength) {
     pulseCount = 0;
@@ -801,7 +831,7 @@ void Arp::handleClock(unsigned long now) {
         swungStepIndex = stepIndex;
         originalSwungNoteTime = now;
       } else {
-        handleStep(stepIndex);
+        handleStartStep(stepIndex);
       }
     }
 
@@ -828,6 +858,7 @@ void Arp::handleClock(unsigned long now) {
 void Arp::reset() {
   pulseCount = 0;
   currNote = 0;
+  currStepIndex = -1;
   swungStepIndex = -1;
 }
 
@@ -972,7 +1003,7 @@ bool Arp::update() {
   // the originalSwungNoteTime will be off
   if (swungStepIndex > -1) {
     if (now - originalSwungNoteTime > swingDelay) {
-      handleStep(swungStepIndex);
+      handleStartStep(swungStepIndex);
       swungStepIndex = -1;
     }
   }

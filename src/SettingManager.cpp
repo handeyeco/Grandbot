@@ -113,7 +113,7 @@ SettingManager::SettingManager(Expressions* _expr, ButtonManager* _buttons)
                   SettingTransforms::ccStepTransform,
                   SettingTransforms::highRandomizeTransform);
   // If active, hold notes through rests
-  latch = new Setting(10, 90, CHAR_L, CHAR_A,
+  latch = new Setting(0, 90, CHAR_L, CHAR_A,
                       SettingTransforms::onOffValueTransform,
                       SettingTransforms::onOffStepTransform,
                       SettingTransforms::noRandomizeTransform);
