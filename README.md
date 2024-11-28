@@ -36,6 +36,7 @@ There's endless potential just doing that. If you'd like more control, there are
 | Description                     | MIDI CC | Display | Button |
 | ------------------------------- | ------- | ------- | ------ |
 | **» Sequence Parameters**       |
+| Base gate length                | 104     | GL      |
 | Base note length                | 20      | nL      |
 | Sequence length                 | 21      | SL      |
 | **» Transposition Chance**      |
@@ -47,6 +48,7 @@ There's endless potential just doing that. If you'd like more control, there are
 | Random transposition chance     | 86      | rn      |
 | Rest chance                     | 29      | rE      |
 | **» Note Length Chance**        |
+| Random gate length chance       | 105     | rG      |
 | Double length chance            | 26      | dL      |
 | Half length chance              | 27      | HL      |
 | Ratchet (double note) chance    | 28      | rA      |
