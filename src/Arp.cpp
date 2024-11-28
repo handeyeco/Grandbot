@@ -29,6 +29,10 @@ const byte possibleNoteLengths[] = {
     32   // double whole note
 };
 
+const String GATE_FULL = "GATE_FULL";
+const String GATE_66 = "GATE_66";
+const String GATE_33 = "GATE_33";
+
 /**
  * Add a step to the sequence
  *
@@ -48,20 +52,8 @@ uint16_t Arp::addStep(byte stepIndex,
   sequenceIntervals[stepIndex] = stepInterval;
   sequenceOffset[stepIndex] = stepOffset;
   sequenceStartPositions[stepIndex] = startPosition;
-  sequenceStepGate[stepIndex] = stepGate;
-
-  // Serial.print("stepIndex: ");
-  // Serial.print(stepIndex);
-  // Serial.print(" stepInterval: ");
-  // Serial.print(stepInterval);
-  // Serial.print(" stepOffset: ");
-  // Serial.print(stepOffset);
-  // Serial.print(" stepLength: ");
-  // Serial.print(stepLength);
-  // Serial.print(" startPosition: ");
-  // Serial.print(startPosition);
-  // Serial.print(" stepGate: ");
-  // Serial.println(stepGate);
+  // 16ths are the smallest note we're handling gate length for
+  sequenceStepGate[stepIndex] = stepLength < PULSES_PER_SIXTEENTH_NOTE ? stepLength : stepGate;
 
   return startPosition + stepLength;
 }
@@ -73,6 +65,29 @@ uint16_t Arp::addStep(byte stepIndex,
  */
 byte Arp::ccRoll() {
   return random(128);
+}
+
+/**
+ * Maps CC base gate (0-127) to base gate enum
+ *
+ * @returns {String} enum representing base gate
+ */
+String Arp::getBaseNoteGate() {
+  byte value = settings->baseGateLength->getValue();
+  byte index = Stepper::getSteppedIndex(value, 4);
+
+  if (index == 0) {
+    // random
+    index = random(1, 4);
+  }
+
+  if (index == 1) {
+    return GATE_33;
+  } else if (index == 2) {
+    return GATE_66;
+  } else {
+    return GATE_FULL;
+  }
 }
 
 /**
@@ -260,13 +275,30 @@ uint16_t Arp::getStepLength(uint16_t baseLength) {
  * (how long the note is held for)
  * 0 = legato (hold through the next note)
  */
-uint16_t Arp::getStepGate(uint16_t stepLength) {
+uint16_t Arp::getStepGate(String baseGate, uint16_t stepLength) {
   if (settings->legatoChance->roll()) {
     return 0;
   }
 
-  // TODO replace with gate length in pulses
-  return stepLength;
+  // don't worry about step lengths for really small steps
+  if (stepLength < PULSES_PER_SIXTEENTH_NOTE) {
+    return stepLength;
+  }
+
+  byte thirdOfStep = stepLength / 3;
+
+  if (settings->randomGateChance->roll()) {
+    // 1/3, 2/3, or 3/3
+    return random(1, 4) * thirdOfStep;
+  }
+
+  if (baseGate == GATE_66) {
+    return thirdOfStep * 2;
+  } else if (baseGate == GATE_33) {
+    return thirdOfStep;
+  } else {
+    return stepLength;
+  }
 }
 
 /**
@@ -281,6 +313,9 @@ void Arp::generateSequence() {
 
   // This is the base length of the note in pulses
   uint16_t baseNoteLength = getBaseNoteLength() * PULSES_PER_SIXTEENTH_NOTE;
+
+  // This is an enum-type thing to identify base gate
+  String baseGate = getBaseNoteGate();
 
   // Accumulator for steps in pulses
   uint16_t newSequenceLength = 0;
@@ -300,10 +335,11 @@ void Arp::generateSequence() {
     bool isRest = stepInterval == 255;
     int8_t stepOffset = isRest ? 0 : getStepOffset();
     uint16_t stepLength = getStepLength(baseNoteLength);
-    uint16_t stepGate = isRest ? 0 : getStepGate(stepLength);
+    uint16_t stepGate = isRest ? 0 : getStepGate(baseGate, stepLength);
 
     if (settings->ratchetChance->roll()) {
       stepLength = stepLength / 2;
+      stepGate = stepGate / 2;
       newSequenceLength = addStep(stepIndex, stepInterval, stepOffset,
                                   stepLength, newSequenceLength, stepGate);
       stepIndex++;

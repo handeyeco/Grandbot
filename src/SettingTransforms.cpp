@@ -277,6 +277,49 @@ byte SettingTransforms::midiChStepTransform(byte value,
 }
 
 /**
+ * Value transform for gate length
+ * (since MIDI 0-127 gets mapped to various different note lengths)
+ */
+void SettingTransforms::gateLengthValueTransform(Setting& self,
+                                                 byte output[4]) {
+  populateName(self, output);
+  byte index = Stepper::getSteppedIndex(self.getValue(), 4);
+
+  if (index == 3) {
+    // full
+    output[2] = CHAR_F;
+    output[3] = CHAR_U;
+  } else if (index == 2) {
+    // 66%
+    output[2] = CHAR_6;
+    output[3] = CHAR_6;
+  } else if (index == 1) {
+    // 33%
+    output[2] = CHAR_3;
+    output[3] = CHAR_3;
+  } else {
+    // random
+    output[2] = CHAR_R;
+    output[3] = CHAR_A;
+  }
+}
+
+/**
+ * Step transform for gate length
+ *
+ * TODO consolidate these transformers that are basically doing the same thing
+ */
+byte SettingTransforms::gateLengthStepTransform(byte value,
+                                                bool stepUp,
+                                                bool shift) {
+  if (shift) {
+    return stepUp ? 127 : 0;
+  }
+
+  return Stepper::stepIndex(value, 4, stepUp);
+}
+
+/**
  * Value transform for note length
  * (since MIDI 0-127 gets mapped to various different note lengths)
  */

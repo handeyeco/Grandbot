@@ -7,6 +7,10 @@ SettingManager::SettingManager(Expressions* _expr, ButtonManager* _buttons)
 
   // CC_DRIFT 3
   // CC_RANDOMIZE_CHANCES 9
+  // CC_RESET_CHANCES 102
+  // CC_SLIP 116
+  // CC_PANIC 117
+  // CC_GENERATE_SEQUENCE 118
 
   // MIDI channel to listen to (respected by most things except panic and
   // midiChannelIn itself) options are: 0 = all channels / 1-16 = channels 1-16
@@ -28,6 +32,12 @@ SettingManager::SettingManager(Expressions* _expr, ButtonManager* _buttons)
                               SettingTransforms::collapseNotesValueTransform,
                               SettingTransforms::collapseNotesStepTransform,
                               SettingTransforms::lowRandomizeTransform);
+  // Default note length in a sequence (gets transformed by other parameters per
+  // step) options are: random, 1/16, 1/8, 1/4, 1/2, 1 (whole note), 2
+  baseGateLength = new Setting(127, 104, CHAR_G, CHAR_L,
+                               SettingTransforms::gateLengthValueTransform,
+                               SettingTransforms::gateLengthStepTransform,
+                               SettingTransforms::noRandomizeTransform);
   // Default note length in a sequence (gets transformed by other parameters per
   // step) options are: random, 1/16, 1/8, 1/4, 1/2, 1 (whole note), 2
   baseNoteLength = new Setting(0, 20, CHAR_N, CHAR_L,
@@ -101,6 +111,11 @@ SettingManager::SettingManager(Expressions* _expr, ButtonManager* _buttons)
       new Setting(0, 86, CHAR_R, CHAR_N, SettingTransforms::ccValueTransform,
                   SettingTransforms::ccStepTransform,
                   SettingTransforms::noRandomizeTransform);
+  // Chance a step's gate will be randomized
+  randomGateChance =
+      new Setting(0, 105, CHAR_R, CHAR_G, SettingTransforms::ccValueTransform,
+                  SettingTransforms::ccStepTransform,
+                  SettingTransforms::noRandomizeTransform);
   // Chance a step's length will be randomized
   randomLengthChance =
       new Setting(0, 87, CHAR_R, CHAR_L, SettingTransforms::ccValueTransform,
@@ -166,20 +181,22 @@ SettingManager::SettingManager(Expressions* _expr, ButtonManager* _buttons)
   sequenceSettings[0] = slipChance;
   sequenceSettings[1] = sequenceLength;
   sequenceSettings[2] = baseNoteLength;
-  sequenceSettings[3] = ratchetChance;
-  sequenceSettings[4] = legatoChance;
-  sequenceSettings[5] = restChance;
-  sequenceSettings[6] = octaveOneUpChance;
-  sequenceSettings[7] = octaveOneDownChance;
-  sequenceSettings[8] = octaveTwoUpChance;
-  sequenceSettings[9] = octaveTwoDownChance;
-  sequenceSettings[10] = halfLengthChance;
-  sequenceSettings[11] = doubleLengthChance;
-  sequenceSettings[12] = runChance;
-  sequenceSettings[13] = fifthChance;
-  sequenceSettings[14] = randomNoteChance;
-  sequenceSettings[15] = randomLengthChance;
-  sequenceSettings[16] = collapseNotes;
+  sequenceSettings[3] = baseGateLength;
+  sequenceSettings[4] = ratchetChance;
+  sequenceSettings[5] = legatoChance;
+  sequenceSettings[6] = restChance;
+  sequenceSettings[7] = octaveOneUpChance;
+  sequenceSettings[8] = octaveOneDownChance;
+  sequenceSettings[9] = octaveTwoUpChance;
+  sequenceSettings[10] = octaveTwoDownChance;
+  sequenceSettings[11] = halfLengthChance;
+  sequenceSettings[12] = doubleLengthChance;
+  sequenceSettings[13] = runChance;
+  sequenceSettings[14] = fifthChance;
+  sequenceSettings[15] = randomNoteChance;
+  sequenceSettings[16] = randomLengthChance;
+  sequenceSettings[17] = randomGateChance;
+  sequenceSettings[18] = collapseNotes;
 
   generalSettings[0] = swing;
   generalSettings[1] = latch;
