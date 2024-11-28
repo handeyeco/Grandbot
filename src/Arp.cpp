@@ -53,7 +53,8 @@ uint16_t Arp::addStep(byte stepIndex,
   sequenceOffset[stepIndex] = stepOffset;
   sequenceStartPositions[stepIndex] = startPosition;
   // 16ths are the smallest note we're handling gate length for
-  sequenceStepGate[stepIndex] = stepLength < PULSES_PER_SIXTEENTH_NOTE ? stepLength : stepGate;
+  sequenceStepGate[stepIndex] =
+      stepLength < PULSES_PER_SIXTEENTH_NOTE ? stepLength : stepGate;
 
   return startPosition + stepLength;
 }
@@ -828,7 +829,9 @@ void Arp::handleStartStep(int stepIndex) {
  * Handle a new MIDI clock pulse
  */
 void Arp::handleClock(unsigned long now) {
-  if (currStepIndex >= 0 && pulseCount == sequenceStartPositions[currStepIndex] + sequenceStepGate[currStepIndex]) {
+  if (currStepIndex >= 0 &&
+      pulseCount == sequenceStartPositions[currStepIndex] +
+                        sequenceStepGate[currStepIndex]) {
     handleStopStep();
   }
 
