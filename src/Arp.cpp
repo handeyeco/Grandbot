@@ -46,7 +46,7 @@ const String GATE_33 = "GATE_33";
 uint16_t Arp::addStep(byte stepIndex,
                       byte stepInterval,
                       int8_t stepOffset,
-                      byte stepLength,
+                      uint16_t stepLength,
                       uint16_t startPosition,
                       uint16_t stepGate) {
   sequenceIntervals[stepIndex] = stepInterval;
@@ -179,16 +179,18 @@ void Arp::slipSequence() {
 
 void Arp::swapNotes(byte aIndex, byte bIndex) {
   byte tmpInterval = sequenceIntervals[aIndex];
-  int8_t tmpOffset = sequenceOffset[aIndex];
-  uint16_t tmpGate = sequenceStepGate[aIndex];
-
   sequenceIntervals[aIndex] = sequenceIntervals[bIndex];
-  sequenceOffset[aIndex] = sequenceOffset[bIndex];
-  sequenceStepGate[aIndex] = sequenceStepGate[bIndex];
-
   sequenceIntervals[bIndex] = tmpInterval;
+
+  int8_t tmpOffset = sequenceOffset[aIndex];
+  sequenceOffset[aIndex] = sequenceOffset[bIndex];
   sequenceOffset[bIndex] = tmpOffset;
-  sequenceStepGate[bIndex] = tmpGate;
+
+  // TODO: it would be nice to swap lengths/gates too
+  // but I ran into issues with notes overlapping
+  // uint16_t tmpGate = sequenceStepGate[aIndex];
+  // sequenceStepGate[aIndex] = sequenceStepGate[bIndex];
+  // sequenceStepGate[bIndex] = tmpGate;
 }
 
 /**
@@ -286,7 +288,7 @@ uint16_t Arp::getStepGate(String baseGate, uint16_t stepLength) {
     return stepLength;
   }
 
-  byte thirdOfStep = stepLength / 3;
+  uint16_t thirdOfStep = stepLength / 3;
 
   if (settings->randomGateChance->roll()) {
     // 1/3, 2/3, or 3/3
@@ -336,7 +338,7 @@ void Arp::generateSequence() {
     bool isRest = stepInterval == 255;
     int8_t stepOffset = isRest ? 0 : getStepOffset();
     uint16_t stepLength = getStepLength(baseNoteLength);
-    uint16_t stepGate = isRest ? 0 : getStepGate(baseGate, stepLength);
+    uint16_t stepGate = getStepGate(baseGate, stepLength);
 
     if (settings->ratchetChance->roll()) {
       stepLength = stepLength / 2;
@@ -388,6 +390,13 @@ void Arp::generateSequence() {
         end--;
       }
     }
+  }
+
+  // make sure the last step doesn't go past total length
+  // (ex: if note length is 2 bars, but sequence length is 1 bar)
+  byte lastStepIndex = stepIndex - 1;
+  if (sequenceStartPositions[lastStepIndex] + sequenceStepGate[lastStepIndex] > newTotalSequenceLength) {
+    sequenceStepGate[lastStepIndex] = newTotalSequenceLength - sequenceStartPositions[lastStepIndex];
   }
 
   totalSequenceSteps = stepIndex;

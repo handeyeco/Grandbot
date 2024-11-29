@@ -164,7 +164,7 @@ class Arp {
   uint16_t addStep(byte stepIndex,
                    byte stepInterval,
                    int8_t stepOffset,
-                   byte stepLength,
+                   uint16_t stepLength,
                    uint16_t startPosition,
                    uint16_t stepGate);
   String getBaseNoteGate();
