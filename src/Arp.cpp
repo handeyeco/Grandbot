@@ -395,8 +395,10 @@ void Arp::generateSequence() {
   // make sure the last step doesn't go past total length
   // (ex: if note length is 2 bars, but sequence length is 1 bar)
   byte lastStepIndex = stepIndex - 1;
-  if (sequenceStartPositions[lastStepIndex] + sequenceStepGate[lastStepIndex] > newTotalSequenceLength) {
-    sequenceStepGate[lastStepIndex] = newTotalSequenceLength - sequenceStartPositions[lastStepIndex];
+  if (sequenceStartPositions[lastStepIndex] + sequenceStepGate[lastStepIndex] >
+      newTotalSequenceLength) {
+    sequenceStepGate[lastStepIndex] =
+        newTotalSequenceLength - sequenceStartPositions[lastStepIndex];
   }
 
   totalSequenceSteps = stepIndex;
