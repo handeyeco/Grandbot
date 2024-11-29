@@ -115,12 +115,12 @@ SettingManager::SettingManager(Expressions* _expr, ButtonManager* _buttons)
   randomGateChance =
       new Setting(0, 105, CHAR_R, CHAR_G, SettingTransforms::ccValueTransform,
                   SettingTransforms::ccStepTransform,
-                  SettingTransforms::noRandomizeTransform);
+                  SettingTransforms::lowRandomizeTransform);
   // Chance a step's length will be randomized
   randomLengthChance =
       new Setting(0, 87, CHAR_R, CHAR_L, SettingTransforms::ccValueTransform,
                   SettingTransforms::ccStepTransform,
-                  SettingTransforms::lowRandomizeTransform);
+                  SettingTransforms::noRandomizeTransform);
   // Chance a step will be swapped with an adjacent step (during slips not
   // sequence generation)
   slipChance =
