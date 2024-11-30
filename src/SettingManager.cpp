@@ -32,13 +32,13 @@ SettingManager::SettingManager(Expressions* _expr, ButtonManager* _buttons)
                               SettingTransforms::collapseNotesValueTransform,
                               SettingTransforms::collapseNotesStepTransform,
                               SettingTransforms::lowRandomizeTransform);
-  // Default note length in a sequence (gets transformed by other parameters per
-  // step) options are: random, 1/16, 1/8, 1/4, 1/2, 1 (whole note), 2
+  // Default step gate length in a sequence (gets transformed by other
+  // parameters per step) options are: random, 33%, 66%, or full
   baseGateLength = new Setting(0, 104, CHAR_G, CHAR_L,
                                SettingTransforms::gateLengthValueTransform,
                                SettingTransforms::gateLengthStepTransform,
                                SettingTransforms::noRandomizeTransform);
-  // Default note length in a sequence (gets transformed by other parameters per
+  // Default step length in a sequence (gets transformed by other parameters per
   // step) options are: random, 1/16, 1/8, 1/4, 1/2, 1 (whole note), 2
   baseNoteLength = new Setting(0, 20, CHAR_N, CHAR_L,
                                SettingTransforms::noteLengthValueTransform,

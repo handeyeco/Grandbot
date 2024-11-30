@@ -344,7 +344,7 @@ void Arp::generateSequence() {
       stepLength = stepLength / 2;
       stepGate = stepGate / 2;
       newSequenceLength = addStep(stepIndex, stepInterval, stepOffset,
-                                  stepLength, stepGate, newSequenceLength );
+                                  stepLength, stepGate, newSequenceLength);
       stepIndex++;
     } else if ((stepIndex + 4 < MAX_STEPS_IN_SEQ) &&
                (settings->runChance->roll())) {
