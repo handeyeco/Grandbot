@@ -5,8 +5,17 @@
  * or for things that should never have a value when randomized
  * (because they're too chaotic)
  */
-byte SettingTransforms::noRandomizeTransform() {
+byte SettingTransforms::noRandomizeTransformMin() {
   return 0;
+}
+
+/**
+ * Placeholder for things we don't want to change during randomization
+ * or for things that should never have a value when randomized
+ * (because they're too chaotic)
+ */
+byte SettingTransforms::noRandomizeTransformMax() {
+  return 127;
 }
 
 /**

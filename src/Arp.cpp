@@ -403,6 +403,8 @@ void Arp::generateSequence() {
 
   totalSequenceSteps = stepIndex;
   totalSequenceLength = newTotalSequenceLength;
+  stopCurrNote();
+  stopLegatoNote();
 }
 
 /**
@@ -549,6 +551,21 @@ void Arp::handleNoteOff(byte channel, byte note, byte velocity) {
 
   if (noteIndex > -1 && numPressedNotes > 0) {
     --numPressedNotes;
+  }
+}
+
+
+void Arp::stopCurrNote() {
+  if (currNote) {
+    sendNoteOff(1, currNote, 64);
+    currNote = 0;
+  }
+}
+
+void Arp::stopLegatoNote() {
+  if (legatoNote) {
+    sendNoteOff(1, legatoNote, 64);
+    legatoNote = 0;
   }
 }
 
@@ -753,13 +770,8 @@ void Arp::handleStopStep() {
     return;
   }
 
-  if (legatoNote != 0) {
-    sendNoteOff(1, legatoNote, 64);
-    legatoNote = 0;
-  }
-
-  sendNoteOff(1, currNote, 64);
-  currNote = 0;
+  stopLegatoNote();
+  stopCurrNote();
   currStepIndex = -1;
 }
 
@@ -772,10 +784,7 @@ void Arp::handleStartStep(int stepIndex) {
   byte stepInterval = sequenceIntervals[stepIndex];
   uint16_t stepGate = sequenceStepGate[stepIndex];
 
-  if (legatoNote != 0) {
-    sendNoteOff(1, legatoNote, 64);
-    legatoNote = 0;
-  }
+  stopLegatoNote();
 
   // last step was legato, so hold it through this step
   if (currStepIndex >= 0 && sequenceStepGate[currStepIndex] == 0) {
@@ -790,14 +799,12 @@ void Arp::handleStartStep(int stepIndex) {
     }
     // handle latch + legato
     else if (legatoNote == 0) {
-      sendNoteOff(1, currNote, 64);
-      currNote = 0;
+      stopCurrNote();
     }
   }
   // handle regular rests
   else if (stepInterval == 255) {
-    sendNoteOff(1, currNote, 64);
-    currNote = 0;
+    stopCurrNote();
     return;
   }
 
@@ -824,8 +831,7 @@ void Arp::handleStartStep(int stepIndex) {
     }
     // but if it's out of range treat it as a rest
     else {
-      sendNoteOff(1, currNote, 64);
-      currNote = 0;
+      stopCurrNote();
       return;
     }
   }
@@ -907,9 +913,10 @@ void Arp::handleClock(unsigned long now) {
  */
 void Arp::reset() {
   pulseCount = 0;
-  currNote = 0;
   currStepIndex = -1;
   swungStepIndex = -1;
+  stopCurrNote();
+  stopLegatoNote();
 }
 
 /**
@@ -943,8 +950,8 @@ void Arp::handleStop() {
   drift = false;
   slipQueued = false;
 
-  sendNoteOff(1, currNote, 64);
-  sendNoteOff(1, legatoNote, 64);
+  stopCurrNote();
+  stopLegatoNote();
 
   expr->writeExpression(true);
 }

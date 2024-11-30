@@ -22,7 +22,8 @@
  */
 namespace SettingTransforms {
 // helpers
-byte noRandomizeTransform();
+byte noRandomizeTransformMin();
+byte noRandomizeTransformMax();
 void populateName(Setting& self, byte output[4]);
 
 // shared

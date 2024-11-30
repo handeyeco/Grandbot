@@ -184,6 +184,8 @@ class Arp {
   void sort(byte arr[], int arrLen);
   void sendNoteOn(byte channel, byte pitch, byte velocity);
   void sendNoteOff(byte channel, byte pitch, byte velocity);
+  void stopCurrNote();
+  void stopLegatoNote();
   byte ccToMidiCh(byte cc);
   void panic();
   void queueRegenerate();
