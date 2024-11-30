@@ -29,6 +29,7 @@ const byte possibleNoteLengths[] = {
     32   // double whole note
 };
 
+// TODO: learn C++ enums
 const String GATE_FULL = "GATE_FULL";
 const String GATE_66 = "GATE_66";
 const String GATE_33 = "GATE_33";
@@ -47,8 +48,8 @@ uint16_t Arp::addStep(byte stepIndex,
                       byte stepInterval,
                       int8_t stepOffset,
                       uint16_t stepLength,
-                      uint16_t startPosition,
-                      uint16_t stepGate) {
+                      uint16_t stepGate,
+                      uint16_t startPosition) {
   sequenceIntervals[stepIndex] = stepInterval;
   sequenceOffset[stepIndex] = stepOffset;
   sequenceStartPositions[stepIndex] = startPosition;
@@ -73,7 +74,7 @@ byte Arp::ccRoll() {
  *
  * @returns {String} enum representing base gate
  */
-String Arp::getBaseNoteGate() {
+String Arp::getBaseStepGate() {
   byte value = settings->baseGateLength->getValue();
   byte index = Stepper::getSteppedIndex(value, 4);
 
@@ -96,7 +97,7 @@ String Arp::getBaseNoteGate() {
  *
  * @returns {byte} number of 16ths for note
  */
-byte Arp::getBaseNoteLength() {
+byte Arp::getBaseStepLength() {
   byte value = settings->baseNoteLength->getValue();
   byte index = Stepper::getSteppedIndex(value, 7);
 
@@ -315,10 +316,10 @@ void Arp::generateSequence() {
   uint16_t newTotalSequenceLength = getSequenceLength() * PULSES_PER_BAR;
 
   // This is the base length of the note in pulses
-  uint16_t baseNoteLength = getBaseNoteLength() * PULSES_PER_SIXTEENTH_NOTE;
+  uint16_t baseNoteLength = getBaseStepLength() * PULSES_PER_SIXTEENTH_NOTE;
 
   // This is an enum-type thing to identify base gate
-  String baseGate = getBaseNoteGate();
+  String baseGate = getBaseStepGate();
 
   // Accumulator for steps in pulses
   uint16_t newSequenceLength = 0;
@@ -335,8 +336,7 @@ void Arp::generateSequence() {
   while (newSequenceLength < newTotalSequenceLength &&
          stepIndex < MAX_STEPS_IN_SEQ) {
     byte stepInterval = getStepInterval();
-    bool isRest = stepInterval == 255;
-    int8_t stepOffset = isRest ? 0 : getStepOffset();
+    int8_t stepOffset = getStepOffset();
     uint16_t stepLength = getStepLength(baseNoteLength);
     uint16_t stepGate = getStepGate(baseGate, stepLength);
 
@@ -344,21 +344,21 @@ void Arp::generateSequence() {
       stepLength = stepLength / 2;
       stepGate = stepGate / 2;
       newSequenceLength = addStep(stepIndex, stepInterval, stepOffset,
-                                  stepLength, newSequenceLength, stepGate);
+                                  stepLength, stepGate, newSequenceLength );
       stepIndex++;
     } else if ((stepIndex + 4 < MAX_STEPS_IN_SEQ) &&
                (settings->runChance->roll())) {
       for (int i = 0; i < 4; i++) {
         newSequenceLength =
             addStep(stepIndex, i % MAX_NOTES, stepOffset,
-                    PULSES_PER_SIXTEENTH_NOTE / 2, newSequenceLength, stepGate);
+                    PULSES_PER_SIXTEENTH_NOTE / 2, stepGate, newSequenceLength);
         stepIndex++;
       }
     }
 
     // take all this variation and add a step to the sequence
     newSequenceLength = addStep(stepIndex, stepInterval, stepOffset, stepLength,
-                                newSequenceLength, stepGate);
+                                stepGate, newSequenceLength);
     stepIndex++;
   }
 

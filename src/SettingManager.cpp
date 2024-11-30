@@ -113,9 +113,9 @@ SettingManager::SettingManager(Expressions* _expr, ButtonManager* _buttons)
                   SettingTransforms::noRandomizeTransform);
   // Chance a step's gate will be randomized
   randomGateChance =
-      new Setting(0, 105, CHAR_R, CHAR_G, SettingTransforms::ccValueTransform,
+      new Setting(10, 105, CHAR_R, CHAR_G, SettingTransforms::ccValueTransform,
                   SettingTransforms::ccStepTransform,
-                  SettingTransforms::lowRandomizeTransform);
+                  SettingTransforms::mediumRandomizeTransform);
   // Chance a step's length will be randomized
   randomLengthChance =
       new Setting(0, 87, CHAR_R, CHAR_L, SettingTransforms::ccValueTransform,

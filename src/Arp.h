@@ -165,14 +165,14 @@ class Arp {
                    byte stepInterval,
                    int8_t stepOffset,
                    uint16_t stepLength,
-                   uint16_t startPosition,
-                   uint16_t stepGate);
-  String getBaseNoteGate();
-  byte getBaseNoteLength();
+                   uint16_t stepGate,
+                   uint16_t startPosition);
   byte getSequenceLength();
   int8_t getStepInterval();
   int8_t getStepOffset();
+  byte getBaseStepLength();
   uint16_t getStepLength(uint16_t baseLength);
+  String getBaseStepGate();
   uint16_t getStepGate(String baseGate, uint16_t stepLength);
   void generateSequence();
   void slipSequence();
