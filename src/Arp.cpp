@@ -29,6 +29,11 @@ const byte possibleNoteLengths[] = {
     32   // double whole note
 };
 
+// TODO: learn C++ enums
+const String GATE_FULL = "GATE_FULL";
+const String GATE_66 = "GATE_66";
+const String GATE_33 = "GATE_33";
+
 /**
  * Add a step to the sequence
  *
@@ -40,17 +45,19 @@ const byte possibleNoteLengths[] = {
  * @returns {uint16_t} where the step ends (in pulses)
  */
 uint16_t Arp::addStep(byte stepIndex,
-                      byte noteInterval,
-                      int8_t noteOffset,
-                      byte noteLength,
-                      uint16_t startPosition,
-                      bool legato) {
-  sequenceIntervals[stepIndex] = noteInterval;
-  sequenceOffset[stepIndex] = noteOffset;
+                      byte stepInterval,
+                      int8_t stepOffset,
+                      uint16_t stepLength,
+                      uint16_t stepGate,
+                      uint16_t startPosition) {
+  sequenceIntervals[stepIndex] = stepInterval;
+  sequenceOffset[stepIndex] = stepOffset;
   sequenceStartPositions[stepIndex] = startPosition;
-  sequenceStepLegato[stepIndex] = legato;
+  // 16ths are the smallest note we're handling gate length for
+  sequenceStepGate[stepIndex] =
+      stepLength < PULSES_PER_SIXTEENTH_NOTE ? stepLength : stepGate;
 
-  return startPosition + noteLength;
+  return startPosition + stepLength;
 }
 
 /**
@@ -63,11 +70,34 @@ byte Arp::ccRoll() {
 }
 
 /**
+ * Maps CC base gate (0-127) to base gate enum
+ *
+ * @returns {String} enum representing base gate
+ */
+String Arp::getBaseStepGate() {
+  byte value = settings->baseGateLength->getValue();
+  byte index = Stepper::getSteppedIndex(value, 4);
+
+  if (index == 0) {
+    // random
+    index = random(1, 4);
+  }
+
+  if (index == 1) {
+    return GATE_33;
+  } else if (index == 2) {
+    return GATE_66;
+  } else {
+    return GATE_FULL;
+  }
+}
+
+/**
  * Maps ccBaseNoteLength (0-127) to note lengths
  *
  * @returns {byte} number of 16ths for note
  */
-byte Arp::getNoteLength() {
+byte Arp::getBaseStepLength() {
   byte value = settings->baseNoteLength->getValue();
   byte index = Stepper::getSteppedIndex(value, 7);
 
@@ -143,17 +173,25 @@ void Arp::slipSequence() {
 
   for (byte i = 0; i < totalSequenceSteps - 1; i++) {
     if (settings->slipChance->roll()) {
-      byte tmpInterval = sequenceIntervals[i + 1];
-      int8_t tmpOffset = sequenceOffset[i + 1];
-      bool tmpLegato = sequenceStepLegato[i + 1];
-      sequenceIntervals[i + 1] = sequenceIntervals[i];
-      sequenceOffset[i + 1] = sequenceOffset[i];
-      sequenceStepLegato[i + 1] = sequenceStepLegato[i];
-      sequenceIntervals[i] = tmpInterval;
-      sequenceOffset[i] = tmpOffset;
-      sequenceStepLegato[i] = tmpLegato;
+      swapNotes(i, i + 1);
     }
   }
+}
+
+void Arp::swapNotes(byte aIndex, byte bIndex) {
+  byte tmpInterval = sequenceIntervals[aIndex];
+  sequenceIntervals[aIndex] = sequenceIntervals[bIndex];
+  sequenceIntervals[bIndex] = tmpInterval;
+
+  int8_t tmpOffset = sequenceOffset[aIndex];
+  sequenceOffset[aIndex] = sequenceOffset[bIndex];
+  sequenceOffset[bIndex] = tmpOffset;
+
+  // TODO: it would be nice to swap lengths/gates too
+  // but I ran into issues with notes overlapping
+  // uint16_t tmpGate = sequenceStepGate[aIndex];
+  // sequenceStepGate[aIndex] = sequenceStepGate[bIndex];
+  // sequenceStepGate[bIndex] = tmpGate;
 }
 
 /**
@@ -177,6 +215,97 @@ void Arp::queueRegenerate() {
 }
 
 /**
+ * Handle determining the steps interval (base note)
+ * 255 = rest
+ */
+int8_t Arp::getStepInterval() {
+  // Random rest
+  if (settings->restChance->roll()) {
+    // use 255 to indicate rest
+    // TODO fix this, it's hacky
+    return 255;
+  }
+
+  return random(MAX_NOTES);
+}
+
+/**
+ * Handle transforming the step's pitch
+ * (relative to a step's interval)
+ */
+int8_t Arp::getStepOffset() {
+  if (settings->octaveOneUpChance->roll()) {
+    // one oct up
+    return 12;
+  } else if (settings->octaveOneDownChance->roll()) {
+    // one oct down
+    return -12;
+  } else if (settings->octaveTwoUpChance->roll()) {
+    // two oct up
+    return 24;
+  } else if (settings->octaveTwoDownChance->roll()) {
+    // two oct down
+    return -24;
+  } else if (settings->fifthChance->roll()) {
+    // fifth up
+    return 7;
+  } else if (settings->randomNoteChance->roll()) {
+    // chaos between two octaves (exclusive)
+    return random(-11, 12);
+  }
+
+  return 0;
+}
+
+/**
+ * Handle transforming the steps's length
+ * (how much space in a sequence the step takes)
+ */
+uint16_t Arp::getStepLength(uint16_t baseLength) {
+  if (settings->randomLengthChance->roll()) {
+    // only chose between 16th, 8th, and quarter during random selection
+    return possibleNoteLengths[random(3)] * PULSES_PER_SIXTEENTH_NOTE;
+  } else if (settings->halfLengthChance->roll()) {
+    return baseLength / 2;
+  } else if (settings->doubleLengthChance->roll()) {
+    return baseLength * 2;
+  }
+
+  return baseLength;
+}
+
+/**
+ * Handle transforming the steps's gate
+ * (how long the note is held for)
+ * 0 = legato (hold through the next note)
+ */
+uint16_t Arp::getStepGate(String baseGate, uint16_t stepLength) {
+  if (settings->legatoChance->roll()) {
+    return 0;
+  }
+
+  // don't worry about step lengths for really small steps
+  if (stepLength < PULSES_PER_SIXTEENTH_NOTE) {
+    return stepLength;
+  }
+
+  uint16_t thirdOfStep = stepLength / 3;
+
+  if (settings->randomGateChance->roll()) {
+    // 1/3, 2/3, or 3/3
+    return random(1, 4) * thirdOfStep;
+  }
+
+  if (baseGate == GATE_66) {
+    return thirdOfStep * 2;
+  } else if (baseGate == GATE_33) {
+    return thirdOfStep;
+  } else {
+    return stepLength;
+  }
+}
+
+/**
  * Generate a new sequence
  */
 void Arp::generateSequence() {
@@ -187,7 +316,10 @@ void Arp::generateSequence() {
   uint16_t newTotalSequenceLength = getSequenceLength() * PULSES_PER_BAR;
 
   // This is the base length of the note in pulses
-  byte baseNoteLength = getNoteLength() * PULSES_PER_SIXTEENTH_NOTE;
+  uint16_t baseNoteLength = getBaseStepLength() * PULSES_PER_SIXTEENTH_NOTE;
+
+  // This is an enum-type thing to identify base gate
+  String baseGate = getBaseStepGate();
 
   // Accumulator for steps in pulses
   uint16_t newSequenceLength = 0;
@@ -203,102 +335,30 @@ void Arp::generateSequence() {
   // #TODO handle this better
   while (newSequenceLength < newTotalSequenceLength &&
          stepIndex < MAX_STEPS_IN_SEQ) {
-    // Due to adding note length variation
-    // this particular step might not stay the same
-    // length as other steps
-    byte noteLength = baseNoteLength;
-    // used for transposition variation
-    int8_t noteOffset = 0;
-    bool legato = settings->legatoChance->roll();
+    byte stepInterval = getStepInterval();
+    int8_t stepOffset = getStepOffset();
+    uint16_t stepLength = getStepLength(baseNoteLength);
+    uint16_t stepGate = getStepGate(baseGate, stepLength);
 
-    // which index in the activeNotes array to play
-    // (gets wrapped by numActiveNotes)
-    // #TODO this name is confusing
-    byte randomNoteInterval = random(MAX_NOTES);
-
-    // Random transposition; since they affect the same value (offset)
-    // there's some interplay between them with a bias
-    // towards single octave intervals
-    if (settings->octaveOneUpChance->getValue() ||
-        settings->octaveOneDownChance->getValue() ||
-        settings->octaveTwoUpChance->getValue() ||
-        settings->octaveTwoDownChance->getValue() ||
-        settings->fifthChance->getValue() ||
-        settings->randomNoteChance->getValue()) {
-      if (settings->octaveOneUpChance->roll()) {
-        // one oct up
-        noteOffset = 12;
-      } else if (settings->octaveOneDownChance->roll()) {
-        // one oct down
-        noteOffset = -12;
-      } else if (settings->octaveTwoUpChance->roll()) {
-        // two oct up
-        noteOffset = 24;
-      } else if (settings->octaveTwoDownChance->roll()) {
-        // two oct down
-        noteOffset = -24;
-      } else if (settings->fifthChance->roll()) {
-        // fifth up
-        noteOffset = 7;
-      } else if (settings->randomNoteChance->roll()) {
-        // chaos between two octaves (exclusive)
-        noteOffset = random(-11, 12);
-      }
-    }
-
-    // Random note length; this is different than
-    // random base note length (affects all notes)
-    // this is random for a single step
-    if (settings->randomLengthChance->getValue()) {
-      if (settings->randomLengthChance->roll()) {
-        // only chose between 16th, 8th, and quarter during random selection
-        noteLength = possibleNoteLengths[random(3)] * PULSES_PER_SIXTEENTH_NOTE;
-      }
-    }
-
-    // this needs to happen before ratchets, or else 100% rest chance still has notes
-    if (settings->restChance->getValue()) {
-      // Random rest
-      if (settings->restChance->roll()) {
-        // use 255 to indicate rest
-        // TODO fix this, it's hacky
-        randomNoteInterval = 255;
-        // no point in sliding from a note to a rest
-        legato = false;
-      }
-    }
-
-    // Note length variation; since they affect the same value (length)
-    // there's some interplay between them with a bias
-    // towards ratchets
-    if (settings->ratchetChance->getValue() ||
-        settings->halfLengthChance->getValue() ||
-        settings->doubleLengthChance->getValue() ||
-        settings->runChance->getValue()) {
-      if (settings->ratchetChance->roll()) {
-        // TODO: do we need to handle legato differently for ratchets?
-        noteLength = noteLength / 2;
-        newSequenceLength = addStep(stepIndex, randomNoteInterval, noteOffset,
-                                    noteLength, newSequenceLength, legato);
+    if (settings->ratchetChance->roll()) {
+      stepLength = stepLength / 2;
+      stepGate = stepGate / 2;
+      newSequenceLength = addStep(stepIndex, stepInterval, stepOffset,
+                                  stepLength, stepGate, newSequenceLength);
+      stepIndex++;
+    } else if ((stepIndex + 4 < MAX_STEPS_IN_SEQ) &&
+               (settings->runChance->roll())) {
+      for (int i = 0; i < 4; i++) {
+        newSequenceLength =
+            addStep(stepIndex, i % MAX_NOTES, stepOffset,
+                    PULSES_PER_SIXTEENTH_NOTE / 2, stepGate, newSequenceLength);
         stepIndex++;
-      } else if ((stepIndex + 4 < MAX_STEPS_IN_SEQ) &&
-                 (settings->runChance->roll())) {
-        for (int i = 0; i < 4; i++) {
-          newSequenceLength =
-              addStep(stepIndex, i % MAX_NOTES, noteOffset,
-                      PULSES_PER_SIXTEENTH_NOTE / 2, newSequenceLength, legato);
-          stepIndex++;
-        }
-      } else if (settings->halfLengthChance->roll()) {
-        noteLength = noteLength / 2;
-      } else if (settings->doubleLengthChance->roll()) {
-        noteLength = noteLength * 2;
       }
     }
 
     // take all this variation and add a step to the sequence
-    newSequenceLength = addStep(stepIndex, randomNoteInterval, noteOffset,
-                                noteLength, newSequenceLength, legato);
+    newSequenceLength = addStep(stepIndex, stepInterval, stepOffset, stepLength,
+                                stepGate, newSequenceLength);
     stepIndex++;
   }
 
@@ -309,9 +369,7 @@ void Arp::generateSequence() {
     byte count = 0;
     for (byte i = 0; i < stepIndex; i++) {
       if (sequenceIntervals[i] != 255) {
-        byte tmp = sequenceIntervals[i];
-        sequenceIntervals[i] = sequenceIntervals[count];
-        sequenceIntervals[count] = tmp;
+        swapNotes(i, count);
         count++;
       }
     }
@@ -328,16 +386,25 @@ void Arp::generateSequence() {
 
     for (int i = end - 1; i >= 0; i--) {
       if (sequenceIntervals[i] != 255) {
-        byte tmp = sequenceIntervals[i];
-        sequenceIntervals[i] = sequenceIntervals[end];
-        sequenceIntervals[end] = tmp;
+        swapNotes(i, end);
         end--;
       }
     }
   }
 
+  // make sure the last step doesn't go past total length
+  // (ex: if note length is 2 bars, but sequence length is 1 bar)
+  byte lastStepIndex = stepIndex - 1;
+  if (sequenceStartPositions[lastStepIndex] + sequenceStepGate[lastStepIndex] >
+      newTotalSequenceLength) {
+    sequenceStepGate[lastStepIndex] =
+        newTotalSequenceLength - sequenceStartPositions[lastStepIndex];
+  }
+
   totalSequenceSteps = stepIndex;
   totalSequenceLength = newTotalSequenceLength;
+  stopCurrNote();
+  stopLegatoNote();
 }
 
 /**
@@ -484,6 +551,20 @@ void Arp::handleNoteOff(byte channel, byte note, byte velocity) {
 
   if (noteIndex > -1 && numPressedNotes > 0) {
     --numPressedNotes;
+  }
+}
+
+void Arp::stopCurrNote() {
+  if (currNote) {
+    sendNoteOff(1, currNote, 64);
+    currNote = 0;
+  }
+}
+
+void Arp::stopLegatoNote() {
+  if (legatoNote) {
+    sendNoteOff(1, legatoNote, 64);
+    legatoNote = 0;
   }
 }
 
@@ -667,47 +748,63 @@ void Arp::handleCommandChange(byte channel, byte cc, byte value) {
   }
 }
 
+void Arp::handleStopStep() {
+  // don't do anything if there's not a current step
+  if (currStepIndex < 0) {
+    return;
+  }
+
+  // there's not a MIDI note to stop
+  if (!currNote) {
+    return;
+  }
+
+  // handle latched notes separately
+  if (settings->latch->getValueAsBool()) {
+    return;
+  }
+
+  // hold through legato notes
+  if (sequenceStepGate[currStepIndex] == 0) {
+    return;
+  }
+
+  stopLegatoNote();
+  stopCurrNote();
+  currStepIndex = -1;
+}
+
 /**
  * Handle changing step in sequence
  *
  * @param {int} stepIndex - index of step in sequence
  */
-void Arp::handleStep(int stepIndex) {
+void Arp::handleStartStep(int stepIndex) {
   byte stepInterval = sequenceIntervals[stepIndex];
-  bool stepLegato = sequenceStepLegato[stepIndex];
+  uint16_t stepGate = sequenceStepGate[stepIndex];
 
-  if (legatoNote != 0) {
-    sendNoteOff(1, legatoNote, 64);
+  stopLegatoNote();
+
+  // last step was legato, so hold it through this step
+  if (currStepIndex >= 0 && sequenceStepGate[currStepIndex] == 0) {
+    legatoNote = currNote;
   }
 
-  legatoNote = stepLegato ? currNote : 0;
-
-  // use 255 to indicate rest
-  // #TODO fix this, it's hacky
-  // (also currNote = 0 is no note and stepInterval = 255 is rest,
-  // which is confusing)
-  if (stepInterval == 255) {
-    // if the next note is a rest and latch is enabled,
-    // do nothing
-    if (settings->latch->getValueAsBool()) {
+  // we have to wait to handle ending latched notes,
+  // since by definition they're held until the next note starts
+  if (settings->latch->getValueAsBool()) {
+    if (stepInterval == 255) {
       return;
     }
-    // if the next note is a rest and latch is disabled,
-    // send note off and rest
-    else {
-      // TODO: why do we have an "all" MIDI out setting if
-      // we just default to channel 1?
-      sendNoteOff(1, currNote, 64);
-      currNote = 0;
-      return;
+    // handle latch + legato
+    else if (legatoNote == 0) {
+      stopCurrNote();
     }
   }
-  // if the next note is not a rest, send note off for the current note
-  // unless we're holding it for legato
-  else if (!stepLegato) {
-    // TODO: why do we have an "all" MIDI out setting if
-    // we just default to channel 1?
-    sendNoteOff(1, currNote, 64);
+  // handle regular rests
+  else if (stepInterval == 255) {
+    stopCurrNote();
+    return;
   }
 
   // This is where the magic happens!
@@ -733,13 +830,13 @@ void Arp::handleStep(int stepIndex) {
     }
     // but if it's out of range treat it as a rest
     else {
-      sendNoteOff(1, currNote, 64);
-      currNote = 0;
+      stopCurrNote();
       return;
     }
   }
 
   currNote = nextNote;
+  currStepIndex = stepIndex;
   // #TODO could we do something more interesting with velocity
   sendNoteOn(1, currNote, 100);
 }
@@ -748,6 +845,12 @@ void Arp::handleStep(int stepIndex) {
  * Handle a new MIDI clock pulse
  */
 void Arp::handleClock(unsigned long now) {
+  if (currStepIndex >= 0 &&
+      pulseCount >= sequenceStartPositions[currStepIndex] +
+                        sequenceStepGate[currStepIndex]) {
+    handleStopStep();
+  }
+
   // End of the sequence
   if (pulseCount >= totalSequenceLength) {
     pulseCount = 0;
@@ -783,7 +886,7 @@ void Arp::handleClock(unsigned long now) {
         swungStepIndex = stepIndex;
         originalSwungNoteTime = now;
       } else {
-        handleStep(stepIndex);
+        handleStartStep(stepIndex);
       }
     }
 
@@ -809,8 +912,10 @@ void Arp::handleClock(unsigned long now) {
  */
 void Arp::reset() {
   pulseCount = 0;
-  currNote = 0;
+  currStepIndex = -1;
   swungStepIndex = -1;
+  stopCurrNote();
+  stopLegatoNote();
 }
 
 /**
@@ -844,8 +949,8 @@ void Arp::handleStop() {
   drift = false;
   slipQueued = false;
 
-  sendNoteOff(1, currNote, 64);
-  sendNoteOff(1, legatoNote, 64);
+  stopCurrNote();
+  stopLegatoNote();
 
   expr->writeExpression(true);
 }
@@ -954,7 +1059,7 @@ bool Arp::update() {
   // the originalSwungNoteTime will be off
   if (swungStepIndex > -1) {
     if (now - originalSwungNoteTime > swingDelay) {
-      handleStep(swungStepIndex);
+      handleStartStep(swungStepIndex);
       swungStepIndex = -1;
     }
   }

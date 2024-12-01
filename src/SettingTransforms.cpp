@@ -5,8 +5,17 @@
  * or for things that should never have a value when randomized
  * (because they're too chaotic)
  */
-byte SettingTransforms::noRandomizeTransform() {
+byte SettingTransforms::noRandomizeTransformMin() {
   return 0;
+}
+
+/**
+ * Placeholder for things we don't want to change during randomization
+ * or for things that should never have a value when randomized
+ * (because they're too chaotic)
+ */
+byte SettingTransforms::noRandomizeTransformMax() {
+  return 127;
 }
 
 /**
@@ -185,11 +194,10 @@ void SettingTransforms::transposeValueTransform(Setting& self, byte output[4]) {
     output[1] = CHAR_DASH;
     num = 24 - index;
   }
-  //positive transpose
+  // positive transpose
   else {
     num = index - 24;
   }
-
 
   if (num < 10) {
     output[3] = ExpressionSets::convertNumberToByte(num % 10);
@@ -203,7 +211,9 @@ void SettingTransforms::transposeValueTransform(Setting& self, byte output[4]) {
 /**
  * Step transfor for BPM
  */
-byte SettingTransforms::transposeStepTransform(byte value, bool stepUp, bool shift) {
+byte SettingTransforms::transposeStepTransform(byte value,
+                                               bool stepUp,
+                                               bool shift) {
   return Stepper::stepIndex(value, 49, stepUp, shift ? 12 : 1);
 }
 
@@ -273,6 +283,49 @@ byte SettingTransforms::midiChStepTransform(byte value,
   }
 
   return Stepper::stepIndex(value, 17, stepUp);
+}
+
+/**
+ * Value transform for gate length
+ * (since MIDI 0-127 gets mapped to various different note lengths)
+ */
+void SettingTransforms::gateLengthValueTransform(Setting& self,
+                                                 byte output[4]) {
+  populateName(self, output);
+  byte index = Stepper::getSteppedIndex(self.getValue(), 4);
+
+  if (index == 3) {
+    // full
+    output[2] = CHAR_F;
+    output[3] = CHAR_U;
+  } else if (index == 2) {
+    // 66%
+    output[2] = CHAR_6;
+    output[3] = CHAR_6;
+  } else if (index == 1) {
+    // 33%
+    output[2] = CHAR_3;
+    output[3] = CHAR_3;
+  } else {
+    // random
+    output[2] = CHAR_R;
+    output[3] = CHAR_A;
+  }
+}
+
+/**
+ * Step transform for gate length
+ *
+ * TODO consolidate these transformers that are basically doing the same thing
+ */
+byte SettingTransforms::gateLengthStepTransform(byte value,
+                                                bool stepUp,
+                                                bool shift) {
+  if (shift) {
+    return stepUp ? 127 : 0;
+  }
+
+  return Stepper::stepIndex(value, 4, stepUp);
 }
 
 /**

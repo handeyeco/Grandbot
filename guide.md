@@ -53,6 +53,26 @@ When set to random, a different Sequence length is picked (between 1-8) each tim
 
 ---
 
+#### Base gate length
+
+- Submenu: Sequence
+- Display: `GL`
+- MIDI CC: 104
+- Options: Random (`rA`), 33%, 66%, full (`Fu`)
+- Default: Full
+
+How long the note is held during the full note length.
+
+Full holds the note for the full note length. 66% and 33% hold it for a percent of the full note length. Random picks between one of the other three options.
+
+> [!WARNING]
+> When latch is enabled, notes are held through full note length.
+
+> [!WARNING]
+> Legato notes are held through the following note regardless of their gate.
+
+---
+
 #### One octave up chance
 
 - Submenu: Sequence
@@ -188,6 +208,18 @@ Legato triggers 303 style slides in supported synths by overlapping the current 
 
 - Bass Station II: set triggering to "Autoglide" and increase the "Glide Time"
 - Hydrasynth: select a mono/unison setting in "Polyphony", turn "Glide" on, turn "Glide Legato" on, and increase "Glide Time"
+
+---
+
+#### Random gate length chance
+
+- Submenu: Sequence
+- Display: `rG`
+- MIDI CC: 105
+- Range: 0-99%
+- Default: 0%
+
+For each step, the chance that step will get a random gate length.
 
 ---
 

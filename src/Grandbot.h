@@ -25,9 +25,9 @@ class Grandbot {
   // Sleep/Wake thresholds; they're different because otherwise
   // slight variations in readings cause jitter
   // how bright it needs to be to switch from sleep to waking
-  static const int wakeThresh = 400;
+  static const int wakeThresh = 200;
   // how dark it needs to be to switch from waking to sleep
-  static const int sleepThresh = 300;
+  static const int sleepThresh = 100;
 
   // Emotional state of Grandbot
   // #TODO make byte

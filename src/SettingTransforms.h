@@ -22,7 +22,8 @@
  */
 namespace SettingTransforms {
 // helpers
-byte noRandomizeTransform();
+byte noRandomizeTransformMin();
+byte noRandomizeTransformMax();
 void populateName(Setting& self, byte output[4]);
 
 // shared
@@ -45,6 +46,8 @@ void swingValueTransform(Setting& self, byte output[4]);
 byte swingStepTransform(byte value, bool stepUp, bool shift);
 void midiChValueTransform(Setting& self, byte output[4]);
 byte midiChStepTransform(byte value, bool stepUp, bool shift);
+void gateLengthValueTransform(Setting& self, byte output[4]);
+byte gateLengthStepTransform(byte value, bool stepUp, bool shift);
 void noteLengthValueTransform(Setting& self, byte output[4]);
 byte noteLengthStepTransform(byte value, bool stepUp, bool shift);
 void sequenceLengthValueTransform(Setting& self, byte output[4]);

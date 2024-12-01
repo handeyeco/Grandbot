@@ -10,7 +10,7 @@
 #define SETTING_MANAGER_INCL_GUARD
 
 #define MAX_MENU_ITEM_INDEX 254
-#define SEQUENCE_SETTING_COUNT 17
+#define SEQUENCE_SETTING_COUNT 19
 #define GENERAL_SETTING_COUNT 9
 
 // used to map MIDI CC 0-127 to 73-200 BPM
@@ -41,6 +41,7 @@ struct SettingManager {
 
   Setting* collapseNotes;
   Setting* sequenceLength;
+  Setting* baseGateLength;
   Setting* baseNoteLength;
   Setting* octaveOneUpChance;
   Setting* octaveOneDownChance;
@@ -54,6 +55,7 @@ struct SettingManager {
   Setting* runChance;
   Setting* fifthChance;
   Setting* randomNoteChance;
+  Setting* randomGateChance;
   Setting* randomLengthChance;
   Setting* slipChance;
 

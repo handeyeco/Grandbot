@@ -97,7 +97,13 @@ class Arp {
   // Number of notes that are currently active
   byte numActiveNotes = 8;
 
-  // Note currently being played
+  // Which step is currently playing;
+  int currStepIndex = -1;
+  // Note currently being played;
+  // separate from currStepIndex because the sequence could change while
+  // the note is playing and we need to know what note to turn off
+  // (0 = no note)
+  // TODO: make 255 = no note
   byte currNote = 0;
   // For legato, we hold two notes
   byte legatoNote = 0;
@@ -105,11 +111,8 @@ class Arp {
   // #TODO this is poorly named, it's not really an "interval"
   // it's an index for accessing a note from `activeNotes`
   // so it's a sequence of array indexes modulo'd by `numActiveNotes`
+  // 255 = rest
   byte sequenceIntervals[MAX_STEPS_IN_SEQ] = {1, 3, 5, 3};
-
-  // For 303-mode, determine which steps in a sequence
-  // need to overlap (to trigger external legato)
-  bool sequenceStepLegato[MAX_STEPS_IN_SEQ] = {0, 0, 0, 0};
 
   // Offset the note at this step (like for octaves)
   // 0=no offset; 12=+1 oct; -24=-2oct
@@ -120,6 +123,12 @@ class Arp {
       // value sum must be >= totalSequenceLength
       PULSES_PER_QUARTER_NOTE * 0, PULSES_PER_QUARTER_NOTE * 1,
       PULSES_PER_QUARTER_NOTE * 2, PULSES_PER_QUARTER_NOTE * 3};
+
+  // How many pulses to hold the step for
+  // 0 = legato (overlap step with the next step)
+  uint16_t sequenceStepGate[MAX_STEPS_IN_SEQ] = {
+      PULSES_PER_QUARTER_NOTE, PULSES_PER_QUARTER_NOTE / 2,
+      PULSES_PER_QUARTER_NOTE / 4, PULSES_PER_QUARTER_NOTE / 2};
 
   // Total sequence length in discrete steps
   byte totalSequenceSteps = 4;
@@ -149,18 +158,25 @@ class Arp {
   void handleClock(unsigned long now);
   void handleStartContinue(bool reset);
   void handleStop();
-  void handleStep(int stepIndex);
+  void handleStopStep();
+  void handleStartStep(int stepIndex);
   void handleButtons(bool useInternalClock);
   uint16_t addStep(byte stepIndex,
-                   byte noteInterval,
-                   int8_t noteOffset,
-                   byte noteLength,
-                   uint16_t startPosition,
-                   bool legato);
-  byte getNoteLength();
+                   byte stepInterval,
+                   int8_t stepOffset,
+                   uint16_t stepLength,
+                   uint16_t stepGate,
+                   uint16_t startPosition);
   byte getSequenceLength();
+  int8_t getStepInterval();
+  int8_t getStepOffset();
+  byte getBaseStepLength();
+  uint16_t getStepLength(uint16_t baseLength);
+  String getBaseStepGate();
+  uint16_t getStepGate(String baseGate, uint16_t stepLength);
   void generateSequence();
   void slipSequence();
+  void swapNotes(byte aIndex, byte bIndex);
   String padded(String input);
   String convertCCToString(byte value);
   bool correctInChannel(byte channel);
@@ -168,6 +184,8 @@ class Arp {
   void sort(byte arr[], int arrLen);
   void sendNoteOn(byte channel, byte pitch, byte velocity);
   void sendNoteOff(byte channel, byte pitch, byte velocity);
+  void stopCurrNote();
+  void stopLegatoNote();
   byte ccToMidiCh(byte cc);
   void panic();
   void queueRegenerate();
