@@ -554,7 +554,6 @@ void Arp::handleNoteOff(byte channel, byte note, byte velocity) {
   }
 }
 
-
 void Arp::stopCurrNote() {
   if (currNote) {
     sendNoteOff(1, currNote, 64);
