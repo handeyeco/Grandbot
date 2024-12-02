@@ -377,6 +377,36 @@ For example if the step's random velocity offset was the max: 126.
 
 ---
 
+#### Velocity high
+
+- Submenu: Settings
+- Display: `vH`
+- MIDI CC: 107
+- Range: 0-99%
+- Default: 99%
+
+Highest possible velocity (0-99% maps to 0-127).
+
+> [!WARNING]
+> If velocity high is lower than velocity low, the values will be swapped
+
+---
+
+#### Velocity low
+
+- Submenu: Settings
+- Display: `vL`
+- MIDI CC: 108
+- Range: 0-99%
+- Default: 0%
+
+Lowest possible velocity (0-99% maps to 0-127).
+
+> [!WARNING]
+> If velocity high is lower than velocity low, the values will be swapped
+
+---
+
 #### Transpose
 
 - Submenu: Settings

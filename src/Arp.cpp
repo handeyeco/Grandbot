@@ -350,22 +350,24 @@ void Arp::generateSequence() {
     if (settings->ratchetChance->roll()) {
       stepLength = stepLength / 2;
       stepGate = stepGate / 2;
-      newSequenceLength = addStep(stepIndex, stepInterval, stepOffset,
-                                  stepLength, stepGate, stepVelocityOffset, newSequenceLength);
+      newSequenceLength =
+          addStep(stepIndex, stepInterval, stepOffset, stepLength, stepGate,
+                  stepVelocityOffset, newSequenceLength);
       stepIndex++;
     } else if ((stepIndex + 4 < MAX_STEPS_IN_SEQ) &&
                (settings->runChance->roll())) {
       for (int i = 0; i < 4; i++) {
-        newSequenceLength =
-            addStep(stepIndex, i % MAX_NOTES, stepOffset,
-                    PULSES_PER_SIXTEENTH_NOTE / 2, stepGate, stepVelocityOffset, newSequenceLength);
+        newSequenceLength = addStep(stepIndex, i % MAX_NOTES, stepOffset,
+                                    PULSES_PER_SIXTEENTH_NOTE / 2, stepGate,
+                                    stepVelocityOffset, newSequenceLength);
         stepIndex++;
       }
     }
 
     // take all this variation and add a step to the sequence
-    newSequenceLength = addStep(stepIndex, stepInterval, stepOffset, stepLength,
-                                stepGate, stepVelocityOffset, newSequenceLength);
+    newSequenceLength =
+        addStep(stepIndex, stepInterval, stepOffset, stepLength, stepGate,
+                stepVelocityOffset, newSequenceLength);
     stepIndex++;
   }
 
@@ -422,18 +424,36 @@ void Arp::generateSequence() {
  * @returns {byte} the mapped velocity value (1-127)
  */
 byte Arp::mapVelocity(byte stepIndex) {
+  byte maxVelocity = max(1, settings->velocityHigh->getValue());
+  byte minVelocity = max(1, settings->velocityLow->getValue());
+
+  if (maxVelocity == minVelocity) {
+    Serial.println("same min/max");
+    return maxVelocity;
+  }
+
+  if (maxVelocity < minVelocity) {
+    byte tmp = maxVelocity;
+    maxVelocity = minVelocity;
+    minVelocity = tmp;
+  }
+
   byte randomOffset = sequenceStepVelocityOffset[stepIndex];
   if (randomOffset == 0) {
-    return 127;
+    Serial.println("no offset");
+    return maxVelocity;
   }
-  
+
   byte depth = min(126, settings->velocityDepth->getValue());
   if (depth == 0) {
-    return 127;
+    Serial.println("no depth");
+    return maxVelocity;
   }
 
   byte mappedOffset = map(randomOffset, 0, 126, 0, depth);
-  return 127 - mappedOffset;
+  byte unclamped = 127 - mappedOffset;
+  byte clamped = map(unclamped, 1, 127, minVelocity, maxVelocity);
+  return clamped;
 }
 
 /**

@@ -167,10 +167,20 @@ SettingManager::SettingManager(Expressions* _expr, ButtonManager* _buttons)
                       SettingTransforms::swingStepTransform,
                       SettingTransforms::noRandomizeTransformMin);
   // How much the random velocity offset is applied to outgoing notes
-  velocityDepth = new Setting(0, 106, CHAR_V, CHAR_E,
-                      SettingTransforms::ccValueTransform,
-                      SettingTransforms::ccStepTransform,
-                      SettingTransforms::noRandomizeTransformMin);
+  velocityDepth =
+      new Setting(0, 106, CHAR_V, CHAR_E, SettingTransforms::ccValueTransform,
+                  SettingTransforms::ccStepTransform,
+                  SettingTransforms::noRandomizeTransformMin);
+  // Highest possible velocity
+  velocityHigh =
+      new Setting(127, 107, CHAR_V, CHAR_H, SettingTransforms::ccValueTransform,
+                  SettingTransforms::ccStepTransform,
+                  SettingTransforms::noRandomizeTransformMax);
+  // Lowest possible velocity
+  velocityLow =
+      new Setting(0, 108, CHAR_V, CHAR_L, SettingTransforms::ccValueTransform,
+                  SettingTransforms::ccStepTransform,
+                  SettingTransforms::noRandomizeTransformMin);
   // Whether to play the sequence through GB's speaker or not
   useSpeaker = new Setting(0, 119, CHAR_S, CHAR_P,
                            SettingTransforms::onOffValueTransform,
@@ -200,14 +210,16 @@ SettingManager::SettingManager(Expressions* _expr, ButtonManager* _buttons)
 
   generalSettings[0] = swing;
   generalSettings[1] = velocityDepth;
-  generalSettings[2] = latch;
-  generalSettings[3] = useSpeaker;
-  generalSettings[4] = midiChannelIn;
-  generalSettings[5] = midiChannelOut;
-  generalSettings[6] = sort;
-  generalSettings[7] = clock;
-  generalSettings[8] = transpose;
-  generalSettings[9] = bpm;
+  generalSettings[2] = velocityHigh;
+  generalSettings[3] = velocityLow;
+  generalSettings[4] = latch;
+  generalSettings[5] = useSpeaker;
+  generalSettings[6] = midiChannelIn;
+  generalSettings[7] = midiChannelOut;
+  generalSettings[8] = sort;
+  generalSettings[9] = clock;
+  generalSettings[10] = transpose;
+  generalSettings[11] = bpm;
 }
 
 /**

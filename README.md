@@ -70,6 +70,8 @@ There's endless potential just doing that. If you'd like more control, there are
 | Transpose                       | 103     | t       |
 | Note sort                       | 114     | So      |
 | Random velocity depth           | 106     | vE      |
+| Velocity high                   | 107     | vH      |
+| Velocity low                    | 108     | vL      |
 | Select MIDI channel in          | 14      | In      |
 | Select MIDI channel out         | 15      | ot      |
 | Toggle internal speaker for arp | 119     | SP      |
