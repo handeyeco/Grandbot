@@ -166,11 +166,11 @@ SettingManager::SettingManager(Expressions* _expr, ButtonManager* _buttons)
                       SettingTransforms::swingValueTransform,
                       SettingTransforms::swingStepTransform,
                       SettingTransforms::noRandomizeTransformMin);
-
-  // CC_SLIP 116
-  // CC_PANIC 117
-  // CC_GENERATE_SEQUENCE 118
-
+  // How much the random velocity offset is applied to outgoing notes
+  velocityDepth = new Setting(0, 106, CHAR_V, CHAR_E,
+                      SettingTransforms::ccValueTransform,
+                      SettingTransforms::ccStepTransform,
+                      SettingTransforms::noRandomizeTransformMin);
   // Whether to play the sequence through GB's speaker or not
   useSpeaker = new Setting(0, 119, CHAR_S, CHAR_P,
                            SettingTransforms::onOffValueTransform,
@@ -199,14 +199,15 @@ SettingManager::SettingManager(Expressions* _expr, ButtonManager* _buttons)
   sequenceSettings[18] = collapseNotes;
 
   generalSettings[0] = swing;
-  generalSettings[1] = latch;
-  generalSettings[2] = useSpeaker;
-  generalSettings[3] = midiChannelIn;
-  generalSettings[4] = midiChannelOut;
-  generalSettings[5] = sort;
-  generalSettings[6] = clock;
-  generalSettings[7] = transpose;
-  generalSettings[8] = bpm;
+  generalSettings[1] = velocityDepth;
+  generalSettings[2] = latch;
+  generalSettings[3] = useSpeaker;
+  generalSettings[4] = midiChannelIn;
+  generalSettings[5] = midiChannelOut;
+  generalSettings[6] = sort;
+  generalSettings[7] = clock;
+  generalSettings[8] = transpose;
+  generalSettings[9] = bpm;
 }
 
 /**

@@ -130,6 +130,9 @@ class Arp {
       PULSES_PER_QUARTER_NOTE, PULSES_PER_QUARTER_NOTE / 2,
       PULSES_PER_QUARTER_NOTE / 4, PULSES_PER_QUARTER_NOTE / 2};
 
+  // Random velocity offsets
+  byte sequenceStepVelocityOffset[MAX_STEPS_IN_SEQ] = {0, 32, 64, 32};
+
   // Total sequence length in discrete steps
   byte totalSequenceSteps = 4;
   // Total sequence length in pulses
@@ -166,6 +169,7 @@ class Arp {
                    int8_t stepOffset,
                    uint16_t stepLength,
                    uint16_t stepGate,
+                   byte stepVelocityOffset,
                    uint16_t startPosition);
   byte getSequenceLength();
   int8_t getStepInterval();
@@ -182,6 +186,7 @@ class Arp {
   bool correctInChannel(byte channel);
   int insert(byte arr[], int arrLen, byte value, int capacity);
   void sort(byte arr[], int arrLen);
+  byte mapVelocity(byte stepIndex);
   void sendNoteOn(byte channel, byte pitch, byte velocity);
   void sendNoteOff(byte channel, byte pitch, byte velocity);
   void stopCurrNote();

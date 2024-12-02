@@ -238,7 +238,7 @@ The percent chance that a step will have a random length (16th, 8th, or quarter 
 #### Note run chance
 
 - Submenu: Sequence
-- Display: `ru`
+- Display: `rU`
 - MIDI CC: 30
 - Range: 0-99%
 - Default: 0%
@@ -356,6 +356,24 @@ When latch is enabled, current notes are held when a rest is encountered.
 - Default: 50% (no swing)
 
 Swing makes every other 16th note start later to create a more natural sounding rhythm. 50-67% is the percent distance a 16th note is moved between its surrounding notes.
+
+---
+
+#### Random velocity depth
+
+- Submenu: Settings
+- Display: `vE`
+- MIDI CC: 106
+- Range: 0-99%
+- Default: 0%
+
+All steps in a sequence are assigned a number between 0-126 (velocity offset). Velocity depth is the amount that number affects the outgoing velocity.
+
+For example if the step's random velocity offset was the max: 126.
+
+- 0%: offset would be mapped to 0, base velocity would be 127, outgoing velocity would be 127
+- 50%: offset would be mapped to 63, base velocity would be 127, outgoing velocity would be 64
+- 99%: offset would be mapped to 126, base velocity would be 127, outgoing velocity would be 1
 
 ---
 

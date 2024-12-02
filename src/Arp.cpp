@@ -49,6 +49,7 @@ uint16_t Arp::addStep(byte stepIndex,
                       int8_t stepOffset,
                       uint16_t stepLength,
                       uint16_t stepGate,
+                      byte stepVelocityOffset,
                       uint16_t startPosition) {
   sequenceIntervals[stepIndex] = stepInterval;
   sequenceOffset[stepIndex] = stepOffset;
@@ -56,6 +57,7 @@ uint16_t Arp::addStep(byte stepIndex,
   // 16ths are the smallest note we're handling gate length for
   sequenceStepGate[stepIndex] =
       stepLength < PULSES_PER_SIXTEENTH_NOTE ? stepLength : stepGate;
+  sequenceStepVelocityOffset[stepIndex] = stepVelocityOffset;
 
   return startPosition + stepLength;
 }
@@ -186,6 +188,10 @@ void Arp::swapNotes(byte aIndex, byte bIndex) {
   int8_t tmpOffset = sequenceOffset[aIndex];
   sequenceOffset[aIndex] = sequenceOffset[bIndex];
   sequenceOffset[bIndex] = tmpOffset;
+
+  byte tmpVelocityOffset = sequenceStepVelocityOffset[aIndex];
+  sequenceStepVelocityOffset[aIndex] = sequenceStepVelocityOffset[bIndex];
+  sequenceStepVelocityOffset[bIndex] = tmpVelocityOffset;
 
   // TODO: it would be nice to swap lengths/gates too
   // but I ran into issues with notes overlapping
@@ -339,26 +345,27 @@ void Arp::generateSequence() {
     int8_t stepOffset = getStepOffset();
     uint16_t stepLength = getStepLength(baseNoteLength);
     uint16_t stepGate = getStepGate(baseGate, stepLength);
+    byte stepVelocityOffset = random(127);
 
     if (settings->ratchetChance->roll()) {
       stepLength = stepLength / 2;
       stepGate = stepGate / 2;
       newSequenceLength = addStep(stepIndex, stepInterval, stepOffset,
-                                  stepLength, stepGate, newSequenceLength);
+                                  stepLength, stepGate, stepVelocityOffset, newSequenceLength);
       stepIndex++;
     } else if ((stepIndex + 4 < MAX_STEPS_IN_SEQ) &&
                (settings->runChance->roll())) {
       for (int i = 0; i < 4; i++) {
         newSequenceLength =
             addStep(stepIndex, i % MAX_NOTES, stepOffset,
-                    PULSES_PER_SIXTEENTH_NOTE / 2, stepGate, newSequenceLength);
+                    PULSES_PER_SIXTEENTH_NOTE / 2, stepGate, stepVelocityOffset, newSequenceLength);
         stepIndex++;
       }
     }
 
     // take all this variation and add a step to the sequence
     newSequenceLength = addStep(stepIndex, stepInterval, stepOffset, stepLength,
-                                stepGate, newSequenceLength);
+                                stepGate, stepVelocityOffset, newSequenceLength);
     stepIndex++;
   }
 
@@ -408,9 +415,30 @@ void Arp::generateSequence() {
 }
 
 /**
+ * Maps step's random velocity relative to velocity depth
+ * (returns between 1-127 since velocity 0 is interpreted as "note off")
+ *
+ * @param {byte} stepIndex - the step we're mapping
+ * @returns {byte} the mapped velocity value (1-127)
+ */
+byte Arp::mapVelocity(byte stepIndex) {
+  byte randomOffset = sequenceStepVelocityOffset[stepIndex];
+  if (randomOffset == 0) {
+    return 127;
+  }
+  
+  byte depth = min(126, settings->velocityDepth->getValue());
+  if (depth == 0) {
+    return 127;
+  }
+
+  byte mappedOffset = map(randomOffset, 0, 126, 0, depth);
+  return 127 - mappedOffset;
+}
+
+/**
  * Sends a note on MIDI message and optionally
  * sends note to the buzzer
- * #TODO do we need velocity?
  *
  * @param {byte} channel - MIDI channel to send to
  * @param {byte} note - MIDI note to send
@@ -837,8 +865,8 @@ void Arp::handleStartStep(int stepIndex) {
 
   currNote = nextNote;
   currStepIndex = stepIndex;
-  // #TODO could we do something more interesting with velocity
-  sendNoteOn(1, currNote, 100);
+  byte velocity = mapVelocity(stepIndex);
+  sendNoteOn(1, currNote, velocity);
 }
 
 /**
