@@ -359,33 +359,15 @@ Swing makes every other 16th note start later to create a more natural sounding 
 
 ---
 
-#### Random velocity depth
-
-- Submenu: Settings
-- Display: `vE`
-- MIDI CC: 106
-- Range: 0-99%
-- Default: 0%
-
-All steps in a sequence are assigned a number between 0-126 (velocity offset). Velocity depth is the amount that number affects the outgoing velocity.
-
-For example if the step's random velocity offset was the max: 126.
-
-- 0%: offset would be mapped to 0, base velocity would be 127, outgoing velocity would be 127
-- 50%: offset would be mapped to 63, base velocity would be 127, outgoing velocity would be 64
-- 99%: offset would be mapped to 126, base velocity would be 127, outgoing velocity would be 1
-
----
-
 #### Velocity high
 
 - Submenu: Settings
 - Display: `vH`
 - MIDI CC: 107
 - Range: 0-99%
-- Default: 99%
+- Default: 86%
 
-Highest possible velocity (0-99% maps to 0-127).
+Highest possible velocity (0-99% maps to 1-127).
 
 > [!WARNING]
 > If velocity high is lower than velocity low, the values will be swapped
@@ -398,9 +380,9 @@ Highest possible velocity (0-99% maps to 0-127).
 - Display: `vL`
 - MIDI CC: 108
 - Range: 0-99%
-- Default: 0%
+- Default: 70%
 
-Lowest possible velocity (0-99% maps to 0-127).
+Lowest possible velocity (0-99% maps to 1-127).
 
 > [!WARNING]
 > If velocity high is lower than velocity low, the values will be swapped

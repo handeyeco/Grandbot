@@ -131,7 +131,7 @@ class Arp {
       PULSES_PER_QUARTER_NOTE / 4, PULSES_PER_QUARTER_NOTE / 2};
 
   // Random velocity offsets
-  byte sequenceStepVelocityOffset[MAX_STEPS_IN_SEQ] = {0, 32, 64, 32};
+  byte sequenceStepVelocity[MAX_STEPS_IN_SEQ] = {0, 32, 64, 32};
 
   // Total sequence length in discrete steps
   byte totalSequenceSteps = 4;
@@ -169,7 +169,7 @@ class Arp {
                    int8_t stepOffset,
                    uint16_t stepLength,
                    uint16_t stepGate,
-                   byte stepVelocityOffset,
+                   byte stepVelocity,
                    uint16_t startPosition);
   byte getSequenceLength();
   int8_t getStepInterval();

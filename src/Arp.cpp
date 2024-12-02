@@ -49,7 +49,7 @@ uint16_t Arp::addStep(byte stepIndex,
                       int8_t stepOffset,
                       uint16_t stepLength,
                       uint16_t stepGate,
-                      byte stepVelocityOffset,
+                      byte stepVelocity,
                       uint16_t startPosition) {
   sequenceIntervals[stepIndex] = stepInterval;
   sequenceOffset[stepIndex] = stepOffset;
@@ -57,7 +57,7 @@ uint16_t Arp::addStep(byte stepIndex,
   // 16ths are the smallest note we're handling gate length for
   sequenceStepGate[stepIndex] =
       stepLength < PULSES_PER_SIXTEENTH_NOTE ? stepLength : stepGate;
-  sequenceStepVelocityOffset[stepIndex] = stepVelocityOffset;
+  sequenceStepVelocity[stepIndex] = stepVelocity;
 
   return startPosition + stepLength;
 }
@@ -189,9 +189,9 @@ void Arp::swapNotes(byte aIndex, byte bIndex) {
   sequenceOffset[aIndex] = sequenceOffset[bIndex];
   sequenceOffset[bIndex] = tmpOffset;
 
-  byte tmpVelocityOffset = sequenceStepVelocityOffset[aIndex];
-  sequenceStepVelocityOffset[aIndex] = sequenceStepVelocityOffset[bIndex];
-  sequenceStepVelocityOffset[bIndex] = tmpVelocityOffset;
+  byte tmpVelocity = sequenceStepVelocity[aIndex];
+  sequenceStepVelocity[aIndex] = sequenceStepVelocity[bIndex];
+  sequenceStepVelocity[bIndex] = tmpVelocity;
 
   // TODO: it would be nice to swap lengths/gates too
   // but I ran into issues with notes overlapping
@@ -345,29 +345,28 @@ void Arp::generateSequence() {
     int8_t stepOffset = getStepOffset();
     uint16_t stepLength = getStepLength(baseNoteLength);
     uint16_t stepGate = getStepGate(baseGate, stepLength);
-    byte stepVelocityOffset = random(127);
+    byte stepVelocity = random(1, 128);
 
     if (settings->ratchetChance->roll()) {
       stepLength = stepLength / 2;
       stepGate = stepGate / 2;
       newSequenceLength =
           addStep(stepIndex, stepInterval, stepOffset, stepLength, stepGate,
-                  stepVelocityOffset, newSequenceLength);
+                  stepVelocity, newSequenceLength);
       stepIndex++;
     } else if ((stepIndex + 4 < MAX_STEPS_IN_SEQ) &&
                (settings->runChance->roll())) {
       for (int i = 0; i < 4; i++) {
         newSequenceLength = addStep(stepIndex, i % MAX_NOTES, stepOffset,
                                     PULSES_PER_SIXTEENTH_NOTE / 2, stepGate,
-                                    stepVelocityOffset, newSequenceLength);
+                                    stepVelocity, newSequenceLength);
         stepIndex++;
       }
     }
 
     // take all this variation and add a step to the sequence
-    newSequenceLength =
-        addStep(stepIndex, stepInterval, stepOffset, stepLength, stepGate,
-                stepVelocityOffset, newSequenceLength);
+    newSequenceLength = addStep(stepIndex, stepInterval, stepOffset, stepLength,
+                                stepGate, stepVelocity, newSequenceLength);
     stepIndex++;
   }
 
@@ -428,7 +427,6 @@ byte Arp::mapVelocity(byte stepIndex) {
   byte minVelocity = max(1, settings->velocityLow->getValue());
 
   if (maxVelocity == minVelocity) {
-    Serial.println("same min/max");
     return maxVelocity;
   }
 
@@ -438,21 +436,8 @@ byte Arp::mapVelocity(byte stepIndex) {
     minVelocity = tmp;
   }
 
-  byte randomOffset = sequenceStepVelocityOffset[stepIndex];
-  if (randomOffset == 0) {
-    Serial.println("no offset");
-    return maxVelocity;
-  }
-
-  byte depth = min(126, settings->velocityDepth->getValue());
-  if (depth == 0) {
-    Serial.println("no depth");
-    return maxVelocity;
-  }
-
-  byte mappedOffset = map(randomOffset, 0, 126, 0, depth);
-  byte unclamped = 127 - mappedOffset;
-  byte clamped = map(unclamped, 1, 127, minVelocity, maxVelocity);
+  byte clamped =
+      map(sequenceStepVelocity[stepIndex], 1, 127, minVelocity, maxVelocity);
   return clamped;
 }
 
