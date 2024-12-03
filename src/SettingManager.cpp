@@ -166,11 +166,16 @@ SettingManager::SettingManager(Expressions* _expr, ButtonManager* _buttons)
                       SettingTransforms::swingValueTransform,
                       SettingTransforms::swingStepTransform,
                       SettingTransforms::noRandomizeTransformMin);
-
-  // CC_SLIP 116
-  // CC_PANIC 117
-  // CC_GENERATE_SEQUENCE 118
-
+  // Highest possible velocity
+  velocityHigh =
+      new Setting(110, 107, CHAR_V, CHAR_H, SettingTransforms::ccValueTransform,
+                  SettingTransforms::ccStepTransform,
+                  SettingTransforms::noRandomizeTransformMax);
+  // Lowest possible velocity
+  velocityLow =
+      new Setting(90, 108, CHAR_V, CHAR_L, SettingTransforms::ccValueTransform,
+                  SettingTransforms::ccStepTransform,
+                  SettingTransforms::noRandomizeTransformMin);
   // Whether to play the sequence through GB's speaker or not
   useSpeaker = new Setting(0, 119, CHAR_S, CHAR_P,
                            SettingTransforms::onOffValueTransform,
@@ -199,14 +204,16 @@ SettingManager::SettingManager(Expressions* _expr, ButtonManager* _buttons)
   sequenceSettings[18] = collapseNotes;
 
   generalSettings[0] = swing;
-  generalSettings[1] = latch;
-  generalSettings[2] = useSpeaker;
-  generalSettings[3] = midiChannelIn;
-  generalSettings[4] = midiChannelOut;
-  generalSettings[5] = sort;
-  generalSettings[6] = clock;
-  generalSettings[7] = transpose;
-  generalSettings[8] = bpm;
+  generalSettings[1] = velocityHigh;
+  generalSettings[2] = velocityLow;
+  generalSettings[3] = latch;
+  generalSettings[4] = useSpeaker;
+  generalSettings[5] = midiChannelIn;
+  generalSettings[6] = midiChannelOut;
+  generalSettings[7] = sort;
+  generalSettings[8] = clock;
+  generalSettings[9] = transpose;
+  generalSettings[10] = bpm;
 }
 
 /**

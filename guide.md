@@ -238,7 +238,7 @@ The percent chance that a step will have a random length (16th, 8th, or quarter 
 #### Note run chance
 
 - Submenu: Sequence
-- Display: `ru`
+- Display: `rU`
 - MIDI CC: 30
 - Range: 0-99%
 - Default: 0%
@@ -356,6 +356,36 @@ When latch is enabled, current notes are held when a rest is encountered.
 - Default: 50% (no swing)
 
 Swing makes every other 16th note start later to create a more natural sounding rhythm. 50-67% is the percent distance a 16th note is moved between its surrounding notes.
+
+---
+
+#### Velocity high
+
+- Submenu: Settings
+- Display: `vH`
+- MIDI CC: 107
+- Range: 0-99%
+- Default: 86%
+
+Highest possible velocity (0-99% maps to 1-127).
+
+> [!WARNING]
+> If velocity high is lower than velocity low, the values will be swapped
+
+---
+
+#### Velocity low
+
+- Submenu: Settings
+- Display: `vL`
+- MIDI CC: 108
+- Range: 0-99%
+- Default: 70%
+
+Lowest possible velocity (0-99% maps to 1-127).
+
+> [!WARNING]
+> If velocity high is lower than velocity low, the values will be swapped
 
 ---
 

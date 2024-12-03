@@ -54,7 +54,7 @@ There's endless potential just doing that. If you'd like more control, there are
 | Ratchet (double note) chance    | 28      | rA      |
 | Legato/slide chance             | 31      | LE      |
 | Random length chance            | 87      | rL      |
-| Note run chance                 | 30      | ru      |
+| Note run chance                 | 30      | rU      |
 | **» Post Generate**             |
 | Collapse notes                  | 19      | Co      |
 | **» Generate / Slip**           |
@@ -69,6 +69,8 @@ There's endless potential just doing that. If you'd like more control, there are
 | Swing (50-67%)                  | 115     | SG      |
 | Transpose                       | 103     | t       |
 | Note sort                       | 114     | So      |
+| Velocity high                   | 107     | vH      |
+| Velocity low                    | 108     | vL      |
 | Select MIDI channel in          | 14      | In      |
 | Select MIDI channel out         | 15      | ot      |
 | Toggle internal speaker for arp | 119     | SP      |
