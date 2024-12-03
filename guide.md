@@ -6,11 +6,59 @@ Grandbot is a generative sequencer. This means you don't tell Grandbot what to p
 
 For a technical overview of the Arp, check out [this blog post](https://handeyeco.github.io/tech-blog/grandbot-update-arp/).
 
+| Description                     | MIDI CC | Display | Button |
+| ------------------------------- | ------- | ------- | ------ |
+| **» SEqU**                      |
+| Sequence length                 | 21      | SL      |
+| Collapse notes                  | 19      | Co      |
+| Slip chance                     | 89      | SC      |
+| **» nOtE**                      |
+| Rest chance                     | 29      | rE      |
+| One octave up chance            | 22      | o-      |
+| One octave down chance          | 23      | o-      |
+| Two octaves up chance           | 24      | o=      |
+| Two octaves down chance         | 25      | o=      |
+| Fifth up chance                 | 85      | Ft      |
+| Random transposition chance     | 86      | rn      |
+| **» GAtE**                      |
+| Base note length                | 20      | nL      |
+| Base gate length                | 104     | GL      |
+| Ratchet (double note) chance    | 28      | rA      |
+| Legato/slide chance             | 31      | LE      |
+| Double length chance            | 26      | dL      |
+| Half length chance              | 27      | HL      |
+| Note run chance                 | 30      | rU      |
+| Random length chance            | 87      | rL      |
+| Random gate length chance       | 105     | rG      |
+| **» PLAy**                      |
+| Swing (50-67%)                  | 115     | SG      |
+| Transpose                       | 103     | t       |
+| Clock: external or internal     | 112     | CL      |
+| BPM for internal clock (73-200) | 113     | b       |
+| Latch                           | 90      | LA      |
+| Note sort                       | 114     | So      |
+| Velocity high                   | 107     | vH      |
+| Velocity low                    | 108     | vL      |
+| **» SEtt**                      |
+| Select MIDI channel in          | 14      | In      |
+| Select MIDI channel out         | 15      | ot      |
+| Toggle internal speaker for arp | 119     | SP      |
+| **» Non-menu items**            |
+| Enter menu                      |         |         | FORWARD + BACKWARD |
+| Queue sequence generation       | 118     |         | UP                 |
+| Randomize sequence params       | 9       |         | SHIFT + UP         |
+| Reset sequence params           | 102     |         | SHIFT + RIGHT      |
+| Queue sequence slip             | 116     |         | DOWN               |
+| Toggle drift (endless slip)     | 3       |         | SHIFT + DOWN       |
+| Play (internal clock)           |         |         | FORWARD            |
+| Stop (internal clock)           |         |         | BACKWARD           |
+| Panic / all notes off           | 117     | AH      | SHIFT + LEFT       |
+
 ### Menus
 
 When using the optional Grandbot controller board, there are two sub-menus:
 
-- Sequence (`SEqu`): these are options that come into effect when generating a new sequence
+- Sequence (`SEqU`): these are options that come into effect when generating a new sequence
 - Settings (`SEtt`): these are options that affect different things immediately
 
 To enter or exit the menu press FORWARD and BACKWARD at the same time.
