@@ -1,6 +1,7 @@
 #include <Setting.h>
 
 Setting::Setting(byte _defaultValue,
+                 byte _zeroValue,
                  byte _midiCC,
                  byte firstDisplayChar,
                  byte secondDisplayChar,
@@ -9,6 +10,7 @@ Setting::Setting(byte _defaultValue,
                  byte (&_randomizeValue)(),
                  bool _usesColon)
     : value(_defaultValue),
+      zeroValue(_zeroValue),
       defaultValue(_defaultValue),
       midiCC(_midiCC),
       valueTransform(_valueTransform),
@@ -74,7 +76,7 @@ void Setting::randomize() {
 }
 
 void Setting::reset() {
-  setValue(defaultValue);
+  setValue(zeroValue);
 }
 
 /**

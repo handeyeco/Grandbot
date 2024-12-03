@@ -338,7 +338,7 @@ It tries to be clever by only adjusting some settings and to different degrees d
 - MIDI CC: 102
 - Button: SHIFT + RIGHT
 
-Resets all sequence generation parameters to their default settings.
+Resets all sequence generation parameters.
 
 > [!TIP]
 > When controlled with MIDI CC, CC needs to go below 64 before going above 64.
