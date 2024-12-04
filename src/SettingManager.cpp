@@ -183,37 +183,40 @@ SettingManager::SettingManager(Expressions* _expr, ButtonManager* _buttons)
                            SettingTransforms::noRandomizeTransformMin);
 
   // Settings sorted for menu
-  sequenceSettings[0] = slipChance;
-  sequenceSettings[1] = sequenceLength;
-  sequenceSettings[2] = baseNoteLength;
-  sequenceSettings[3] = baseGateLength;
-  sequenceSettings[4] = ratchetChance;
-  sequenceSettings[5] = legatoChance;
-  sequenceSettings[6] = restChance;
-  sequenceSettings[7] = octaveOneUpChance;
-  sequenceSettings[8] = octaveOneDownChance;
-  sequenceSettings[9] = octaveTwoUpChance;
-  sequenceSettings[10] = octaveTwoDownChance;
-  sequenceSettings[11] = halfLengthChance;
-  sequenceSettings[12] = doubleLengthChance;
-  sequenceSettings[13] = runChance;
-  sequenceSettings[14] = fifthChance;
-  sequenceSettings[15] = randomNoteChance;
-  sequenceSettings[16] = randomLengthChance;
-  sequenceSettings[17] = randomGateChance;
-  sequenceSettings[18] = collapseNotes;
+  sequenceSettings[0] = sequenceLength;
+  sequenceSettings[1] = slipChance;
+  sequenceSettings[2] = collapseNotes;
 
-  generalSettings[0] = swing;
-  generalSettings[1] = velocityHigh;
-  generalSettings[2] = velocityLow;
-  generalSettings[3] = latch;
-  generalSettings[4] = useSpeaker;
-  generalSettings[5] = midiChannelIn;
-  generalSettings[6] = midiChannelOut;
-  generalSettings[7] = sort;
-  generalSettings[8] = clock;
-  generalSettings[9] = transpose;
-  generalSettings[10] = bpm;
+  noteSettings[0] = restChance;
+  noteSettings[1] = octaveOneUpChance;
+  noteSettings[2] = octaveOneDownChance;
+  noteSettings[3] = octaveTwoUpChance;
+  noteSettings[4] = octaveTwoDownChance;
+  noteSettings[5] = fifthChance;
+  noteSettings[6] = randomNoteChance;
+
+  gateSettings[0] = baseNoteLength;
+  gateSettings[1] = baseGateLength;
+  gateSettings[2] = ratchetChance;
+  gateSettings[3] = legatoChance;
+  gateSettings[4] = doubleLengthChance;
+  gateSettings[5] = halfLengthChance;
+  gateSettings[6] = runChance;
+  gateSettings[7] = randomLengthChance;
+  gateSettings[8] = randomGateChance;
+
+  playSettings[0] = swing;
+  playSettings[1] = transpose;
+  playSettings[2] = clock;
+  playSettings[3] = bpm;
+  playSettings[4] = latch;
+  playSettings[5] = sort;
+  playSettings[6] = velocityHigh;
+  playSettings[7] = velocityLow;
+
+  generalSettings[0] = midiChannelIn;
+  generalSettings[1] = midiChannelOut;
+  generalSettings[2] = useSpeaker;
 }
 
 /**
@@ -244,11 +247,27 @@ void SettingManager::randomize() {
   for (int i = 0; i < SEQUENCE_SETTING_COUNT; i++) {
     sequenceSettings[i]->randomize();
   }
+
+  for (int i = 0; i < NOTE_SETTING_COUNT; i++) {
+    noteSettings[i]->randomize();
+  }
+
+  for (int i = 0; i < GATE_SETTING_COUNT; i++) {
+    gateSettings[i]->randomize();
+  }
 }
 
 void SettingManager::reset() {
   for (int i = 0; i < SEQUENCE_SETTING_COUNT; i++) {
     sequenceSettings[i]->reset();
+  }
+
+  for (int i = 0; i < NOTE_SETTING_COUNT; i++) {
+    noteSettings[i]->reset();
+  }
+
+  for (int i = 0; i < GATE_SETTING_COUNT; i++) {
+    gateSettings[i]->reset();
   }
 }
 
@@ -291,48 +310,81 @@ void SettingManager::handleCC(byte cc, byte value) {
  */
 void SettingManager::updateMenu() {
   // Select submenu from top menu
-  if (menuStage == 1 && buttons->forward.released) {
-    menuStage = (menuIndex % 2 == 0) ? 2 : 3;
-    menuIndex = 0;
+  if (isInMenu && !isInSubMenu && buttons->forward.released) {
+    isInSubMenu = true;
+    menuOptionIndex = 0;
     writeMenu();
     return;
   }
   // Increment/decrement focused setting when in a submenu
-  else if (menuStage > 1 && (buttons->up.released || buttons->down.released)) {
-    Setting* setting = menuStage == 2 ? sequenceSettings[menuIndex]
-                                      : generalSettings[menuIndex];
+  else if (isInSubMenu && (buttons->up.released || buttons->down.released)) {
+    Setting* setting;
+    if (subMenu == 0) {
+      setting = sequenceSettings[menuOptionIndex];
+    } else if (subMenu == 1) {
+      setting = noteSettings[menuOptionIndex];
+    } else if (subMenu == 2) {
+      setting = gateSettings[menuOptionIndex];
+    } else if (subMenu == 3) {
+      setting = playSettings[menuOptionIndex];
+    } else if (subMenu == 4) {
+      setting = generalSettings[menuOptionIndex];
+    }
 
     setting->step(buttons->up.released, buttons->forward.held);
     writeMenu();
     return;
-  } else if (menuStage > 0) {
+  } else if (isInMenu || isInSubMenu) {
     // Back out of menus
     if (buttons->backward.released) {
-      menuStage = (menuStage == 1) ? 0 : 1;
-      menuIndex = 0;
-      if (menuStage == 0) {
-        expr->setMenu(false);
-      } else {
+      if (isInSubMenu) {
+        isInSubMenu = false;
         writeMenu();
+      } else if (isInMenu) {
+        isInMenu = false;
+        expr->setMenu(false);
       }
       return;
     }
-    // Handle scrolling right through settings
     else if (buttons->right.released || buttons->left.released) {
-      int nextIndex = menuIndex + (buttons->right.released ? 1 : -1);
+      // Handle scrolling right through settings within submenu
+      if (isInSubMenu) {
+        int nextIndex = menuOptionIndex + (buttons->right.released ? 1 : -1);
 
-      byte maxIndex = menuStage == 1   ? 2
-                      : menuStage == 2 ? SEQUENCE_SETTING_COUNT
-                                       : GENERAL_SETTING_COUNT;
-      maxIndex -= 1;
+        byte settingsCount;
+        if (subMenu == 0) {
+          settingsCount = SEQUENCE_SETTING_COUNT;
+        } else if (subMenu == 1) {
+          settingsCount = NOTE_SETTING_COUNT;
+        } else if (subMenu == 2) {
+          settingsCount = GATE_SETTING_COUNT;
+        } else if (subMenu == 3) {
+          settingsCount = PLAY_SETTING_COUNT;
+        } else if (subMenu == 4) {
+          settingsCount = GENERAL_SETTING_COUNT;
+        }
 
-      if (nextIndex < 0) {
-        nextIndex = maxIndex;
-      } else if (nextIndex > maxIndex) {
-        nextIndex = 0;
+        if (nextIndex < 0) {
+          nextIndex = settingsCount - 1;
+        } else if (nextIndex >= settingsCount) {
+          nextIndex = 0;
+        }
+
+        menuOptionIndex = nextIndex;
+      }
+      // handle scrolling through submenus
+      else if (isInMenu) {
+        int nextIndex = subMenu + (buttons->right.released ? 1 : -1);
+
+        if (nextIndex < 0) {
+          nextIndex = SUBMENU_COUNT - 1;
+        } else if (nextIndex >= SUBMENU_COUNT) {
+          nextIndex = 0;
+        }
+
+        subMenu = nextIndex;
       }
 
-      menuIndex = nextIndex;
       writeMenu();
       return;
     }
@@ -343,9 +395,9 @@ void SettingManager::updateMenu() {
  * Jump in and out of the menu
  */
 void SettingManager::toggleMenu() {
-  menuStage = menuStage == 0 ? 1 : 0;
-  menuIndex = 0;
-  expr->setMenu(menuStage);
+  isInMenu = !isInMenu;
+
+  expr->setMenu(isInMenu);
   writeMenu();
 }
 
@@ -355,25 +407,43 @@ void SettingManager::toggleMenu() {
  * @returns {bool} whether we're in the menu
  */
 bool SettingManager::inMenu() {
-  return menuStage > 0;
+  return isInMenu;
 }
 
 /**
  * Write the current state of the menu to the display
  */
 void SettingManager::writeMenu() {
-  if (menuStage == 0)
+  if (!isInMenu)
     return;
 
   byte dis[4];
   // Handle top-level menu
-  if (menuStage == 1) {
-    if (menuIndex == 0) {
+  if (!isInSubMenu) {
+    if (subMenu == 0) {
       // SEQU = sequence settings
       dis[0] = CHAR_S;
       dis[1] = CHAR_E;
       dis[2] = CHAR_Q;
       dis[3] = CHAR_U;
+    } else if (subMenu == 1) {
+      // NOTE = note/pitch settings
+      dis[0] = CHAR_N;
+      dis[1] = CHAR_O;
+      dis[2] = CHAR_T;
+      dis[3] = CHAR_E;
+    } else if (subMenu == 2) {
+      // GATE = length/gate settings
+      dis[0] = CHAR_G;
+      dis[1] = CHAR_A;
+      dis[2] = CHAR_T;
+      dis[3] = CHAR_E;
+    } else if (subMenu == 3) {
+      // PLAY = realtime performance controls
+      dis[0] = CHAR_P;
+      dis[1] = CHAR_L;
+      dis[2] = CHAR_A;
+      dis[3] = CHAR_Y;
     } else {
       // SETT = general settings
       dis[0] = CHAR_S;
@@ -384,9 +454,19 @@ void SettingManager::writeMenu() {
     expr->writeText(dis, false);
   }
   // Handle sub menus
-  else {
-    Setting* setting = menuStage == 2 ? sequenceSettings[menuIndex]
-                                      : generalSettings[menuIndex];
+  else { 
+    Setting* setting;
+    if (subMenu == 0) {
+      setting = sequenceSettings[menuOptionIndex];
+    } else if (subMenu == 1) {
+      setting = noteSettings[menuOptionIndex];
+    } else if (subMenu == 2) {
+      setting = gateSettings[menuOptionIndex];
+    } else if (subMenu == 3) {
+      setting = playSettings[menuOptionIndex];
+    } else if (subMenu == 4) {
+      setting = generalSettings[menuOptionIndex];
+    }
 
     setting->getDisplay(dis);
     expr->writeText(dis, setting->usesColon);
