@@ -9,8 +9,12 @@
 #ifndef SETTING_MANAGER_INCL_GUARD
 #define SETTING_MANAGER_INCL_GUARD
 
-#define SEQUENCE_SETTING_COUNT 19
-#define GENERAL_SETTING_COUNT 11
+#define SUBMENU_COUNT 5
+#define SEQUENCE_SETTING_COUNT 3
+#define NOTE_SETTING_COUNT 7
+#define GATE_SETTING_COUNT 9
+#define PLAY_SETTING_COUNT 8
+#define GENERAL_SETTING_COUNT 3
 
 // used to map MIDI CC 0-127 to 73-200 BPM
 #define BPM_OFFSET 73
@@ -25,14 +29,25 @@ struct SettingManager {
   ButtonManager* buttons;
 
   Setting* sequenceSettings[SEQUENCE_SETTING_COUNT];
+  Setting* noteSettings[NOTE_SETTING_COUNT];
+  Setting* gateSettings[GATE_SETTING_COUNT];
+  Setting* playSettings[PLAY_SETTING_COUNT];
   Setting* generalSettings[GENERAL_SETTING_COUNT];
 
-  // 0 = no menu
-  // 1 = submenu select
-  // 2 = seq menu
-  // 3 = general menu
-  byte menuStage = 0;
-  byte menuIndex = 0;
+  // whether or not the menu is active
+  bool isInMenu = false;
+  // whether or not the submenu is active
+  bool isInSubMenu = false;
+  // which submenu we're in
+  // 0 = sequence
+  // 1 = note
+  // 2 = gate
+  // 3 = play
+  // 4 = settings
+  byte subMenu = 0;
+  // index of the parameter that's focused
+  byte menuOptionIndex = 0;
+
   void writeMenu();
 
  public:

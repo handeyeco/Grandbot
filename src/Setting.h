@@ -10,7 +10,10 @@ struct Setting {
  private:
   // current value
   byte value = 0;
-  // start / reset value
+  // what's the "doing nothing interesting" state
+  byte zeroValue = 0;
+  // smart defaults to get started making sequences
+  // TODO: consider getting rid of this now that reset == zeroValue
   byte defaultValue = 0;
   // value transform (map name/value to display)
   void (&valueTransform)(Setting& self, byte output[4]);
@@ -21,6 +24,7 @@ struct Setting {
 
  public:
   Setting(byte defaultValue,
+          byte zeroValue,
           byte midiCC,
           byte firstDisplayChar,
           byte secondDisplayChar,
