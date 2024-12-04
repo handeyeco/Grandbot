@@ -82,10 +82,10 @@ SettingManager::SettingManager(Expressions* _expr, ButtonManager* _buttons)
                   SettingTransforms::ccStepTransform,
                   SettingTransforms::lowRandomizeTransform);
   // Chance a step will be a ratchet (two half-length steps of the same note)
-  ratchetChance =
-      new Setting(10, 0, 28, CHAR_R, CHAR_A, SettingTransforms::ccValueTransform,
-                  SettingTransforms::ccStepTransform,
-                  SettingTransforms::mediumRandomizeTransform);
+  ratchetChance = new Setting(10, 0, 28, CHAR_R, CHAR_A,
+                              SettingTransforms::ccValueTransform,
+                              SettingTransforms::ccStepTransform,
+                              SettingTransforms::mediumRandomizeTransform);
   // Chance a step will overlap with the previous step (for triggering legato)
   legatoChance =
       new Setting(0, 0, 31, CHAR_L, CHAR_E, SettingTransforms::ccValueTransform,
@@ -112,10 +112,10 @@ SettingManager::SettingManager(Expressions* _expr, ButtonManager* _buttons)
                   SettingTransforms::ccStepTransform,
                   SettingTransforms::noRandomizeTransformMin);
   // Chance a step's gate will be randomized
-  randomGateChance =
-      new Setting(10, 0, 105, CHAR_R, CHAR_G, SettingTransforms::ccValueTransform,
-                  SettingTransforms::ccStepTransform,
-                  SettingTransforms::mediumRandomizeTransform);
+  randomGateChance = new Setting(10, 0, 105, CHAR_R, CHAR_G,
+                                 SettingTransforms::ccValueTransform,
+                                 SettingTransforms::ccStepTransform,
+                                 SettingTransforms::mediumRandomizeTransform);
   // Chance a step's length will be randomized
   randomLengthChance =
       new Setting(0, 0, 87, CHAR_R, CHAR_L, SettingTransforms::ccValueTransform,
@@ -123,15 +123,15 @@ SettingManager::SettingManager(Expressions* _expr, ButtonManager* _buttons)
                   SettingTransforms::noRandomizeTransformMin);
   // Chance a step will be swapped with an adjacent step (during slips not
   // sequence generation)
-  slipChance =
-      new Setting(10, 10, 89, CHAR_S, CHAR_C, SettingTransforms::ccValueTransform,
-                  SettingTransforms::ccStepTransform,
-                  SettingTransforms::highRandomizeTransform);
+  slipChance = new Setting(10, 10, 89, CHAR_S, CHAR_C,
+                           SettingTransforms::ccValueTransform,
+                           SettingTransforms::ccStepTransform,
+                           SettingTransforms::highRandomizeTransform);
   // If active, hold notes through rests
-  latch =
-      new Setting(0, 0, 90, CHAR_L, CHAR_A, SettingTransforms::onOffValueTransform,
-                  SettingTransforms::onOffStepTransform,
-                  SettingTransforms::noRandomizeTransformMin);
+  latch = new Setting(0, 0, 90, CHAR_L, CHAR_A,
+                      SettingTransforms::onOffValueTransform,
+                      SettingTransforms::onOffStepTransform,
+                      SettingTransforms::noRandomizeTransformMin);
 
   // Whether to use an external (Et) or internal (In) clock
   // TODO: should the default be internal?
@@ -167,15 +167,15 @@ SettingManager::SettingManager(Expressions* _expr, ButtonManager* _buttons)
                       SettingTransforms::swingStepTransform,
                       SettingTransforms::noRandomizeTransformMin);
   // Highest possible velocity
-  velocityHigh =
-      new Setting(110, 110, 107, CHAR_V, CHAR_H, SettingTransforms::ccValueTransform,
-                  SettingTransforms::ccStepTransform,
-                  SettingTransforms::noRandomizeTransformMax);
+  velocityHigh = new Setting(110, 110, 107, CHAR_V, CHAR_H,
+                             SettingTransforms::ccValueTransform,
+                             SettingTransforms::ccStepTransform,
+                             SettingTransforms::noRandomizeTransformMax);
   // Lowest possible velocity
-  velocityLow =
-      new Setting(90, 90, 108, CHAR_V, CHAR_L, SettingTransforms::ccValueTransform,
-                  SettingTransforms::ccStepTransform,
-                  SettingTransforms::noRandomizeTransformMin);
+  velocityLow = new Setting(90, 90, 108, CHAR_V, CHAR_L,
+                            SettingTransforms::ccValueTransform,
+                            SettingTransforms::ccStepTransform,
+                            SettingTransforms::noRandomizeTransformMin);
   // Whether to play the sequence through GB's speaker or not
   useSpeaker = new Setting(0, 0, 119, CHAR_S, CHAR_P,
                            SettingTransforms::onOffValueTransform,
@@ -345,8 +345,7 @@ void SettingManager::updateMenu() {
         expr->setMenu(false);
       }
       return;
-    }
-    else if (buttons->right.released || buttons->left.released) {
+    } else if (buttons->right.released || buttons->left.released) {
       // Handle scrolling right through settings within submenu
       if (isInSubMenu) {
         int nextIndex = menuOptionIndex + (buttons->right.released ? 1 : -1);
@@ -454,7 +453,7 @@ void SettingManager::writeMenu() {
     expr->writeText(dis, false);
   }
   // Handle sub menus
-  else { 
+  else {
     Setting* setting;
     if (subMenu == 0) {
       setting = sequenceSettings[menuOptionIndex];
