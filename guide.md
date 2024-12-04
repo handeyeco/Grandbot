@@ -12,7 +12,7 @@ For a technical overview of the Arp, check out [this blog post](https://handeyec
 | Sequence length                 | 21      | SL      |
 | Slip chance                     | 89      | SC      |
 | Collapse notes                  | 19      | Co      |
-| **» nOtE**                      |
+| **» notE**                      |
 | Rest chance                     | 29      | rE      |
 | One octave up chance            | 22      | o-      |
 | One octave down chance          | 23      | o-      |
@@ -151,6 +151,8 @@ Slip chance is the likelihood that a step is affected when a sequence is being t
 
 When rests are present in a new sequence, collapse shifts all of the non-rest notes to either the beginning or the end of the sequence.
 
+---
+
 ## Note menu
 
 > [!TIP]
@@ -158,6 +160,8 @@ When rests are present in a new sequence, collapse shifts all of the non-rest no
 
 > [!WARNING]
 > Pretty much all of these are only affected if the MIDI CC happens on the selected MIDI in channel (by default Grandbot listens to all channels). However CC 14 (MIDI in selector) and CC 117 (Panic) listen for changes on all channels all the time.
+
+---
 
 ### rE: Rest chance
 
@@ -244,6 +248,8 @@ The percent chance that a step will be transposed one fifth (7 semitones) up.
 
 The percent chance that a step will be transposed randomly between -11 and +11 semitones.
 
+---
+
 ## Gate menu
 
 > [!TIP]
@@ -251,6 +257,8 @@ The percent chance that a step will be transposed randomly between -11 and +11 s
 
 > [!WARNING]
 > Pretty much all of these are only affected if the MIDI CC happens on the selected MIDI in channel (by default Grandbot listens to all channels). However CC 14 (MIDI in selector) and CC 117 (Panic) listen for changes on all channels all the time.
+
+---
 
 ### nL: Base note length
 
@@ -371,10 +379,14 @@ The percent chance that a step will have a random length (16th, 8th, or quarter 
 
 For each step, the chance that step will get a random gate length.
 
+---
+
 ## Play menu
 
 > [!WARNING]
 > Pretty much all of these are only affected if the MIDI CC happens on the selected MIDI in channel (by default Grandbot listens to all channels). However CC 14 (MIDI in selector) and CC 117 (Panic) listen for changes on all channels all the time.
+
+---
 
 ### SG: Swing
 
@@ -479,10 +491,14 @@ Lowest possible velocity (0-99% maps to 1-127).
 > [!WARNING]
 > If velocity high is lower than velocity low, the values will be swapped
 
+---
+
 ## Settings menu
 
 > [!WARNING]
 > Pretty much all of these are only affected if the MIDI CC happens on the selected MIDI in channel (by default Grandbot listens to all channels). However CC 14 (MIDI in selector) and CC 117 (Panic) listen for changes on all channels all the time.
+
+---
 
 ### In: Select MIDI channel in
 
@@ -522,6 +538,8 @@ What MIDI channel to send notes to. When set to "All", Grandbot will send notes 
 Whether or not the Arp sequence should play through Grandbot's internal speaker.
 
 ## Non-menu items
+
+---
 
 ### Queue sequence generation
 
@@ -594,6 +612,8 @@ In the case of an emergency, panic tries to stop everything and tells all connec
 
 > [!TIP]
 > When controlled with MIDI CC, CC needs to go below 64 before going above 64.
+
+---
 
 ## Tools
 
