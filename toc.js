@@ -4,6 +4,7 @@
 
 const fs = require("fs");
 
+// this is basically a MD comment to mark that the TOC exists
 const endString = `[//]: # (__endtoc__)`;
 
 // removes any existing TOC if it exists

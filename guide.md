@@ -42,11 +42,61 @@
   - [Reset sequence parameters](#reset-sequence-parameters)
   - [Queue sequence slip](#queue-sequence-slip)
   - [Toggle drift mode](#toggle-drift-mode)
-  - [Panic / all notes off](#panic-all-notes-off)
+  - [Panic: all notes off](#panic-all-notes-off)
 - [Tools](#tools)
 - [Byte to digit](#byte-to-digit)
 
 [//]: # (__endtoc__)
+
+- [Cheat sheet](#cheat-sheet)
+- [Button Combos](#button-combos)
+- [Menus](#menus)
+- [Sequence menu](#sequence-menu)
+  - [SL: Sequence length](#sl-sequence-length)
+  - [SC: Slip chance](#sc-slip-chance)
+  - [Co: Collapse notes](#co-collapse-notes)
+- [Note menu](#note-menu)
+  - [rE: Rest chance](#re-rest-chance)
+  - [o-: One octave up chance](#o--one-octave-up-chance)
+  - [o-: One octave down chance](#o--one-octave-down-chance)
+  - [o=: Two octave up chance](#o-two-octave-up-chance)
+  - [o=: Two octave down chance](#o-two-octave-down-chance)
+  - [Ft: Fifth up chance](#ft-fifth-up-chance)
+  - [rn: Random transposition chance](#rn-random-transposition-chance)
+- [Gate menu](#gate-menu)
+  - [nL: Base note length](#nl-base-note-length)
+  - [GL: Base gate length](#gl-base-gate-length)
+  - [rA: Ratchet chance](#ra-ratchet-chance)
+  - [LE: Legato / slide chance](#le-legato-slide-chance)
+  - [dL: Double length chance](#dl-double-length-chance)
+  - [HL: Half length chance](#hl-half-length-chance)
+  - [rU: Note run chance](#ru-note-run-chance)
+  - [rL: Random length chance](#rl-random-length-chance)
+  - [rG: Random gate length chance](#rg-random-gate-length-chance)
+- [Play menu](#play-menu)
+  - [SG: Swing](#sg-swing)
+  - [t: Transpose](#t-transpose)
+  - [CL: Clock source](#cl-clock-source)
+  - [b: BPM](#b-bpm)
+  - [LA: Latch](#la-latch)
+  - [so: Note sort](#so-note-sort)
+  - [vH: Velocity high](#vh-velocity-high)
+  - [vL: Velocity low](#vl-velocity-low)
+- [Settings menu](#settings-menu)
+  - [In: Select MIDI channel in](#in-select-midi-channel-in)
+  - [ot: Select MIDI channel out](#ot-select-midi-channel-out)
+  - [SP: Toggle internal speaker](#sp-toggle-internal-speaker)
+- [Non-menu items](#non-menu-items)
+  - [Queue sequence generation](#queue-sequence-generation)
+  - [Randomize sequence parameters](#randomize-sequence-parameters)
+  - [Reset sequence parameters](#reset-sequence-parameters)
+  - [Queue sequence slip](#queue-sequence-slip)
+  - [Toggle drift mode](#toggle-drift-mode)
+  - [Panic / all notes off](#panic-all-notes-off)
+- [Tools](#tools)
+- [Byte to digit](#byte-to-digit)
+
+[//]: # "__endtoc__"
 
 # Grandbot Arp Guide
 
@@ -56,8 +106,8 @@ For a technical overview of the Arp, check out [this blog post](https://handeyec
 
 ## Cheat sheet
 
-| Description                     | MIDI CC | Display | Button |
-| ------------------------------- | ------- | ------- | ------ |
+| Description                     | MIDI CC | Display | Button             |
+| ------------------------------- | ------- | ------- | ------------------ |
 | **» SEqU**                      |
 | Sequence length                 | 21      | SL      |
 | Slip chance                     | 89      | SC      |
@@ -109,6 +159,7 @@ For a technical overview of the Arp, check out [this blog post](https://handeyec
 With the optional control board, six buttons are added for controlling the Arp settings.
 
 Buttons:
+
 - `˄`: UP
 - `˃`: RIGHT
 - `˅`: DOWN
@@ -117,6 +168,7 @@ Buttons:
 - `˂˂`: BACKWARD
 
 When outside the menu:
+
 - UP: queue sequence generation
 - SHIFT + UP: randomize sequence settings
 - DOWN: queue slip
@@ -129,6 +181,7 @@ When outside the menu:
 - SHIFT + BACKWARD: enter menu
 
 When inside the menu:
+
 - UP: increment current setting
 - SHIFT + UP: increment current setting (fast)
 - DOWN: decrement current setting
@@ -312,11 +365,11 @@ The percent chance that a step will be transposed randomly between -11 and +11 s
 
 ### nL: Base note length
 
- - Submenu: Sequence
- - Display: `nL`
- - MIDI CC: 20
- - Options: Random (`rA`), 16th (`16`), 8th (` 8`), quarter (` 4`), half (`HA`), whole (`1-`), double whole (`2-`)
- - Default: Random
+- Submenu: Sequence
+- Display: `nL`
+- MIDI CC: 20
+- Options: Random (`rA`), 16th (`16`), 8th (` 8`), quarter (` 4`), half (`HA`), whole (`1-`), double whole (`2-`)
+- Default: Random
 
 The starting note length for each step in the sequence. This can be modified by different settings like double length chance, half length chance, and ratchet chance.
 
@@ -653,7 +706,7 @@ Drift mode is an endless slip mode. Each time the sequence reaches the end, the 
 
 ---
 
-### Panic / all notes off
+### Panic: all notes off
 
 - MIDI CC: 117
 - Button: SHIFT + LEFT
