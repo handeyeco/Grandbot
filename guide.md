@@ -46,7 +46,7 @@
 - [Tools](#tools)
 - [Byte to digit](#byte-to-digit)
 
-[//]: # (__endtoc__)
+[//]: # "__endtoc__"
 
 # Grandbot Arp Guide
 
