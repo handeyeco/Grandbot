@@ -17,6 +17,7 @@
   - [nL: Base note length](#nl-base-note-length)
   - [GL: Base gate length](#gl-base-gate-length)
   - [rA: Ratchet chance](#ra-ratchet-chance)
+  - [tr: Triplet chance](#tr-triplet-chance)
   - [LE: Legato / slide chance](#le-legato-slide-chance)
   - [dL: Double length chance](#dl-double-length-chance)
   - [HL: Half length chance](#hl-half-length-chance)
@@ -74,6 +75,7 @@ For a technical overview of the Arp, check out [this blog post](https://handeyec
 | Base note length                | 20      | nL      |
 | Base gate length                | 104     | GL      |
 | Ratchet (double note) chance    | 28      | rA      |
+| Triplet (triple note) chance    | 28      | tr      |
 | Legato/slide chance             | 31      | LE      |
 | Double length chance            | 26      | dL      |
 | Half length chance              | 27      | HL      |
@@ -356,6 +358,18 @@ Full holds the note for the full note length. 66% and 33% hold it for a percent 
 - Default: 7%
 
 The percent chance that a step will be split into a ratchet. A ratchet is a note played twice, each half the length as the base note length. This transforms one step into two.
+
+---
+
+### tr: Triplet chance
+
+- Submenu: Sequence
+- Display: `tr`
+- MIDI CC: 106
+- Range: 0-99%
+- Default: 0%
+
+The percent chance that a step will be a triplet. A triplet is a quarter note split into three notes. This transforms one step into three.
 
 ---
 

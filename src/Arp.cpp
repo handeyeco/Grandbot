@@ -347,27 +347,39 @@ void Arp::generateSequence() {
     uint16_t stepGate = getStepGate(baseGate, stepLength);
     byte stepVelocity = random(1, 128);
 
-    if (settings->ratchetChance->roll()) {
-      stepLength = stepLength / 2;
-      stepGate = stepGate / 2;
-      newSequenceLength =
-          addStep(stepIndex, stepInterval, stepOffset, stepLength, stepGate,
-                  stepVelocity, newSequenceLength);
-      stepIndex++;
-    } else if ((stepIndex + 4 < MAX_STEPS_IN_SEQ) &&
-               (settings->runChance->roll())) {
+    if (settings->ratchetChance->roll() && (stepIndex + 2 < MAX_STEPS_IN_SEQ)) {
+      for (int i = 0; i < 2; i++) {
+        newSequenceLength =
+            addStep(stepIndex, stepInterval, stepOffset, stepLength / 2,
+                    stepGate / 2, stepVelocity, newSequenceLength);
+        stepIndex++;
+      }
+    } else if (settings->tripletChance->roll() &&
+               (stepIndex + 3 < MAX_STEPS_IN_SEQ) &&
+               (newSequenceLength + PULSES_PER_QUARTER_NOTE <=
+                newTotalSequenceLength)) {
+      for (int i = 0; i < 3; i++) {
+        newSequenceLength = addStep(
+            stepIndex, stepInterval, stepOffset, PULSES_PER_QUARTER_NOTE / 3,
+            PULSES_PER_QUARTER_NOTE / 3, stepVelocity, newSequenceLength);
+        stepIndex++;
+      }
+    } else if ((settings->runChance->roll()) &&
+               (stepIndex + 4 < MAX_STEPS_IN_SEQ) &&
+               (newSequenceLength + PULSES_PER_EIGHTH_NOTE <=
+                newTotalSequenceLength)) {
       for (int i = 0; i < 4; i++) {
         newSequenceLength = addStep(stepIndex, i % MAX_NOTES, stepOffset,
                                     PULSES_PER_SIXTEENTH_NOTE / 2, stepGate,
                                     stepVelocity, newSequenceLength);
         stepIndex++;
       }
+    } else {
+      newSequenceLength =
+          addStep(stepIndex, stepInterval, stepOffset, stepLength, stepGate,
+                  stepVelocity, newSequenceLength);
+      stepIndex++;
     }
-
-    // take all this variation and add a step to the sequence
-    newSequenceLength = addStep(stepIndex, stepInterval, stepOffset, stepLength,
-                                stepGate, stepVelocity, newSequenceLength);
-    stepIndex++;
   }
 
   byte collapseIndex =
@@ -1060,9 +1072,15 @@ void Arp::handleButtons(bool useInternalClock) {
       return;
     }
     // Stop
-    else if (useInternalClock && buttons->backward.released && running) {
-      handleStop();
-      MIDI.sendStop();
+    else if (buttons->backward.released) {
+      regenerateQueued = false;
+      drift = false;
+      slipQueued = false;
+      
+      if (useInternalClock && running) {
+        handleStop();
+        MIDI.sendStop();
+      }
       return;
     }
   }

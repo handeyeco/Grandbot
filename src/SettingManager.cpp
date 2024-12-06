@@ -86,6 +86,11 @@ SettingManager::SettingManager(Expressions* _expr, ButtonManager* _buttons)
                               SettingTransforms::ccValueTransform,
                               SettingTransforms::ccStepTransform,
                               SettingTransforms::mediumRandomizeTransform);
+  // Chance a step will be a triplet (a quarter note split into three notes)
+  tripletChance = new Setting(0, 0, 106, CHAR_T, CHAR_R,
+                              SettingTransforms::ccValueTransform,
+                              SettingTransforms::ccStepTransform,
+                              SettingTransforms::lowRandomizeTransform);
   // Chance a step will overlap with the previous step (for triggering legato)
   legatoChance =
       new Setting(0, 0, 31, CHAR_L, CHAR_E, SettingTransforms::ccValueTransform,
@@ -198,12 +203,13 @@ SettingManager::SettingManager(Expressions* _expr, ButtonManager* _buttons)
   gateSettings[0] = baseNoteLength;
   gateSettings[1] = baseGateLength;
   gateSettings[2] = ratchetChance;
-  gateSettings[3] = legatoChance;
-  gateSettings[4] = doubleLengthChance;
-  gateSettings[5] = halfLengthChance;
-  gateSettings[6] = runChance;
-  gateSettings[7] = randomLengthChance;
-  gateSettings[8] = randomGateChance;
+  gateSettings[3] = tripletChance;
+  gateSettings[4] = legatoChance;
+  gateSettings[5] = doubleLengthChance;
+  gateSettings[6] = halfLengthChance;
+  gateSettings[7] = runChance;
+  gateSettings[8] = randomLengthChance;
+  gateSettings[9] = randomGateChance;
 
   playSettings[0] = swing;
   playSettings[1] = transpose;

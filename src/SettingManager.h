@@ -12,7 +12,7 @@
 #define SUBMENU_COUNT 5
 #define SEQUENCE_SETTING_COUNT 3
 #define NOTE_SETTING_COUNT 7
-#define GATE_SETTING_COUNT 9
+#define GATE_SETTING_COUNT 10
 #define PLAY_SETTING_COUNT 8
 #define GENERAL_SETTING_COUNT 3
 
@@ -64,6 +64,7 @@ struct SettingManager {
   Setting* halfLengthChance;
   Setting* doubleLengthChance;
   Setting* ratchetChance;
+  Setting* tripletChance;
   Setting* legatoChance;
   Setting* restChance;
   Setting* runChance;

@@ -25,7 +25,7 @@ byte SettingTransforms::noRandomizeTransformMax() {
 byte SettingTransforms::lowRandomizeTransform() {
   // 25% chance to have any value
   if (random(4) == 0) {
-    return random(64);
+    return random(5);
   } else {
     return 0;
   }
@@ -37,7 +37,7 @@ byte SettingTransforms::lowRandomizeTransform() {
 byte SettingTransforms::mediumRandomizeTransform() {
   // 50% chance to have any value
   if (random(2)) {
-    return random(128);
+    return random(64);
   } else {
     return 0;
   }
