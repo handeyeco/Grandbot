@@ -220,7 +220,7 @@ When rests are present in a new sequence, collapse shifts all of the non-rest no
 
 ### rE: Rest chance
 
-- Submenu: Sequence
+- Submenu: Note
 - Display: `rE`
 - MIDI CC: 29
 - Range: 0-99%
@@ -235,7 +235,7 @@ The percent chance that a step will be a rest (no note played).
 
 ### o-: One octave up chance
 
-- Submenu: Sequence
+- Submenu: Note
 - Display: `o-`
 - MIDI CC: 22
 - Range: 0-99%
@@ -247,7 +247,7 @@ The percent chance that a step will be transposed one octave up.
 
 ### o-: One octave down chance
 
-- Submenu: Sequence
+- Submenu: Note
 - Display: `o-`
 - MIDI CC: 23
 - Range: 0-99%
@@ -259,7 +259,7 @@ The percent chance that a step will be transposed one octave down.
 
 ### o=: Two octave up chance
 
-- Submenu: Sequence
+- Submenu: Note
 - Display: `o=`
 - MIDI CC: 24
 - Range: 0-99%
@@ -271,7 +271,7 @@ The percent chance that a step will be transposed two octaves up.
 
 ### o=: Two octave down chance
 
-- Submenu: Sequence
+- Submenu: Note
 - Display: `o=`
 - MIDI CC: 25
 - Range: 0-99%
@@ -283,7 +283,7 @@ The percent chance that a step will be transposed two octaves down.
 
 ### Ft: Fifth up chance
 
-- Submenu: Sequence
+- Submenu: Note
 - Display: `Ft`
 - MIDI CC: 85
 - Range: 0-99%
@@ -295,7 +295,7 @@ The percent chance that a step will be transposed one fifth (7 semitones) up.
 
 ### rn: Random transposition chance
 
-- Submenu: Sequence
+- Submenu: Note
 - Display: `rn`
 - MIDI CC: 86
 - Range: 0-99%
@@ -317,7 +317,7 @@ The percent chance that a step will be transposed randomly between -11 and +11 s
 
 ### nL: Base note length
 
-- Submenu: Sequence
+- Submenu: Gate
 - Display: `nL`
 - MIDI CC: 20
 - Options: Random (`rA`), 16th (`16`), 8th (` 8`), quarter (` 4`), half (`HA`), whole (`1-`), double whole (`2-`)
@@ -331,7 +331,7 @@ When set to random, a different base length is picked (between 16th, 8th, and qu
 
 ### GL: Base gate length
 
-- Submenu: Sequence
+- Submenu: Gate
 - Display: `GL`
 - MIDI CC: 104
 - Options: Random (`rA`), 33%, 66%, full (`Fu`)
@@ -351,7 +351,7 @@ Full holds the note for the full note length. 66% and 33% hold it for a percent 
 
 ### rA: Ratchet chance
 
-- Submenu: Sequence
+- Submenu: Gate
 - Display: `rA`
 - MIDI CC: 28
 - Range: 0-99%
@@ -363,7 +363,7 @@ The percent chance that a step will be split into a ratchet. A ratchet is a note
 
 ### tr: Triplet chance
 
-- Submenu: Sequence
+- Submenu: Gate
 - Display: `tr`
 - MIDI CC: 106
 - Range: 0-99%
@@ -375,7 +375,7 @@ The percent chance that a step will be a triplet. A triplet is a quarter note sp
 
 ### LE: Legato / slide chance
 
-- Submenu: Sequence
+- Submenu: Gate
 - Display: `LE`
 - MIDI CC: 31
 - Range: 0-99%
@@ -390,7 +390,7 @@ Legato triggers 303 style slides in supported synths by overlapping the current 
 
 ### dL: Double length chance
 
-- Submenu: Sequence
+- Submenu: Gate
 - Display: `dL`
 - MIDI CC: 26
 - Range: 0-99%
@@ -402,7 +402,7 @@ The percent chance that a step will be twice the length as the base note length.
 
 ### HL: Half length chance
 
-- Submenu: Sequence
+- Submenu: Gate
 - Display: `HL`
 - MIDI CC: 27
 - Range: 0-99%
@@ -414,7 +414,7 @@ The percent chance that a step will be half the length as the base note length.
 
 ### rU: Note run chance
 
-- Submenu: Sequence
+- Submenu: Gate
 - Display: `rU`
 - MIDI CC: 30
 - Range: 0-99%
@@ -426,7 +426,7 @@ The percent chance that a step will be a run. A run is a quick succession of not
 
 ### rL: Random length chance
 
-- Submenu: Sequence
+- Submenu: Gate
 - Display: `rL`
 - MIDI CC: 87
 - Range: 0-99%
@@ -438,7 +438,7 @@ The percent chance that a step will have a random length (16th, 8th, or quarter 
 
 ### rG: Random gate length chance
 
-- Submenu: Sequence
+- Submenu: Gate
 - Display: `rG`
 - MIDI CC: 105
 - Range: 0-99%
@@ -457,7 +457,7 @@ For each step, the chance that step will get a random gate length.
 
 ### SG: Swing
 
-- Submenu: Settings
+- Submenu: Play
 - Display: `SG`
 - MIDI CC: 115
 - Range: 50-67%
@@ -469,7 +469,7 @@ Swing makes every other 16th note start later to create a more natural sounding 
 
 ### t: Transpose
 
-- Submenu: Settings
+- Submenu: Play
 - Display: `t`
 - MIDI CC: 103
 - Range: -24 to +24
@@ -481,7 +481,7 @@ Transposes outgoing notes by a fixed number of semitones. Good for changing base
 
 ### CL: Clock source
 
-- Submenu: Settings
+- Submenu: Play
 - Display: `CL`
 - MIDI CC: 112
 - Options: External (`Et`) - Internal (`In`)
@@ -493,7 +493,7 @@ To be able to play the sequence, there needs to be a clock source. When set to e
 
 ### b: BPM
 
-- Submenu: Settings
+- Submenu: Play
 - Display: `b`
 - MIDI CC: 113
 - Range: 73-200
@@ -508,7 +508,7 @@ The beats per minute (BPM) of the sequence, or how fast the sequence is played.
 
 ### LA: Latch
 
-- Submenu: Settings
+- Submenu: Play
 - Display: `LA`
 - MIDI CC: 90
 - Options: Off - On
@@ -520,7 +520,7 @@ When latch is enabled, current notes are held when a rest is encountered.
 
 ### so: Note sort
 
-- Submenu: Settings
+- Submenu: Play
 - Display: `So`
 - MIDI CC: 114
 - Options: Off - On
@@ -532,7 +532,7 @@ Whether incoming notes are sorted by pitch; it leads to more predictable sequenc
 
 ### vH: Velocity high
 
-- Submenu: Settings
+- Submenu: Play
 - Display: `vH`
 - MIDI CC: 107
 - Range: 0-99%
@@ -547,7 +547,7 @@ Highest possible velocity (0-99% maps to 1-127).
 
 ### vL: Velocity low
 
-- Submenu: Settings
+- Submenu: Play
 - Display: `vL`
 - MIDI CC: 108
 - Range: 0-99%

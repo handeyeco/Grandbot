@@ -1076,7 +1076,7 @@ void Arp::handleButtons(bool useInternalClock) {
       regenerateQueued = false;
       drift = false;
       slipQueued = false;
-      
+
       if (useInternalClock && running) {
         handleStop();
         MIDI.sendStop();
