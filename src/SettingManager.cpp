@@ -395,6 +395,7 @@ void SettingManager::updateMenu() {
  */
 void SettingManager::toggleMenu() {
   isInMenu = !isInMenu;
+  subMenu = 0;
 
   expr->setMenu(isInMenu);
   writeMenu();
