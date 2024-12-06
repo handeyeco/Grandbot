@@ -85,5 +85,7 @@ void Setting::reset() {
  * @returns {bool} whether the roll was successful
  */
 bool Setting::roll() {
+  if (getValue() == 0)
+    return false;
   return random(127) < getValue();
 }
