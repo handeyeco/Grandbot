@@ -110,11 +110,13 @@ For a technical overview of the Arp, check out [this blog post](https://handeyec
 
 With the optional control board, six buttons are added for controlling the Arp settings.
 
+![Grandbot button diagram](grandbot-buttons.svg)
+
 Buttons:
 
 - `˄`: UP
-- `˃`: RIGHT
 - `˅`: DOWN
+- `˃`: RIGHT
 - `˂`: LEFT
 - `˃˃`: FORWARD (SHIFT)
 - `˂˂`: BACKWARD
