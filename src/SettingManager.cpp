@@ -172,12 +172,12 @@ SettingManager::SettingManager(Expressions* _expr, ButtonManager* _buttons)
                       SettingTransforms::swingStepTransform,
                       SettingTransforms::noRandomizeTransformMin);
   // Highest possible velocity
-  velocityHigh = new Setting(110, 110, 107, CHAR_V, CHAR_H, 0,
+  velocityHigh = new Setting(110, 110, 107, CHAR_V, CHAR_H, 100,
                              SettingTransforms::ccValueTransform,
                              SettingTransforms::ccStepTransform,
                              SettingTransforms::noRandomizeTransformMax);
   // Lowest possible velocity
-  velocityLow = new Setting(90, 90, 108, CHAR_V, CHAR_L, 0,
+  velocityLow = new Setting(90, 90, 108, CHAR_V, CHAR_L, 100,
                             SettingTransforms::ccValueTransform,
                             SettingTransforms::ccStepTransform,
                             SettingTransforms::noRandomizeTransformMin);

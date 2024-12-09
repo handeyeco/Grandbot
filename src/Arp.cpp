@@ -412,7 +412,7 @@ void Arp::generateSequence() {
     collapseNotes(0, stepIndex / 2, false);
     collapseNotes(stepIndex / 2, stepIndex, true);
   }
-  // split rests beginning/end
+  // split rests center
   else if (collapseIndex == 4) {
     collapseNotes(0, stepIndex / 2, true);
     collapseNotes(stepIndex / 2, stepIndex, false);

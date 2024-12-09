@@ -457,12 +457,12 @@ void SettingTransforms::collapseNotesValueTransform(Setting& self,
   // Play notes in center
   else if (index == 3) {
     output[2] = CHAR_S;
-    output[3] = CHAR_C;
+    output[3] = CHAR_E;
   }
   // Play notes at beginning/end
   else if (index == 4) {
     output[2] = CHAR_S;
-    output[3] = CHAR_E;
+    output[3] = CHAR_C;
   }
 }
 
