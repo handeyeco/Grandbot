@@ -192,7 +192,6 @@ class Arp {
   void sendNoteOff(byte channel, byte pitch, byte velocity);
   void stopCurrNote();
   void stopLegatoNote();
-  byte ccToMidiCh(byte cc);
   void panic();
   void queueRegenerate();
   void queueSlip(bool setDrift);

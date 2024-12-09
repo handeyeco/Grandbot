@@ -77,8 +77,7 @@ byte Arp::ccRoll() {
  * @returns {String} enum representing base gate
  */
 String Arp::getBaseStepGate() {
-  byte value = settings->baseGateLength->getValue();
-  byte index = Stepper::getSteppedIndex(value, 4);
+  byte index = settings->baseGateLength->getSteppedIndex();
 
   if (index == 0) {
     // random
@@ -100,8 +99,7 @@ String Arp::getBaseStepGate() {
  * @returns {byte} number of 16ths for note
  */
 byte Arp::getBaseStepLength() {
-  byte value = settings->baseNoteLength->getValue();
-  byte index = Stepper::getSteppedIndex(value, 7);
+  byte index = settings->baseNoteLength->getSteppedIndex();
 
   if (index == 0) {
     // random; only choose between
@@ -118,8 +116,7 @@ byte Arp::getBaseStepLength() {
  * @returns {byte} number between 1-8
  */
 byte Arp::getSequenceLength() {
-  byte ccSequenceLength = settings->sequenceLength->getValue();
-  byte index = Stepper::getSteppedIndex(ccSequenceLength, 9);
+  byte index = settings->sequenceLength->getSteppedIndex();
 
   // Random
   if (index == 0) {
@@ -401,8 +398,7 @@ void Arp::generateSequence() {
     }
   }
 
-  byte collapseIndex =
-      Stepper::getSteppedIndex(settings->collapseNotes->getValue(), 5);
+  byte collapseIndex = settings->collapseNotes->getSteppedIndex();
   // move notes to start
   if (collapseIndex == 1) {
     collapseNotes(0, stepIndex, false);
@@ -475,7 +471,7 @@ byte Arp::mapVelocity(byte stepIndex) {
 void Arp::sendNoteOn(byte channel, byte note, byte velocity) {
   // if midiChannelOut is 0, we use whatever channel was provided,
   // otherwise use the channel set in midiChannelOut
-  byte outCh = ccToMidiCh(settings->midiChannelOut->getValue());
+  byte outCh = settings->midiChannelOut->getSteppedIndex();
   byte movedChannel = outCh == 0 ? channel : outCh;
   MIDI.sendNoteOn(note, velocity, movedChannel);
 
@@ -501,14 +497,10 @@ void Arp::sendNoteOff(byte channel, byte note, byte velocity) {
 
   // if midiChannelOut is 0, we use whatever channel was provided,
   // otherwise use the channel set in midiChannelOut
-  byte outCh = ccToMidiCh(settings->midiChannelOut->getValue());
+  byte outCh = settings->midiChannelOut->getSteppedIndex();
   byte movedChannel = outCh == 0 ? channel : outCh;
   MIDI.sendNoteOff(note, velocity, movedChannel);
   noTone(BUZZER_PIN);
-}
-
-byte Arp::ccToMidiCh(byte value) {
-  return Stepper::getSteppedIndex(value, 17);
 }
 
 int Arp::insert(byte arr[], int arrLen, byte value, int capacity) {
@@ -693,7 +685,7 @@ String Arp::convertCCToString(byte value) {
 bool Arp::correctInChannel(byte channel) {
   // 0 is the magic number to represent "all channels are okay"
   // otherwise we only care about the channel set in midiChannelIn
-  byte inCh = ccToMidiCh(settings->midiChannelIn->getValue());
+  byte inCh = settings->midiChannelIn->getSteppedIndex();
   if (inCh == 0 || channel == inCh) {
     return true;
   }
@@ -877,8 +869,8 @@ void Arp::handleStartStep(int stepIndex) {
     nextNote = nextNote + sequenceOffset[stepIndex];
   }
 
-  byte transposeValue = settings->transpose->getValue();
-  int transposeOffset = Stepper::getSteppedIndex(transposeValue, 49) - 24;
+  byte transposeIndex = settings->transpose->getSteppedIndex();
+  int transposeOffset = transposeIndex - 24;
   if (transposeOffset != 0) {
     // try to apply transpose,
     if (noteInBounds(nextNote + transposeOffset)) {

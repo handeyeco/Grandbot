@@ -14,13 +14,13 @@ SettingManager::SettingManager(Expressions* _expr, ButtonManager* _buttons)
 
   // MIDI channel to listen to (respected by most things except panic and
   // midiChannelIn itself) options are: 0 = all channels / 1-16 = channels 1-16
-  midiChannelIn = new Setting(0, 0, 14, CHAR_I, CHAR_N,
+  midiChannelIn = new Setting(0, 0, 14, CHAR_I, CHAR_N, 17,
                               SettingTransforms::midiChValueTransform,
                               SettingTransforms::midiChStepTransform,
                               SettingTransforms::noRandomizeTransformMin);
   // MIDI channel to send to
   // options are: 0 = all channels / 1-16 = channels 1-16
-  midiChannelOut = new Setting(0, 0, 15, CHAR_O, CHAR_T,
+  midiChannelOut = new Setting(0, 0, 15, CHAR_O, CHAR_T, 17,
                                SettingTransforms::midiChValueTransform,
                                SettingTransforms::midiChStepTransform,
                                SettingTransforms::noRandomizeTransformMin);
@@ -28,126 +28,126 @@ SettingManager::SettingManager(Expressions* _expr, ButtonManager* _buttons)
   // Collapse all notes/rests to one side
   // options are: none, start (play notes at the beginning), end (play notes at
   // the end)
-  collapseNotes = new Setting(0, 0, 19, CHAR_C, CHAR_O,
+  collapseNotes = new Setting(0, 0, 19, CHAR_C, CHAR_O, 5,
                               SettingTransforms::collapseNotesValueTransform,
                               SettingTransforms::collapseNotesStepTransform,
                               SettingTransforms::lowRandomizeTransform);
   // Default step gate length in a sequence (gets transformed by other
   // parameters per step) options are: random, 33%, 66%, or full
-  baseGateLength = new Setting(127, 127, 104, CHAR_G, CHAR_L,
+  baseGateLength = new Setting(127, 127, 104, CHAR_G, CHAR_L, 4,
                                SettingTransforms::gateLengthValueTransform,
                                SettingTransforms::gateLengthStepTransform,
                                SettingTransforms::noRandomizeTransformMax);
   // Default step length in a sequence (gets transformed by other parameters per
   // step) options are: random, 1/16, 1/8, 1/4, 1/2, 1 (whole note), 2
-  baseNoteLength = new Setting(0, 0, 20, CHAR_N, CHAR_L,
+  baseNoteLength = new Setting(0, 0, 20, CHAR_N, CHAR_L, 7,
                                SettingTransforms::noteLengthValueTransform,
                                SettingTransforms::noteLengthStepTransform,
                                SettingTransforms::highRandomizeTransform);
   // The length of the generated sequence
   // options are: random, 1-8 bars
-  sequenceLength = new Setting(0, 0, 21, CHAR_S, CHAR_L,
+  sequenceLength = new Setting(0, 0, 21, CHAR_S, CHAR_L, 9,
                                SettingTransforms::sequenceLengthValueTransform,
                                SettingTransforms::sequenceLengthStepTransform,
                                SettingTransforms::highRandomizeTransform);
 
   // Chance a step will be transposed one octave up
-  octaveOneUpChance = new Setting(10, 0, 22, B01100011, B01000000,
+  octaveOneUpChance = new Setting(10, 0, 22, B01100011, B01000000, 100,
                                   SettingTransforms::ccValueTransform,
                                   SettingTransforms::ccStepTransform,
                                   SettingTransforms::mediumRandomizeTransform);
   // Chance a step will be transposed one octave down
   octaveOneDownChance = new Setting(
-      10, 0, 23, B00011101, B00001000, SettingTransforms::ccValueTransform,
+      10, 0, 23, B00011101, B00001000, 100, SettingTransforms::ccValueTransform,
       SettingTransforms::ccStepTransform,
       SettingTransforms::mediumRandomizeTransform);
   // Chance a step will be transposed two octaves up
-  octaveTwoUpChance = new Setting(5, 0, 24, B01100011, B01000001,
+  octaveTwoUpChance = new Setting(5, 0, 24, B01100011, B01000001, 100,
                                   SettingTransforms::ccValueTransform,
                                   SettingTransforms::ccStepTransform,
                                   SettingTransforms::lowRandomizeTransform);
   // Chance a step will be transposed two octaves down
-  octaveTwoDownChance = new Setting(5, 0, 25, B00011101, B00001001,
+  octaveTwoDownChance = new Setting(5, 0, 25, B00011101, B00001001, 100,
                                     SettingTransforms::ccValueTransform,
                                     SettingTransforms::ccStepTransform,
                                     SettingTransforms::lowRandomizeTransform);
   // Chance a step's length will change to double length
   doubleLengthChance =
-      new Setting(0, 0, 26, CHAR_D, CHAR_L, SettingTransforms::ccValueTransform,
+      new Setting(0, 0, 26, CHAR_D, CHAR_L, 100, SettingTransforms::ccValueTransform,
                   SettingTransforms::ccStepTransform,
                   SettingTransforms::lowRandomizeTransform);
   // Chance a step's length will change to half length
   halfLengthChance =
-      new Setting(0, 0, 27, CHAR_H, CHAR_L, SettingTransforms::ccValueTransform,
+      new Setting(0, 0, 27, CHAR_H, CHAR_L, 100, SettingTransforms::ccValueTransform,
                   SettingTransforms::ccStepTransform,
                   SettingTransforms::lowRandomizeTransform);
   // Chance a step will be a ratchet (two half-length steps of the same note)
   ratchetChance = new Setting(10, 0, 28, CHAR_R, CHAR_A,
-                              SettingTransforms::ccValueTransform,
+                              100, SettingTransforms::ccValueTransform,
                               SettingTransforms::ccStepTransform,
                               SettingTransforms::mediumRandomizeTransform);
   // Chance a step will be a triplet (a quarter note split into three notes)
   tripletChance = new Setting(0, 0, 106, CHAR_T, CHAR_R,
-                              SettingTransforms::ccValueTransform,
+                              100, SettingTransforms::ccValueTransform,
                               SettingTransforms::ccStepTransform,
                               SettingTransforms::lowRandomizeTransform);
   // Chance a step will overlap with the previous step (for triggering legato)
   legatoChance =
-      new Setting(0, 0, 31, CHAR_L, CHAR_E, SettingTransforms::ccValueTransform,
+      new Setting(0, 0, 31, CHAR_L, CHAR_E, 100, SettingTransforms::ccValueTransform,
                   SettingTransforms::ccStepTransform,
                   SettingTransforms::noRandomizeTransformMin);
   // Chance a step will be a rest
   restChance =
-      new Setting(5, 0, 29, CHAR_R, CHAR_E, SettingTransforms::ccValueTransform,
+      new Setting(5, 0, 29, CHAR_R, CHAR_E, 100, SettingTransforms::ccValueTransform,
                   SettingTransforms::ccStepTransform,
                   SettingTransforms::mediumRandomizeTransform);
   // Chance a step will be a run (4 quick, different notes)
   runChance =
-      new Setting(0, 0, 30, CHAR_R, CHAR_U, SettingTransforms::ccValueTransform,
+      new Setting(0, 0, 30, CHAR_R, CHAR_U, 100, SettingTransforms::ccValueTransform,
                   SettingTransforms::ccStepTransform,
                   SettingTransforms::lowRandomizeTransform);
   // Chance a step will be transposed a fifth up
   fifthChance =
-      new Setting(0, 0, 85, CHAR_F, CHAR_T, SettingTransforms::ccValueTransform,
+      new Setting(0, 0, 85, CHAR_F, CHAR_T, 100, SettingTransforms::ccValueTransform,
                   SettingTransforms::ccStepTransform,
                   SettingTransforms::noRandomizeTransformMin);
   // Chance a step will be transposed randomly (-11 to 11)
   randomNoteChance =
-      new Setting(0, 0, 86, CHAR_R, CHAR_N, SettingTransforms::ccValueTransform,
+      new Setting(0, 0, 86, CHAR_R, CHAR_N, 100, SettingTransforms::ccValueTransform,
                   SettingTransforms::ccStepTransform,
                   SettingTransforms::noRandomizeTransformMin);
   // Chance a step's gate will be randomized
-  randomGateChance = new Setting(10, 0, 105, CHAR_R, CHAR_G,
+  randomGateChance = new Setting(10, 0, 105, CHAR_R, CHAR_G, 100,
                                  SettingTransforms::ccValueTransform,
                                  SettingTransforms::ccStepTransform,
                                  SettingTransforms::mediumRandomizeTransform);
   // Chance a step's length will be randomized
   randomLengthChance =
-      new Setting(0, 0, 87, CHAR_R, CHAR_L, SettingTransforms::ccValueTransform,
+      new Setting(0, 0, 87, CHAR_R, CHAR_L, 100, SettingTransforms::ccValueTransform,
                   SettingTransforms::ccStepTransform,
                   SettingTransforms::noRandomizeTransformMin);
   // Chance a step will be swapped with an adjacent step (during slips not
   // sequence generation)
-  slipChance = new Setting(10, 10, 89, CHAR_S, CHAR_C,
+  slipChance = new Setting(10, 10, 89, CHAR_S, CHAR_C, 100,
                            SettingTransforms::ccValueTransform,
                            SettingTransforms::ccStepTransform,
                            SettingTransforms::highRandomizeTransform);
   // If active, hold notes through rests
-  latch = new Setting(0, 0, 90, CHAR_L, CHAR_A,
+  latch = new Setting(0, 0, 90, CHAR_L, CHAR_A, 2,
                       SettingTransforms::onOffValueTransform,
                       SettingTransforms::onOffStepTransform,
                       SettingTransforms::noRandomizeTransformMin);
 
   // Whether to use an external (Et) or internal (In) clock
   // TODO: should the default be internal?
-  clock = new Setting(0, 0, 112, CHAR_C, CHAR_L,
+  clock = new Setting(0, 0, 112, CHAR_C, CHAR_L, 0,
                       SettingTransforms::clockValueTransform,
                       SettingTransforms::onOffStepTransform,
                       SettingTransforms::noRandomizeTransformMin);
   // When using an internal clock, what BPM? 0-127 gets mapped to 73-200
   // TODO can we add an onchange callback or something to update
   // timeBetweenInternalClockPulses when changed
-  bpm = new Setting(47, 47, 113, CHAR_B, CHAR_BLANK,
+  bpm = new Setting(47, 47, 113, CHAR_B, CHAR_BLANK, 0,
                     SettingTransforms::bpmValueTransform,
                     SettingTransforms::bpmStepTransform,
                     SettingTransforms::noRandomizeTransformMin, false);
@@ -155,34 +155,34 @@ SettingManager::SettingManager(Expressions* _expr, ButtonManager* _buttons)
   // sequences, but are less exciting due to less variation
   // TODO can we add an onchange callback or something to trigger sort of
   // currently pressed/active notes?
-  sort = new Setting(0, 0, 114, CHAR_S, CHAR_O,
+  sort = new Setting(0, 0, 114, CHAR_S, CHAR_O, 2,
                      SettingTransforms::onOffValueTransform,
                      SettingTransforms::onOffStepTransform,
                      SettingTransforms::noRandomizeTransformMin);
   // How many semitones to transpose the output notes
-  transpose = new Setting(64, 64, 103, CHAR_T, CHAR_BLANK,
+  transpose = new Setting(64, 64, 103, CHAR_T, CHAR_BLANK, 49,
                           SettingTransforms::transposeValueTransform,
                           SettingTransforms::transposeStepTransform,
                           SettingTransforms::noRandomizeTransformMin, false);
   // Swing of sequence playback; delays every other 16th note when activated.
   // 50% = no swing; 67% max swing
   // TODO how hard would it be to support negative swing?
-  swing = new Setting(0, 0, 115, CHAR_S, CHAR_G,
+  swing = new Setting(0, 0, 115, CHAR_S, CHAR_G, 18,
                       SettingTransforms::swingValueTransform,
                       SettingTransforms::swingStepTransform,
                       SettingTransforms::noRandomizeTransformMin);
   // Highest possible velocity
-  velocityHigh = new Setting(110, 110, 107, CHAR_V, CHAR_H,
+  velocityHigh = new Setting(110, 110, 107, CHAR_V, CHAR_H, 0,
                              SettingTransforms::ccValueTransform,
                              SettingTransforms::ccStepTransform,
                              SettingTransforms::noRandomizeTransformMax);
   // Lowest possible velocity
-  velocityLow = new Setting(90, 90, 108, CHAR_V, CHAR_L,
+  velocityLow = new Setting(90, 90, 108, CHAR_V, CHAR_L, 0,
                             SettingTransforms::ccValueTransform,
                             SettingTransforms::ccStepTransform,
                             SettingTransforms::noRandomizeTransformMin);
   // Whether to play the sequence through GB's speaker or not
-  useSpeaker = new Setting(0, 0, 119, CHAR_S, CHAR_P,
+  useSpeaker = new Setting(0, 0, 119, CHAR_S, CHAR_P, 2,
                            SettingTransforms::onOffValueTransform,
                            SettingTransforms::onOffStepTransform,
                            SettingTransforms::noRandomizeTransformMin);

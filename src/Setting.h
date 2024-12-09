@@ -1,4 +1,5 @@
 #include <Arduino.h>
+#include <Stepper.h>
 
 #ifndef SETTING_INCL_GUARD
 #define SETTING_INCL_GUARD
@@ -15,6 +16,8 @@ struct Setting {
   // smart defaults to get started making sequences
   // TODO: consider getting rid of this now that reset == zeroValue
   byte defaultValue = 0;
+  // settings are stored between 0-127, but they might be broken into finite steps
+  byte numOfOptions = 0;
   // value transform (map name/value to display)
   void (&valueTransform)(Setting& self, byte output[4]);
   // handle setting value with buttons
@@ -28,6 +31,7 @@ struct Setting {
           byte midiCC,
           byte firstDisplayChar,
           byte secondDisplayChar,
+          byte _numOfOptions,
           void (&valueTransform)(Setting& self, byte output[4]),
           byte (&setValueStepped)(byte value, bool stepUp, bool shift),
           byte (&randomizeValue)(),
@@ -47,6 +51,7 @@ struct Setting {
 
   byte getValue();
   void setValue(byte nextValue);
+  byte getSteppedIndex();
   void step(bool stepUp, bool shift);
   void randomize();
   void reset();

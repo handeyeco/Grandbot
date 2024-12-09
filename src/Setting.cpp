@@ -5,6 +5,7 @@ Setting::Setting(byte _defaultValue,
                  byte _midiCC,
                  byte firstDisplayChar,
                  byte secondDisplayChar,
+                 byte _numOfOptions,
                  void (&_valueTransform)(Setting& self, byte output[4]),
                  byte (&_stepTransform)(byte value, bool stepUp, bool shift),
                  byte (&_randomizeValue)(),
@@ -13,6 +14,7 @@ Setting::Setting(byte _defaultValue,
       zeroValue(_zeroValue),
       defaultValue(_defaultValue),
       midiCC(_midiCC),
+      numOfOptions(_numOfOptions),
       valueTransform(_valueTransform),
       stepTransform(_stepTransform),
       randomizeValue(_randomizeValue),
@@ -54,6 +56,12 @@ bool Setting::getValueAsBool() {
 
 void Setting::setValue(byte nextValue) {
   value = nextValue;
+}
+
+byte Setting::getSteppedIndex() {
+  // 0 = no stepping
+  if (numOfOptions == 0) return value;
+  Stepper::getSteppedIndex(value, numOfOptions);
 }
 
 /**
