@@ -312,6 +312,25 @@ uint16_t Arp::getStepGate(String baseGate, uint16_t stepLength) {
 }
 
 /**
+ * Collapse notes so that rests are grouped together.
+ *
+ * @param {byte} start - the index of the sequence to start sorting (inclusive)
+ * @param {byte} end - the index of the sequence to end sorting (exclusive)
+ * @param {bool} restsAtStart - whether rests should be at the start or end
+ *
+ */
+void Arp::collapseNotes(byte start, byte end, bool restsAtStart) {
+  byte count = start;
+  for (byte i = start; i < end; i++) {
+    if ((!restsAtStart && sequenceIntervals[i] != 255) ||
+        (restsAtStart && sequenceIntervals[i] == 255)) {
+      swapNotes(i, count);
+      count++;
+    }
+  }
+}
+
+/**
  * Generate a new sequence
  */
 void Arp::generateSequence() {
@@ -383,33 +402,24 @@ void Arp::generateSequence() {
   }
 
   byte collapseIndex =
-      Stepper::getSteppedIndex(settings->collapseNotes->getValue(), 3);
-  // move rests to the end
+      Stepper::getSteppedIndex(settings->collapseNotes->getValue(), 5);
+  // move notes to start
   if (collapseIndex == 1) {
-    byte count = 0;
-    for (byte i = 0; i < stepIndex; i++) {
-      if (sequenceIntervals[i] != 255) {
-        swapNotes(i, count);
-        count++;
-      }
-    }
+    collapseNotes(0, stepIndex, false);
   }
-  // move rests to the beginning
+  // move notes to end
   else if (collapseIndex == 2) {
-    int end = -1;
-    for (int i = stepIndex - 1; i >= 0; i--) {
-      if (sequenceIntervals[i] == 255) {
-        end = i;
-        break;
-      }
-    }
-
-    for (int i = end - 1; i >= 0; i--) {
-      if (sequenceIntervals[i] != 255) {
-        swapNotes(i, end);
-        end--;
-      }
-    }
+    collapseNotes(0, stepIndex, true);
+  }
+  // split notes beginning/end
+  else if (collapseIndex == 3) {
+    collapseNotes(0, stepIndex/2, false);
+    collapseNotes(stepIndex/2, stepIndex, true);
+  }
+  // split rests beginning/end
+  else if (collapseIndex == 4) {
+    collapseNotes(0, stepIndex/2, true);
+    collapseNotes(stepIndex/2, stepIndex, false);
   }
 
   // make sure the last step doesn't go past total length
@@ -425,6 +435,7 @@ void Arp::generateSequence() {
   totalSequenceLength = newTotalSequenceLength;
   stopCurrNote();
   stopLegatoNote();
+  debugSequence();
 }
 
 /**
@@ -1195,4 +1206,30 @@ bool Arp::update() {
   }
 
   return midiMode || (useInternalClock && running);
+}
+
+/**
+ * Print data about the full sequence. It's very slow
+ * it should be used sparingly.
+ */
+void Arp::debugSequence() {
+  Serial.println(">>");
+  Serial.print("totalSequenceSteps: ");
+  Serial.println(totalSequenceSteps);
+  Serial.print("totalSequenceLength: ");
+  Serial.println(totalSequenceLength);
+  for (byte i = 0; i < totalSequenceSteps; i++) {
+    Serial.print("step: ");
+    Serial.print(i);
+    Serial.print(" interval: ");
+    Serial.print(sequenceIntervals[i]);
+    Serial.print(" offset: ");
+    Serial.print(sequenceOffset[i]);
+    Serial.print(" start: ");
+    Serial.print(sequenceStartPositions[i]);
+    Serial.print(" gate: ");
+    Serial.print(sequenceStepGate[i]);
+    Serial.println();
+  }
+  Serial.println("<<");
 }

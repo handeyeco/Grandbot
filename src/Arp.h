@@ -178,6 +178,7 @@ class Arp {
   uint16_t getStepLength(uint16_t baseLength);
   String getBaseStepGate();
   uint16_t getStepGate(String baseGate, uint16_t stepLength);
+  void collapseNotes(byte start, byte end, bool restsAtStart);
   void generateSequence();
   void slipSequence();
   void swapNotes(byte aIndex, byte bIndex);
@@ -195,6 +196,7 @@ class Arp {
   void panic();
   void queueRegenerate();
   void queueSlip(bool setDrift);
+  void debugSequence();
 
  public:
   Arp(Grandbot* gb);

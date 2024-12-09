@@ -425,7 +425,7 @@ byte SettingTransforms::sequenceLengthStepTransform(byte value,
 void SettingTransforms::collapseNotesValueTransform(Setting& self,
                                                     byte output[4]) {
   populateName(self, output);
-  byte index = Stepper::getSteppedIndex(self.getValue(), 3);
+  byte index = Stepper::getSteppedIndex(self.getValue(), 5);
 
   // No collapse
   if (index == 0) {
@@ -438,9 +438,19 @@ void SettingTransforms::collapseNotesValueTransform(Setting& self,
     output[3] = CHAR_T;
   }
   // Play notes at the end
-  else {
+  else if (index == 2) {
     output[2] = CHAR_E;
     output[3] = CHAR_N;
+  }
+  // Play notes in center
+  else if (index == 3) {
+    output[2] = CHAR_S;
+    output[3] = CHAR_C;
+  }
+  // Play notes at beginning/end
+  else if (index == 4) {
+    output[2] = CHAR_S;
+    output[3] = CHAR_E;
   }
 }
 
@@ -456,5 +466,5 @@ byte SettingTransforms::collapseNotesStepTransform(byte value,
     return stepUp ? 127 : 0;
   }
 
-  return Stepper::stepIndex(value, 3, stepUp);
+  return Stepper::stepIndex(value, 5, stepUp);
 }
