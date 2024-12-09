@@ -90,7 +90,10 @@ void SettingTransforms::ccValueTransform(Setting& self, byte output[4]) {
  * (so for example: we don't need to press up twice to get to the next displayed
  * value)
  */
-byte SettingTransforms::ccStepTransform(Setting& self, byte value, bool stepUp, bool shift) {
+byte SettingTransforms::ccStepTransform(Setting& self,
+                                        byte value,
+                                        bool stepUp,
+                                        bool shift) {
   return self.stepIndex(value, stepUp, shift ? 10 : 1);
 }
 
@@ -111,7 +114,8 @@ void SettingTransforms::onOffValueTransform(Setting& self, byte output[4]) {
 /**
  * Step transform for on/off settings
  */
-byte SettingTransforms::onOffStepTransform(Setting& self, byte value,
+byte SettingTransforms::onOffStepTransform(Setting& self,
+                                           byte value,
                                            bool stepUp,
                                            bool shift) {
   return stepUp ? 127 : 0;
@@ -160,7 +164,10 @@ void SettingTransforms::bpmValueTransform(Setting& self, byte output[4]) {
 /**
  * Step transfor for BPM
  */
-byte SettingTransforms::bpmStepTransform(Setting& self, byte value, bool stepUp, bool shift) {
+byte SettingTransforms::bpmStepTransform(Setting& self,
+                                         byte value,
+                                         bool stepUp,
+                                         bool shift) {
   int step = (shift ? 10 : 1) * (stepUp ? 1 : -1);
   int next = value + step;
   next = max(0, next);
@@ -210,7 +217,8 @@ void SettingTransforms::transposeValueTransform(Setting& self, byte output[4]) {
 /**
  * Step transfor for BPM
  */
-byte SettingTransforms::transposeStepTransform(Setting& self, byte value,
+byte SettingTransforms::transposeStepTransform(Setting& self,
+                                               byte value,
                                                bool stepUp,
                                                bool shift) {
   return self.stepIndex(value, stepUp, shift ? 12 : 1);
@@ -234,7 +242,8 @@ void SettingTransforms::swingValueTransform(Setting& self, byte output[4]) {
  *
  * TODO consolidate these transformers that are basically doing the same thing
  */
-byte SettingTransforms::swingStepTransform(Setting& self, byte value,
+byte SettingTransforms::swingStepTransform(Setting& self,
+                                           byte value,
                                            bool stepUp,
                                            bool shift) {
   if (shift) {
@@ -274,7 +283,8 @@ void SettingTransforms::midiChValueTransform(Setting& self, byte output[4]) {
  *
  * TODO consolidate these transformers that are basically doing the same thing
  */
-byte SettingTransforms::midiChStepTransform(Setting& self, byte value,
+byte SettingTransforms::midiChStepTransform(Setting& self,
+                                            byte value,
                                             bool stepUp,
                                             bool shift) {
   if (shift) {
@@ -317,7 +327,8 @@ void SettingTransforms::gateLengthValueTransform(Setting& self,
  *
  * TODO consolidate these transformers that are basically doing the same thing
  */
-byte SettingTransforms::gateLengthStepTransform(Setting& self, byte value,
+byte SettingTransforms::gateLengthStepTransform(Setting& self,
+                                                byte value,
                                                 bool stepUp,
                                                 bool shift) {
   if (shift) {
@@ -372,7 +383,8 @@ void SettingTransforms::noteLengthValueTransform(Setting& self,
  *
  * TODO consolidate these transformers that are basically doing the same thing
  */
-byte SettingTransforms::noteLengthStepTransform(Setting& self, byte value,
+byte SettingTransforms::noteLengthStepTransform(Setting& self,
+                                                byte value,
                                                 bool stepUp,
                                                 bool shift) {
   if (shift) {
@@ -407,7 +419,8 @@ void SettingTransforms::sequenceLengthValueTransform(Setting& self,
  *
  * TODO consolidate these transformers that are basically doing the same thing
  */
-byte SettingTransforms::sequenceLengthStepTransform(Setting& self, byte value,
+byte SettingTransforms::sequenceLengthStepTransform(Setting& self,
+                                                    byte value,
                                                     bool stepUp,
                                                     bool shift) {
   if (shift) {
@@ -458,7 +471,8 @@ void SettingTransforms::collapseNotesValueTransform(Setting& self,
  *
  * TODO consolidate these transformers that are basically doing the same thing
  */
-byte SettingTransforms::collapseNotesStepTransform(Setting& self, byte value,
+byte SettingTransforms::collapseNotesStepTransform(Setting& self,
+                                                   byte value,
                                                    bool stepUp,
                                                    bool shift) {
   if (shift) {

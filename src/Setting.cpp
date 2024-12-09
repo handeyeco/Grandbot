@@ -1,15 +1,16 @@
 #include <Setting.h>
 
-Setting::Setting(byte _defaultValue,
-                 byte _zeroValue,
-                 byte _midiCC,
-                 byte firstDisplayChar,
-                 byte secondDisplayChar,
-                 byte _numOfOptions,
-                 void (&_valueTransform)(Setting& self, byte output[4]),
-                 byte (&_stepTransform)(Setting& self, byte value, bool stepUp, bool shift),
-                 byte (&_randomizeValue)(),
-                 bool _usesColon)
+Setting::Setting(
+    byte _defaultValue,
+    byte _zeroValue,
+    byte _midiCC,
+    byte firstDisplayChar,
+    byte secondDisplayChar,
+    byte _numOfOptions,
+    void (&_valueTransform)(Setting& self, byte output[4]),
+    byte (&_stepTransform)(Setting& self, byte value, bool stepUp, bool shift),
+    byte (&_randomizeValue)(),
+    bool _usesColon)
     : value(_defaultValue),
       zeroValue(_zeroValue),
       defaultValue(_defaultValue),

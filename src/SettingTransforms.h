@@ -47,13 +47,25 @@ byte swingStepTransform(Setting& self, byte value, bool stepUp, bool shift);
 void midiChValueTransform(Setting& self, byte output[4]);
 byte midiChStepTransform(Setting& self, byte value, bool stepUp, bool shift);
 void gateLengthValueTransform(Setting& self, byte output[4]);
-byte gateLengthStepTransform(Setting& self, byte value, bool stepUp, bool shift);
+byte gateLengthStepTransform(Setting& self,
+                             byte value,
+                             bool stepUp,
+                             bool shift);
 void noteLengthValueTransform(Setting& self, byte output[4]);
-byte noteLengthStepTransform(Setting& self, byte value, bool stepUp, bool shift);
+byte noteLengthStepTransform(Setting& self,
+                             byte value,
+                             bool stepUp,
+                             bool shift);
 void sequenceLengthValueTransform(Setting& self, byte output[4]);
-byte sequenceLengthStepTransform(Setting& self, byte value, bool stepUp, bool shift);
+byte sequenceLengthStepTransform(Setting& self,
+                                 byte value,
+                                 bool stepUp,
+                                 bool shift);
 void collapseNotesValueTransform(Setting& self, byte output[4]);
-byte collapseNotesStepTransform(Setting& self, byte value, bool stepUp, bool shift);
+byte collapseNotesStepTransform(Setting& self,
+                                byte value,
+                                bool stepUp,
+                                bool shift);
 };  // namespace SettingTransforms
 
 #endif

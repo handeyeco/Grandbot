@@ -431,7 +431,7 @@ void Arp::generateSequence() {
   totalSequenceLength = newTotalSequenceLength;
   stopCurrNote();
   stopLegatoNote();
-  debugSequence();
+  // debugSequence();
 }
 
 /**

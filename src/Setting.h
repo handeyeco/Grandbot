@@ -27,16 +27,17 @@ struct Setting {
   byte (&randomizeValue)();
 
  public:
-  Setting(byte defaultValue,
-          byte zeroValue,
-          byte midiCC,
-          byte firstDisplayChar,
-          byte secondDisplayChar,
-          byte _numOfOptions,
-          void (&valueTransform)(Setting& self, byte output[4]),
-          byte (&stepTransform)(Setting& self, byte value, bool stepUp, bool shift),
-          byte (&randomizeValue)(),
-          bool usesColon = true);
+  Setting(
+      byte defaultValue,
+      byte zeroValue,
+      byte midiCC,
+      byte firstDisplayChar,
+      byte secondDisplayChar,
+      byte _numOfOptions,
+      void (&valueTransform)(Setting& self, byte output[4]),
+      byte (&stepTransform)(Setting& self, byte value, bool stepUp, bool shift),
+      byte (&randomizeValue)(),
+      bool usesColon = true);
 
   static bool convertCCToBool(byte cc);
 
