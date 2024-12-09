@@ -203,10 +203,16 @@ Slip chance is the likelihood that a step is affected when a sequence is being t
 - Submenu: Sequence
 - Display: `Co`
 - MIDI CC: 19
-- Options: None (`no`), start (`St`), end (`En`)
+- Options: None (`no`), start (`St`), end (`En`), center rests (`Cr`), center notes (`Cn`)
 - Default: None
 
-When rests are present in a new sequence, collapse shifts all of the non-rest notes to either the beginning or the end of the sequence.
+When rests are present in a new sequence, groups rests together:
+
+- None (`no`): no collapse
+- Start (`St`): move all notes to the beginning of the sequence and all rests to the end
+- Start (`En`): move all notes to the end of the sequence and all rests to the beginning
+- Center rests (`Cr`): moves all rests to the center of the sequence
+- Center notes (`Cn`): moves all notes to the center of the sequence
 
 ---
 
