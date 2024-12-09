@@ -28,9 +28,9 @@ void populateName(Setting& self, byte output[4]);
 
 // shared
 void ccValueTransform(Setting& self, byte output[4]);
-byte ccStepTransform(byte value, bool stepUp, bool shift);
+byte ccStepTransform(Setting& self, byte value, bool stepUp, bool shift);
 void onOffValueTransform(Setting& self, byte output[4]);
-byte onOffStepTransform(byte value, bool stepUp, bool shift);
+byte onOffStepTransform(Setting& self, byte value, bool stepUp, bool shift);
 byte lowRandomizeTransform();
 byte mediumRandomizeTransform();
 byte highRandomizeTransform();
@@ -39,21 +39,21 @@ byte highRandomizeTransform();
 // TODO a lot of these could be consolidated
 void clockValueTransform(Setting& self, byte output[4]);
 void bpmValueTransform(Setting& self, byte output[4]);
-byte bpmStepTransform(byte value, bool stepUp, bool shift);
+byte bpmStepTransform(Setting& self, byte value, bool stepUp, bool shift);
 void transposeValueTransform(Setting& self, byte output[4]);
-byte transposeStepTransform(byte value, bool stepUp, bool shift);
+byte transposeStepTransform(Setting& self, byte value, bool stepUp, bool shift);
 void swingValueTransform(Setting& self, byte output[4]);
-byte swingStepTransform(byte value, bool stepUp, bool shift);
+byte swingStepTransform(Setting& self, byte value, bool stepUp, bool shift);
 void midiChValueTransform(Setting& self, byte output[4]);
-byte midiChStepTransform(byte value, bool stepUp, bool shift);
+byte midiChStepTransform(Setting& self, byte value, bool stepUp, bool shift);
 void gateLengthValueTransform(Setting& self, byte output[4]);
-byte gateLengthStepTransform(byte value, bool stepUp, bool shift);
+byte gateLengthStepTransform(Setting& self, byte value, bool stepUp, bool shift);
 void noteLengthValueTransform(Setting& self, byte output[4]);
-byte noteLengthStepTransform(byte value, bool stepUp, bool shift);
+byte noteLengthStepTransform(Setting& self, byte value, bool stepUp, bool shift);
 void sequenceLengthValueTransform(Setting& self, byte output[4]);
-byte sequenceLengthStepTransform(byte value, bool stepUp, bool shift);
+byte sequenceLengthStepTransform(Setting& self, byte value, bool stepUp, bool shift);
 void collapseNotesValueTransform(Setting& self, byte output[4]);
-byte collapseNotesStepTransform(byte value, bool stepUp, bool shift);
+byte collapseNotesStepTransform(Setting& self, byte value, bool stepUp, bool shift);
 };  // namespace SettingTransforms
 
 #endif

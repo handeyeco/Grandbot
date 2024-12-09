@@ -7,7 +7,7 @@ Setting::Setting(byte _defaultValue,
                  byte secondDisplayChar,
                  byte _numOfOptions,
                  void (&_valueTransform)(Setting& self, byte output[4]),
-                 byte (&_stepTransform)(byte value, bool stepUp, bool shift),
+                 byte (&_stepTransform)(Setting& self, byte value, bool stepUp, bool shift),
                  byte (&_randomizeValue)(),
                  bool _usesColon)
     : value(_defaultValue),
@@ -58,6 +58,10 @@ void Setting::setValue(byte nextValue) {
   value = nextValue;
 }
 
+byte Setting::stepIndex(byte value, bool up, byte stride = 1) {
+  return Stepper::stepIndex(value, numOfOptions, up, stride);
+}
+
 byte Setting::getSteppedIndex() {
   // 0 = no stepping
   if (numOfOptions == 0)
@@ -77,7 +81,7 @@ void Setting::step(bool stepUp, bool shift) {
   if ((stepUp && value >= 127) || (!stepUp && value <= 0))
     return;
 
-  setValue(stepTransform(value, stepUp, shift));
+  setValue(stepTransform(*this, value, stepUp, shift));
 };
 
 void Setting::randomize() {

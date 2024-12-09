@@ -90,8 +90,8 @@ void SettingTransforms::ccValueTransform(Setting& self, byte output[4]) {
  * (so for example: we don't need to press up twice to get to the next displayed
  * value)
  */
-byte SettingTransforms::ccStepTransform(byte value, bool stepUp, bool shift) {
-  return Stepper::stepIndex(value, 100, stepUp, shift ? 10 : 1);
+byte SettingTransforms::ccStepTransform(Setting& self, byte value, bool stepUp, bool shift) {
+  return self.stepIndex(value, stepUp, shift ? 10 : 1);
 }
 
 /**
@@ -111,7 +111,7 @@ void SettingTransforms::onOffValueTransform(Setting& self, byte output[4]) {
 /**
  * Step transform for on/off settings
  */
-byte SettingTransforms::onOffStepTransform(byte value,
+byte SettingTransforms::onOffStepTransform(Setting& self, byte value,
                                            bool stepUp,
                                            bool shift) {
   return stepUp ? 127 : 0;
@@ -160,7 +160,7 @@ void SettingTransforms::bpmValueTransform(Setting& self, byte output[4]) {
 /**
  * Step transfor for BPM
  */
-byte SettingTransforms::bpmStepTransform(byte value, bool stepUp, bool shift) {
+byte SettingTransforms::bpmStepTransform(Setting& self, byte value, bool stepUp, bool shift) {
   int step = (shift ? 10 : 1) * (stepUp ? 1 : -1);
   int next = value + step;
   next = max(0, next);
@@ -210,10 +210,10 @@ void SettingTransforms::transposeValueTransform(Setting& self, byte output[4]) {
 /**
  * Step transfor for BPM
  */
-byte SettingTransforms::transposeStepTransform(byte value,
+byte SettingTransforms::transposeStepTransform(Setting& self, byte value,
                                                bool stepUp,
                                                bool shift) {
-  return Stepper::stepIndex(value, 49, stepUp, shift ? 12 : 1);
+  return self.stepIndex(value, stepUp, shift ? 12 : 1);
 }
 
 /**
@@ -234,14 +234,14 @@ void SettingTransforms::swingValueTransform(Setting& self, byte output[4]) {
  *
  * TODO consolidate these transformers that are basically doing the same thing
  */
-byte SettingTransforms::swingStepTransform(byte value,
+byte SettingTransforms::swingStepTransform(Setting& self, byte value,
                                            bool stepUp,
                                            bool shift) {
   if (shift) {
     return stepUp ? 127 : 0;
   }
 
-  return Stepper::stepIndex(value, 18, stepUp);
+  return self.stepIndex(value, stepUp);
 }
 
 /**
@@ -274,14 +274,14 @@ void SettingTransforms::midiChValueTransform(Setting& self, byte output[4]) {
  *
  * TODO consolidate these transformers that are basically doing the same thing
  */
-byte SettingTransforms::midiChStepTransform(byte value,
+byte SettingTransforms::midiChStepTransform(Setting& self, byte value,
                                             bool stepUp,
                                             bool shift) {
   if (shift) {
     return stepUp ? 127 : 0;
   }
 
-  return Stepper::stepIndex(value, 17, stepUp);
+  return self.stepIndex(value, stepUp);
 }
 
 /**
@@ -317,14 +317,14 @@ void SettingTransforms::gateLengthValueTransform(Setting& self,
  *
  * TODO consolidate these transformers that are basically doing the same thing
  */
-byte SettingTransforms::gateLengthStepTransform(byte value,
+byte SettingTransforms::gateLengthStepTransform(Setting& self, byte value,
                                                 bool stepUp,
                                                 bool shift) {
   if (shift) {
     return stepUp ? 127 : 0;
   }
 
-  return Stepper::stepIndex(value, 4, stepUp);
+  return self.stepIndex(value, stepUp);
 }
 
 /**
@@ -372,14 +372,14 @@ void SettingTransforms::noteLengthValueTransform(Setting& self,
  *
  * TODO consolidate these transformers that are basically doing the same thing
  */
-byte SettingTransforms::noteLengthStepTransform(byte value,
+byte SettingTransforms::noteLengthStepTransform(Setting& self, byte value,
                                                 bool stepUp,
                                                 bool shift) {
   if (shift) {
     return stepUp ? 127 : 0;
   }
 
-  return Stepper::stepIndex(value, 7, stepUp);
+  return self.stepIndex(value, stepUp);
 }
 
 /**
@@ -407,14 +407,14 @@ void SettingTransforms::sequenceLengthValueTransform(Setting& self,
  *
  * TODO consolidate these transformers that are basically doing the same thing
  */
-byte SettingTransforms::sequenceLengthStepTransform(byte value,
+byte SettingTransforms::sequenceLengthStepTransform(Setting& self, byte value,
                                                     bool stepUp,
                                                     bool shift) {
   if (shift) {
     return stepUp ? 127 : 0;
   }
 
-  return Stepper::stepIndex(value, 9, stepUp);
+  return self.stepIndex(value, stepUp);
 }
 
 /**
@@ -458,12 +458,12 @@ void SettingTransforms::collapseNotesValueTransform(Setting& self,
  *
  * TODO consolidate these transformers that are basically doing the same thing
  */
-byte SettingTransforms::collapseNotesStepTransform(byte value,
+byte SettingTransforms::collapseNotesStepTransform(Setting& self, byte value,
                                                    bool stepUp,
                                                    bool shift) {
   if (shift) {
     return stepUp ? 127 : 0;
   }
 
-  return Stepper::stepIndex(value, 5, stepUp);
+  return self.stepIndex(value, stepUp);
 }

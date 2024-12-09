@@ -22,7 +22,7 @@ struct Setting {
   // value transform (map name/value to display)
   void (&valueTransform)(Setting& self, byte output[4]);
   // handle setting value with buttons
-  byte (&stepTransform)(byte value, bool stepUp, bool shift);
+  byte (&stepTransform)(Setting& self, byte value, bool stepUp, bool shift);
   // callback to randomize setting
   byte (&randomizeValue)();
 
@@ -34,7 +34,7 @@ struct Setting {
           byte secondDisplayChar,
           byte _numOfOptions,
           void (&valueTransform)(Setting& self, byte output[4]),
-          byte (&setValueStepped)(byte value, bool stepUp, bool shift),
+          byte (&setValueStepped)(Setting& self, byte value, bool stepUp, bool shift),
           byte (&randomizeValue)(),
           bool usesColon = true);
 
@@ -52,6 +52,7 @@ struct Setting {
 
   byte getValue();
   void setValue(byte nextValue);
+  byte stepIndex(byte value, bool up, byte stride = 1);
   byte getSteppedIndex();
   void step(bool stepUp, bool shift);
   void randomize();
