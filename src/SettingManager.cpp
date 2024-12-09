@@ -72,60 +72,60 @@ SettingManager::SettingManager(Expressions* _expr, ButtonManager* _buttons)
                                     SettingTransforms::ccStepTransform,
                                     SettingTransforms::lowRandomizeTransform);
   // Chance a step's length will change to double length
-  doubleLengthChance =
-      new Setting(0, 0, 26, CHAR_D, CHAR_L, 100, SettingTransforms::ccValueTransform,
-                  SettingTransforms::ccStepTransform,
-                  SettingTransforms::lowRandomizeTransform);
+  doubleLengthChance = new Setting(0, 0, 26, CHAR_D, CHAR_L, 100,
+                                   SettingTransforms::ccValueTransform,
+                                   SettingTransforms::ccStepTransform,
+                                   SettingTransforms::lowRandomizeTransform);
   // Chance a step's length will change to half length
-  halfLengthChance =
-      new Setting(0, 0, 27, CHAR_H, CHAR_L, 100, SettingTransforms::ccValueTransform,
-                  SettingTransforms::ccStepTransform,
-                  SettingTransforms::lowRandomizeTransform);
+  halfLengthChance = new Setting(0, 0, 27, CHAR_H, CHAR_L, 100,
+                                 SettingTransforms::ccValueTransform,
+                                 SettingTransforms::ccStepTransform,
+                                 SettingTransforms::lowRandomizeTransform);
   // Chance a step will be a ratchet (two half-length steps of the same note)
-  ratchetChance = new Setting(10, 0, 28, CHAR_R, CHAR_A,
-                              100, SettingTransforms::ccValueTransform,
+  ratchetChance = new Setting(10, 0, 28, CHAR_R, CHAR_A, 100,
+                              SettingTransforms::ccValueTransform,
                               SettingTransforms::ccStepTransform,
                               SettingTransforms::mediumRandomizeTransform);
   // Chance a step will be a triplet (a quarter note split into three notes)
-  tripletChance = new Setting(0, 0, 106, CHAR_T, CHAR_R,
-                              100, SettingTransforms::ccValueTransform,
+  tripletChance = new Setting(0, 0, 106, CHAR_T, CHAR_R, 100,
+                              SettingTransforms::ccValueTransform,
                               SettingTransforms::ccStepTransform,
                               SettingTransforms::lowRandomizeTransform);
   // Chance a step will overlap with the previous step (for triggering legato)
-  legatoChance =
-      new Setting(0, 0, 31, CHAR_L, CHAR_E, 100, SettingTransforms::ccValueTransform,
-                  SettingTransforms::ccStepTransform,
-                  SettingTransforms::noRandomizeTransformMin);
+  legatoChance = new Setting(0, 0, 31, CHAR_L, CHAR_E, 100,
+                             SettingTransforms::ccValueTransform,
+                             SettingTransforms::ccStepTransform,
+                             SettingTransforms::noRandomizeTransformMin);
   // Chance a step will be a rest
-  restChance =
-      new Setting(5, 0, 29, CHAR_R, CHAR_E, 100, SettingTransforms::ccValueTransform,
-                  SettingTransforms::ccStepTransform,
-                  SettingTransforms::mediumRandomizeTransform);
+  restChance = new Setting(5, 0, 29, CHAR_R, CHAR_E, 100,
+                           SettingTransforms::ccValueTransform,
+                           SettingTransforms::ccStepTransform,
+                           SettingTransforms::mediumRandomizeTransform);
   // Chance a step will be a run (4 quick, different notes)
-  runChance =
-      new Setting(0, 0, 30, CHAR_R, CHAR_U, 100, SettingTransforms::ccValueTransform,
-                  SettingTransforms::ccStepTransform,
-                  SettingTransforms::lowRandomizeTransform);
+  runChance = new Setting(0, 0, 30, CHAR_R, CHAR_U, 100,
+                          SettingTransforms::ccValueTransform,
+                          SettingTransforms::ccStepTransform,
+                          SettingTransforms::lowRandomizeTransform);
   // Chance a step will be transposed a fifth up
-  fifthChance =
-      new Setting(0, 0, 85, CHAR_F, CHAR_T, 100, SettingTransforms::ccValueTransform,
-                  SettingTransforms::ccStepTransform,
-                  SettingTransforms::noRandomizeTransformMin);
+  fifthChance = new Setting(0, 0, 85, CHAR_F, CHAR_T, 100,
+                            SettingTransforms::ccValueTransform,
+                            SettingTransforms::ccStepTransform,
+                            SettingTransforms::noRandomizeTransformMin);
   // Chance a step will be transposed randomly (-11 to 11)
-  randomNoteChance =
-      new Setting(0, 0, 86, CHAR_R, CHAR_N, 100, SettingTransforms::ccValueTransform,
-                  SettingTransforms::ccStepTransform,
-                  SettingTransforms::noRandomizeTransformMin);
+  randomNoteChance = new Setting(0, 0, 86, CHAR_R, CHAR_N, 100,
+                                 SettingTransforms::ccValueTransform,
+                                 SettingTransforms::ccStepTransform,
+                                 SettingTransforms::noRandomizeTransformMin);
   // Chance a step's gate will be randomized
   randomGateChance = new Setting(10, 0, 105, CHAR_R, CHAR_G, 100,
                                  SettingTransforms::ccValueTransform,
                                  SettingTransforms::ccStepTransform,
                                  SettingTransforms::mediumRandomizeTransform);
   // Chance a step's length will be randomized
-  randomLengthChance =
-      new Setting(0, 0, 87, CHAR_R, CHAR_L, 100, SettingTransforms::ccValueTransform,
-                  SettingTransforms::ccStepTransform,
-                  SettingTransforms::noRandomizeTransformMin);
+  randomLengthChance = new Setting(0, 0, 87, CHAR_R, CHAR_L, 100,
+                                   SettingTransforms::ccValueTransform,
+                                   SettingTransforms::ccStepTransform,
+                                   SettingTransforms::noRandomizeTransformMin);
   // Chance a step will be swapped with an adjacent step (during slips not
   // sequence generation)
   slipChance = new Setting(10, 10, 89, CHAR_S, CHAR_C, 100,
@@ -140,7 +140,7 @@ SettingManager::SettingManager(Expressions* _expr, ButtonManager* _buttons)
 
   // Whether to use an external (Et) or internal (In) clock
   // TODO: should the default be internal?
-  clock = new Setting(0, 0, 112, CHAR_C, CHAR_L, 0,
+  clock = new Setting(0, 0, 112, CHAR_C, CHAR_L, 2,
                       SettingTransforms::clockValueTransform,
                       SettingTransforms::onOffStepTransform,
                       SettingTransforms::noRandomizeTransformMin);

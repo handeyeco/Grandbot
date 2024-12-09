@@ -409,13 +409,13 @@ void Arp::generateSequence() {
   }
   // split notes beginning/end
   else if (collapseIndex == 3) {
-    collapseNotes(0, stepIndex/2, false);
-    collapseNotes(stepIndex/2, stepIndex, true);
+    collapseNotes(0, stepIndex / 2, false);
+    collapseNotes(stepIndex / 2, stepIndex, true);
   }
   // split rests beginning/end
   else if (collapseIndex == 4) {
-    collapseNotes(0, stepIndex/2, true);
-    collapseNotes(stepIndex/2, stepIndex, false);
+    collapseNotes(0, stepIndex / 2, true);
+    collapseNotes(stepIndex / 2, stepIndex, false);
   }
 
   // make sure the last step doesn't go past total length

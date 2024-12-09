@@ -16,7 +16,8 @@ struct Setting {
   // smart defaults to get started making sequences
   // TODO: consider getting rid of this now that reset == zeroValue
   byte defaultValue = 0;
-  // settings are stored between 0-127, but they might be broken into finite steps
+  // settings are stored between 0-127, but they might be broken into finite
+  // steps
   byte numOfOptions = 0;
   // value transform (map name/value to display)
   void (&valueTransform)(Setting& self, byte output[4]);

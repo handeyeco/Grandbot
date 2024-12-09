@@ -60,7 +60,8 @@ void Setting::setValue(byte nextValue) {
 
 byte Setting::getSteppedIndex() {
   // 0 = no stepping
-  if (numOfOptions == 0) return value;
+  if (numOfOptions == 0)
+    return value;
   Stepper::getSteppedIndex(value, numOfOptions);
 }
 
