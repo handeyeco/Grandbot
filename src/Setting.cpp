@@ -66,7 +66,7 @@ byte Setting::getSteppedIndex() {
   // 0 = no stepping
   if (numOfOptions == 0)
     return value;
-  Stepper::getSteppedIndex(value, numOfOptions);
+  return Stepper::getSteppedIndex(value, numOfOptions);
 }
 
 /**

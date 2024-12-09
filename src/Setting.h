@@ -34,7 +34,7 @@ struct Setting {
           byte secondDisplayChar,
           byte _numOfOptions,
           void (&valueTransform)(Setting& self, byte output[4]),
-          byte (&setValueStepped)(Setting& self, byte value, bool stepUp, bool shift),
+          byte (&stepTransform)(Setting& self, byte value, bool stepUp, bool shift),
           byte (&randomizeValue)(),
           bool usesColon = true);
 
