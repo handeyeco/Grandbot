@@ -464,6 +464,16 @@ void SettingTransforms::collapseNotesValueTransform(Setting& self,
     output[2] = CHAR_C;
     output[3] = CHAR_N;
   }
+  // Splits in half, notes at start of each half
+  else if (index == 5) {
+    output[2] = CHAR_S;
+    output[3] = CHAR_S;
+  }
+  // Splits in half, notes at start of each half
+  else if (index == 6) {
+    output[2] = CHAR_S;
+    output[3] = CHAR_E;
+  }
 }
 
 /**

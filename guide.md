@@ -203,7 +203,7 @@ Slip chance is the likelihood that a step is affected when a sequence is being t
 - Submenu: Sequence
 - Display: `Co`
 - MIDI CC: 19
-- Options: None (`no`), start (`St`), end (`En`), center rests (`Cr`), center notes (`Cn`)
+- Options: None (`no`), start (`St`), end (`En`), center rests (`Cr`), center notes (`Cn`), split start (`SS`), split end (`SE`)
 - Default: None
 
 When rests are present in a new sequence, groups rests together:
@@ -213,6 +213,8 @@ When rests are present in a new sequence, groups rests together:
 - Start (`En`): move all notes to the end of the sequence and all rests to the beginning
 - Center rests (`Cr`): moves all rests to the center of the sequence
 - Center notes (`Cn`): moves all notes to the center of the sequence
+- Split start (`SS`): notes play at the beginning of each sequence half
+- Split end (`SE`): notes play at the end of each sequence half
 
 ---
 
