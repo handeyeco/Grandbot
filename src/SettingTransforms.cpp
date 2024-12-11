@@ -71,7 +71,7 @@ void SettingTransforms::populateName(Setting& self, byte output[4]) {
  */
 void SettingTransforms::ccValueTransform(Setting& self, byte output[4]) {
   populateName(self, output);
-  byte index = Stepper::getSteppedIndex(self.getValue(), 100);
+  byte index = self.getSteppedIndex();
 
   if (index < 10) {
     output[2] = CHAR_BLANK;
@@ -90,8 +90,11 @@ void SettingTransforms::ccValueTransform(Setting& self, byte output[4]) {
  * (so for example: we don't need to press up twice to get to the next displayed
  * value)
  */
-byte SettingTransforms::ccStepTransform(byte value, bool stepUp, bool shift) {
-  return Stepper::stepIndex(value, 100, stepUp, shift ? 10 : 1);
+byte SettingTransforms::ccStepTransform(Setting& self,
+                                        byte value,
+                                        bool stepUp,
+                                        bool shift) {
+  return self.stepIndex(value, stepUp, shift ? 10 : 1);
 }
 
 /**
@@ -111,7 +114,8 @@ void SettingTransforms::onOffValueTransform(Setting& self, byte output[4]) {
 /**
  * Step transform for on/off settings
  */
-byte SettingTransforms::onOffStepTransform(byte value,
+byte SettingTransforms::onOffStepTransform(Setting& self,
+                                           byte value,
                                            bool stepUp,
                                            bool shift) {
   return stepUp ? 127 : 0;
@@ -160,7 +164,10 @@ void SettingTransforms::bpmValueTransform(Setting& self, byte output[4]) {
 /**
  * Step transfor for BPM
  */
-byte SettingTransforms::bpmStepTransform(byte value, bool stepUp, bool shift) {
+byte SettingTransforms::bpmStepTransform(Setting& self,
+                                         byte value,
+                                         bool stepUp,
+                                         bool shift) {
   int step = (shift ? 10 : 1) * (stepUp ? 1 : -1);
   int next = value + step;
   next = max(0, next);
@@ -178,8 +185,7 @@ void SettingTransforms::transposeValueTransform(Setting& self, byte output[4]) {
   output[1] = CHAR_BLANK;
   output[2] = CHAR_BLANK;
   // two octaves down, two octaves up, 0 transpose
-  byte steps = 49;
-  byte index = Stepper::getSteppedIndex(self.getValue(), steps);
+  byte index = self.getSteppedIndex();
 
   // no transform
   if (index == 24) {
@@ -211,10 +217,11 @@ void SettingTransforms::transposeValueTransform(Setting& self, byte output[4]) {
 /**
  * Step transfor for BPM
  */
-byte SettingTransforms::transposeStepTransform(byte value,
+byte SettingTransforms::transposeStepTransform(Setting& self,
+                                               byte value,
                                                bool stepUp,
                                                bool shift) {
-  return Stepper::stepIndex(value, 49, stepUp, shift ? 12 : 1);
+  return self.stepIndex(value, stepUp, shift ? 12 : 1);
 }
 
 /**
@@ -223,7 +230,7 @@ byte SettingTransforms::transposeStepTransform(byte value,
  */
 void SettingTransforms::swingValueTransform(Setting& self, byte output[4]) {
   populateName(self, output);
-  byte index = Stepper::getSteppedIndex(self.getValue(), 18);
+  byte index = self.getSteppedIndex();
   byte mapped = index + 50;
 
   output[2] = ExpressionSets::convertNumberToByte((mapped / 10) % 10);
@@ -235,14 +242,15 @@ void SettingTransforms::swingValueTransform(Setting& self, byte output[4]) {
  *
  * TODO consolidate these transformers that are basically doing the same thing
  */
-byte SettingTransforms::swingStepTransform(byte value,
+byte SettingTransforms::swingStepTransform(Setting& self,
+                                           byte value,
                                            bool stepUp,
                                            bool shift) {
   if (shift) {
     return stepUp ? 127 : 0;
   }
 
-  return Stepper::stepIndex(value, 18, stepUp);
+  return self.stepIndex(value, stepUp);
 }
 
 /**
@@ -251,7 +259,7 @@ byte SettingTransforms::swingStepTransform(byte value,
  */
 void SettingTransforms::midiChValueTransform(Setting& self, byte output[4]) {
   populateName(self, output);
-  byte index = Stepper::getSteppedIndex(self.getValue(), 17);
+  byte index = self.getSteppedIndex();
 
   // we use channel 0 to mean "no channel transform"
   if (index == 0) {
@@ -275,14 +283,15 @@ void SettingTransforms::midiChValueTransform(Setting& self, byte output[4]) {
  *
  * TODO consolidate these transformers that are basically doing the same thing
  */
-byte SettingTransforms::midiChStepTransform(byte value,
+byte SettingTransforms::midiChStepTransform(Setting& self,
+                                            byte value,
                                             bool stepUp,
                                             bool shift) {
   if (shift) {
     return stepUp ? 127 : 0;
   }
 
-  return Stepper::stepIndex(value, 17, stepUp);
+  return self.stepIndex(value, stepUp);
 }
 
 /**
@@ -292,7 +301,7 @@ byte SettingTransforms::midiChStepTransform(byte value,
 void SettingTransforms::gateLengthValueTransform(Setting& self,
                                                  byte output[4]) {
   populateName(self, output);
-  byte index = Stepper::getSteppedIndex(self.getValue(), 4);
+  byte index = self.getSteppedIndex();
 
   if (index == 3) {
     // full
@@ -318,14 +327,15 @@ void SettingTransforms::gateLengthValueTransform(Setting& self,
  *
  * TODO consolidate these transformers that are basically doing the same thing
  */
-byte SettingTransforms::gateLengthStepTransform(byte value,
+byte SettingTransforms::gateLengthStepTransform(Setting& self,
+                                                byte value,
                                                 bool stepUp,
                                                 bool shift) {
   if (shift) {
     return stepUp ? 127 : 0;
   }
 
-  return Stepper::stepIndex(value, 4, stepUp);
+  return self.stepIndex(value, stepUp);
 }
 
 /**
@@ -335,7 +345,7 @@ byte SettingTransforms::gateLengthStepTransform(byte value,
 void SettingTransforms::noteLengthValueTransform(Setting& self,
                                                  byte output[4]) {
   populateName(self, output);
-  byte index = Stepper::getSteppedIndex(self.getValue(), 7);
+  byte index = self.getSteppedIndex();
 
   if (index == 6) {
     // double whole
@@ -373,14 +383,15 @@ void SettingTransforms::noteLengthValueTransform(Setting& self,
  *
  * TODO consolidate these transformers that are basically doing the same thing
  */
-byte SettingTransforms::noteLengthStepTransform(byte value,
+byte SettingTransforms::noteLengthStepTransform(Setting& self,
+                                                byte value,
                                                 bool stepUp,
                                                 bool shift) {
   if (shift) {
     return stepUp ? 127 : 0;
   }
 
-  return Stepper::stepIndex(value, 7, stepUp);
+  return self.stepIndex(value, stepUp);
 }
 
 /**
@@ -390,7 +401,7 @@ byte SettingTransforms::noteLengthStepTransform(byte value,
 void SettingTransforms::sequenceLengthValueTransform(Setting& self,
                                                      byte output[4]) {
   populateName(self, output);
-  byte index = Stepper::getSteppedIndex(self.getValue(), 9);
+  byte index = self.getSteppedIndex();
 
   // Random
   if (index == 0) {
@@ -408,14 +419,15 @@ void SettingTransforms::sequenceLengthValueTransform(Setting& self,
  *
  * TODO consolidate these transformers that are basically doing the same thing
  */
-byte SettingTransforms::sequenceLengthStepTransform(byte value,
+byte SettingTransforms::sequenceLengthStepTransform(Setting& self,
+                                                    byte value,
                                                     bool stepUp,
                                                     bool shift) {
   if (shift) {
     return stepUp ? 127 : 0;
   }
 
-  return Stepper::stepIndex(value, 9, stepUp);
+  return self.stepIndex(value, stepUp);
 }
 
 /**
@@ -425,7 +437,7 @@ byte SettingTransforms::sequenceLengthStepTransform(byte value,
 void SettingTransforms::collapseNotesValueTransform(Setting& self,
                                                     byte output[4]) {
   populateName(self, output);
-  byte index = Stepper::getSteppedIndex(self.getValue(), 3);
+  byte index = self.getSteppedIndex();
 
   // No collapse
   if (index == 0) {
@@ -438,9 +450,29 @@ void SettingTransforms::collapseNotesValueTransform(Setting& self,
     output[3] = CHAR_T;
   }
   // Play notes at the end
-  else {
+  else if (index == 2) {
     output[2] = CHAR_E;
     output[3] = CHAR_N;
+  }
+  // Play notes in center
+  else if (index == 3) {
+    output[2] = CHAR_C;
+    output[3] = CHAR_R;
+  }
+  // Play notes at beginning/end
+  else if (index == 4) {
+    output[2] = CHAR_C;
+    output[3] = CHAR_N;
+  }
+  // Splits in half, notes at start of each half
+  else if (index == 5) {
+    output[2] = CHAR_S;
+    output[3] = CHAR_S;
+  }
+  // Splits in half, notes at end of each half
+  else if (index == 6) {
+    output[2] = CHAR_S;
+    output[3] = CHAR_E;
   }
 }
 
@@ -449,12 +481,13 @@ void SettingTransforms::collapseNotesValueTransform(Setting& self,
  *
  * TODO consolidate these transformers that are basically doing the same thing
  */
-byte SettingTransforms::collapseNotesStepTransform(byte value,
+byte SettingTransforms::collapseNotesStepTransform(Setting& self,
+                                                   byte value,
                                                    bool stepUp,
                                                    bool shift) {
   if (shift) {
     return stepUp ? 127 : 0;
   }
 
-  return Stepper::stepIndex(value, 3, stepUp);
+  return self.stepIndex(value, stepUp);
 }

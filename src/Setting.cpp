@@ -1,18 +1,21 @@
 #include <Setting.h>
 
-Setting::Setting(byte _defaultValue,
-                 byte _zeroValue,
-                 byte _midiCC,
-                 byte firstDisplayChar,
-                 byte secondDisplayChar,
-                 void (&_valueTransform)(Setting& self, byte output[4]),
-                 byte (&_stepTransform)(byte value, bool stepUp, bool shift),
-                 byte (&_randomizeValue)(),
-                 bool _usesColon)
+Setting::Setting(
+    byte _defaultValue,
+    byte _zeroValue,
+    byte _midiCC,
+    byte firstDisplayChar,
+    byte secondDisplayChar,
+    byte _numOfOptions,
+    void (&_valueTransform)(Setting& self, byte output[4]),
+    byte (&_stepTransform)(Setting& self, byte value, bool stepUp, bool shift),
+    byte (&_randomizeValue)(),
+    bool _usesColon)
     : value(_defaultValue),
       zeroValue(_zeroValue),
       defaultValue(_defaultValue),
       midiCC(_midiCC),
+      numOfOptions(_numOfOptions),
       valueTransform(_valueTransform),
       stepTransform(_stepTransform),
       randomizeValue(_randomizeValue),
@@ -56,6 +59,17 @@ void Setting::setValue(byte nextValue) {
   value = nextValue;
 }
 
+byte Setting::stepIndex(byte value, bool up, byte stride = 1) {
+  return Stepper::stepIndex(value, numOfOptions, up, stride);
+}
+
+byte Setting::getSteppedIndex() {
+  // 0 = no stepping
+  if (numOfOptions == 0)
+    return value;
+  return Stepper::getSteppedIndex(value, numOfOptions);
+}
+
 /**
  * Update the setting using buttons (rather than MIDI CC).
  * Since not all settings are linear, we transform them
@@ -68,7 +82,7 @@ void Setting::step(bool stepUp, bool shift) {
   if ((stepUp && value >= 127) || (!stepUp && value <= 0))
     return;
 
-  setValue(stepTransform(value, stepUp, shift));
+  setValue(stepTransform(*this, value, stepUp, shift));
 };
 
 void Setting::randomize() {

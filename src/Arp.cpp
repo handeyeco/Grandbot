@@ -77,8 +77,7 @@ byte Arp::ccRoll() {
  * @returns {String} enum representing base gate
  */
 String Arp::getBaseStepGate() {
-  byte value = settings->baseGateLength->getValue();
-  byte index = Stepper::getSteppedIndex(value, 4);
+  byte index = settings->baseGateLength->getSteppedIndex();
 
   if (index == 0) {
     // random
@@ -100,8 +99,7 @@ String Arp::getBaseStepGate() {
  * @returns {byte} number of 16ths for note
  */
 byte Arp::getBaseStepLength() {
-  byte value = settings->baseNoteLength->getValue();
-  byte index = Stepper::getSteppedIndex(value, 7);
+  byte index = settings->baseNoteLength->getSteppedIndex();
 
   if (index == 0) {
     // random; only choose between
@@ -118,8 +116,7 @@ byte Arp::getBaseStepLength() {
  * @returns {byte} number between 1-8
  */
 byte Arp::getSequenceLength() {
-  byte ccSequenceLength = settings->sequenceLength->getValue();
-  byte index = Stepper::getSteppedIndex(ccSequenceLength, 9);
+  byte index = settings->sequenceLength->getSteppedIndex();
 
   // Random
   if (index == 0) {
@@ -312,6 +309,25 @@ uint16_t Arp::getStepGate(String baseGate, uint16_t stepLength) {
 }
 
 /**
+ * Collapse notes so that rests are grouped together.
+ *
+ * @param {byte} start - the index of the sequence to start sorting (inclusive)
+ * @param {byte} end - the index of the sequence to end sorting (exclusive)
+ * @param {bool} restsAtStart - whether rests should be at the start or end
+ *
+ */
+void Arp::collapseNotes(byte start, byte end, bool restsAtStart) {
+  byte count = start;
+  for (byte i = start; i < end; i++) {
+    if ((!restsAtStart && sequenceIntervals[i] != 255) ||
+        (restsAtStart && sequenceIntervals[i] == 255)) {
+      swapNotes(i, count);
+      count++;
+    }
+  }
+}
+
+/**
  * Generate a new sequence
  */
 void Arp::generateSequence() {
@@ -382,34 +398,34 @@ void Arp::generateSequence() {
     }
   }
 
-  byte collapseIndex =
-      Stepper::getSteppedIndex(settings->collapseNotes->getValue(), 3);
-  // move rests to the end
+  byte collapseIndex = settings->collapseNotes->getSteppedIndex();
+  // move notes to start
   if (collapseIndex == 1) {
-    byte count = 0;
-    for (byte i = 0; i < stepIndex; i++) {
-      if (sequenceIntervals[i] != 255) {
-        swapNotes(i, count);
-        count++;
-      }
-    }
+    collapseNotes(0, stepIndex, false);
   }
-  // move rests to the beginning
+  // move notes to end
   else if (collapseIndex == 2) {
-    int end = -1;
-    for (int i = stepIndex - 1; i >= 0; i--) {
-      if (sequenceIntervals[i] == 255) {
-        end = i;
-        break;
-      }
-    }
-
-    for (int i = end - 1; i >= 0; i--) {
-      if (sequenceIntervals[i] != 255) {
-        swapNotes(i, end);
-        end--;
-      }
-    }
+    collapseNotes(0, stepIndex, true);
+  }
+  // center rests
+  else if (collapseIndex == 3) {
+    collapseNotes(0, stepIndex / 2, false);
+    collapseNotes(stepIndex / 2, stepIndex, true);
+  }
+  // center notes
+  else if (collapseIndex == 4) {
+    collapseNotes(0, stepIndex / 2, true);
+    collapseNotes(stepIndex / 2, stepIndex, false);
+  }
+  // split start
+  else if (collapseIndex == 5) {
+    collapseNotes(0, stepIndex / 2, false);
+    collapseNotes(stepIndex / 2, stepIndex, false);
+  }
+  // split end
+  else if (collapseIndex == 6) {
+    collapseNotes(0, stepIndex / 2, true);
+    collapseNotes(stepIndex / 2, stepIndex, true);
   }
 
   // make sure the last step doesn't go past total length
@@ -425,6 +441,7 @@ void Arp::generateSequence() {
   totalSequenceLength = newTotalSequenceLength;
   stopCurrNote();
   stopLegatoNote();
+  // debugSequence();
 }
 
 /**
@@ -464,7 +481,7 @@ byte Arp::mapVelocity(byte stepIndex) {
 void Arp::sendNoteOn(byte channel, byte note, byte velocity) {
   // if midiChannelOut is 0, we use whatever channel was provided,
   // otherwise use the channel set in midiChannelOut
-  byte outCh = ccToMidiCh(settings->midiChannelOut->getValue());
+  byte outCh = settings->midiChannelOut->getSteppedIndex();
   byte movedChannel = outCh == 0 ? channel : outCh;
   MIDI.sendNoteOn(note, velocity, movedChannel);
 
@@ -490,14 +507,10 @@ void Arp::sendNoteOff(byte channel, byte note, byte velocity) {
 
   // if midiChannelOut is 0, we use whatever channel was provided,
   // otherwise use the channel set in midiChannelOut
-  byte outCh = ccToMidiCh(settings->midiChannelOut->getValue());
+  byte outCh = settings->midiChannelOut->getSteppedIndex();
   byte movedChannel = outCh == 0 ? channel : outCh;
   MIDI.sendNoteOff(note, velocity, movedChannel);
   noTone(BUZZER_PIN);
-}
-
-byte Arp::ccToMidiCh(byte value) {
-  return Stepper::getSteppedIndex(value, 17);
 }
 
 int Arp::insert(byte arr[], int arrLen, byte value, int capacity) {
@@ -682,7 +695,7 @@ String Arp::convertCCToString(byte value) {
 bool Arp::correctInChannel(byte channel) {
   // 0 is the magic number to represent "all channels are okay"
   // otherwise we only care about the channel set in midiChannelIn
-  byte inCh = ccToMidiCh(settings->midiChannelIn->getValue());
+  byte inCh = settings->midiChannelIn->getSteppedIndex();
   if (inCh == 0 || channel == inCh) {
     return true;
   }
@@ -866,8 +879,8 @@ void Arp::handleStartStep(int stepIndex) {
     nextNote = nextNote + sequenceOffset[stepIndex];
   }
 
-  byte transposeValue = settings->transpose->getValue();
-  int transposeOffset = Stepper::getSteppedIndex(transposeValue, 49) - 24;
+  byte transposeIndex = settings->transpose->getSteppedIndex();
+  int transposeOffset = transposeIndex - 24;
   if (transposeOffset != 0) {
     // try to apply transpose,
     if (noteInBounds(nextNote + transposeOffset)) {
@@ -1195,4 +1208,30 @@ bool Arp::update() {
   }
 
   return midiMode || (useInternalClock && running);
+}
+
+/**
+ * Print data about the full sequence. It's very slow
+ * it should be used sparingly.
+ */
+void Arp::debugSequence() {
+  Serial.println(">>");
+  Serial.print("totalSequenceSteps: ");
+  Serial.println(totalSequenceSteps);
+  Serial.print("totalSequenceLength: ");
+  Serial.println(totalSequenceLength);
+  for (byte i = 0; i < totalSequenceSteps; i++) {
+    Serial.print("step: ");
+    Serial.print(i);
+    Serial.print(" interval: ");
+    Serial.print(sequenceIntervals[i]);
+    Serial.print(" offset: ");
+    Serial.print(sequenceOffset[i]);
+    Serial.print(" start: ");
+    Serial.print(sequenceStartPositions[i]);
+    Serial.print(" gate: ");
+    Serial.print(sequenceStepGate[i]);
+    Serial.println();
+  }
+  Serial.println("<<");
 }
