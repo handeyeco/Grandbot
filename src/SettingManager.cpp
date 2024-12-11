@@ -26,8 +26,8 @@ SettingManager::SettingManager(Expressions* _expr, ButtonManager* _buttons)
                                SettingTransforms::noRandomizeTransformMin);
 
   // Collapse all notes/rests to one side
-  // options are: none, start (play notes at the beginning), end (play notes at
-  // the end)
+  // options are: none, start, end, center rests, center notes, split start,
+  // split end
   collapseNotes = new Setting(0, 0, 19, CHAR_C, CHAR_O, 7,
                               SettingTransforms::collapseNotesValueTransform,
                               SettingTransforms::collapseNotesStepTransform,
