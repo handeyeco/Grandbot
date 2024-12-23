@@ -138,7 +138,7 @@ SettingManager::SettingManager(Expressions* _expr, ButtonManager* _buttons)
                       SettingTransforms::onOffStepTransform,
                       SettingTransforms::noRandomizeTransformMin);
   // If active, hold same notes across steps
-  combineNotes = new Setting(0, 0, 90, CHAR_C, CHAR_N, 2,
+  combineNotes = new Setting(0, 0, 109, CHAR_C, CHAR_N, 2,
                       SettingTransforms::onOffValueTransform,
                       SettingTransforms::onOffStepTransform,
                       SettingTransforms::noRandomizeTransformMin);

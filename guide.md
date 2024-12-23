@@ -88,7 +88,7 @@ For a technical overview of the Arp, check out [this blog post](https://handeyec
 | Clock: external or internal     | 112     | CL      |
 | BPM for internal clock (73-200) | 113     | b       |
 | Latch                           | 90      | LA      |
-| Combine same note               | ??      | Cn      |
+| Combine same note               | 109      | Cn      |
 | Note sort                       | 114     | So      |
 | Velocity high                   | 107     | vH      |
 | Velocity low                    | 108     | vL      |
@@ -533,7 +533,7 @@ When latch is enabled, current notes are held when a rest is encountered.
 
 - Submenu: Play
 - Display: `Cn`
-- MIDI CC: ??
+- MIDI CC: 109
 - Options: Off - On
 - Default: Off
 
