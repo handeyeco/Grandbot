@@ -878,6 +878,8 @@ byte Arp::getStepNoteTransformed(int stepIndex) {
       return 255;
     }
   }
+
+  return nextNote;
 }
 
 /**
@@ -919,10 +921,13 @@ void Arp::handleStartStep(int stepIndex) {
     return;
   }
 
+  if (!settings->combineNotes->getValueAsBool() || (nextNote != currNote)) {
+    byte velocity = mapVelocity(stepIndex);
+    sendNoteOn(1, nextNote, velocity);
+  }
+
   currNote = nextNote;
   currStepIndex = stepIndex;
-  byte velocity = mapVelocity(stepIndex);
-  sendNoteOn(1, currNote, velocity);
 }
 
 /**
