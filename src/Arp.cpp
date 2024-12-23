@@ -824,7 +824,8 @@ void Arp::handleStopStep() {
 
   // combine same notes
   if (settings->combineNotes->getValueAsBool()) {
-    byte nextNote = getStepNoteTransformed(currStepIndex + 1 % totalSequenceSteps);
+    uint16_t nextIndex = (currStepIndex + 1) % totalSequenceSteps;
+    byte nextNote = getStepNoteTransformed(nextIndex);
     if (currNote == nextNote) {
       return;
     }
