@@ -13,7 +13,7 @@
 #define SEQUENCE_SETTING_COUNT 3
 #define NOTE_SETTING_COUNT 7
 #define GATE_SETTING_COUNT 10
-#define PLAY_SETTING_COUNT 8
+#define PLAY_SETTING_COUNT 9
 #define GENERAL_SETTING_COUNT 3
 
 // used to map MIDI CC 0-127 to 73-200 BPM
@@ -83,6 +83,7 @@ struct SettingManager {
   Setting* sort;
   Setting* transpose;
   Setting* latch;
+  Setting* combineNotes;
   Setting* midiChannelIn;
   Setting* midiChannelOut;
 

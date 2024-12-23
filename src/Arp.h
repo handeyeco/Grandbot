@@ -178,6 +178,7 @@ class Arp {
   uint16_t getStepLength(uint16_t baseLength);
   String getBaseStepGate();
   uint16_t getStepGate(String baseGate, uint16_t stepLength);
+  byte getStepNoteTransformed(int stepIndex);
   void collapseNotes(byte start, byte end, bool restsAtStart);
   void generateSequence();
   void slipSequence();
