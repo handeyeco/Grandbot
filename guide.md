@@ -88,7 +88,7 @@ For a technical overview of the Arp, check out [this blog post](https://handeyec
 | Clock: external or internal     | 112     | CL      |
 | BPM for internal clock (73-200) | 113     | b       |
 | Latch                           | 90      | LA      |
-| Combine same note               | 109      | Cn      |
+| Combine same note               | 109     | Cn      |
 | Note sort                       | 114     | So      |
 | Velocity high                   | 107     | vH      |
 | Velocity low                    | 108     | vL      |
@@ -537,7 +537,7 @@ When latch is enabled, current notes are held when a rest is encountered.
 - Options: Off - On
 - Default: Off
 
-When combine notes is on, notes are latched across steps when the steps are the same note.
+During sequence playback, combine steps when they're for the same note (ie don't repeat notes).
 
 ---
 
