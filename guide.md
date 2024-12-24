@@ -30,6 +30,7 @@
   - [CL: Clock source](#cl-clock-source)
   - [b: BPM](#b-bpm)
   - [LA: Latch](#la-latch)
+  - [Cn: Combine same note](#cn-combine-same-note)
   - [so: Note sort](#so-note-sort)
   - [vH: Velocity high](#vh-velocity-high)
   - [vL: Velocity low](#vl-velocity-low)
