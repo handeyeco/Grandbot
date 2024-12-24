@@ -822,6 +822,15 @@ void Arp::handleStopStep() {
     return;
   }
 
+  // combine same notes
+  if (settings->combineNotes->getValueAsBool()) {
+    uint16_t nextIndex = (currStepIndex + 1) % totalSequenceSteps;
+    byte nextNote = getStepNoteTransformed(nextIndex);
+    if (currNote == nextNote) {
+      return;
+    }
+  }
+
   // hold through legato notes
   if (sequenceStepGate[currStepIndex] == 0) {
     return;
@@ -830,6 +839,48 @@ void Arp::handleStopStep() {
   stopLegatoNote();
   stopCurrNote();
   currStepIndex = -1;
+}
+
+/**
+ * For a step, get the actual step note - including:
+ * - applying stepInternal to activeNotes
+ * - applying transposition
+ * - clamping note range
+ *
+ * @param {int} stepIndex - index of step in sequence
+ * @returns {byte} MIDI note of transformed note
+ */
+byte Arp::getStepNoteTransformed(int stepIndex) {
+  byte stepInterval = sequenceIntervals[stepIndex];
+
+  // This is where the magic happens!
+  // `sequenceIntervals` keeps a sequence of array indexes that are set randomly
+  //  and `activeNotes` keeps a set of notes that have been played by the user.
+  // The index wraps around the total number of active notes
+  // to determine which note to play.
+  byte newNoteIndex = stepInterval % numActiveNotes;
+  byte nextNote = activeNotes[newNoteIndex];
+
+  // check to make sure we can safely apply note/octave offset
+  if (sequenceOffset[stepIndex] &&
+      noteInBounds(nextNote + sequenceOffset[stepIndex])) {
+    nextNote = nextNote + sequenceOffset[stepIndex];
+  }
+
+  byte transposeIndex = settings->transpose->getSteppedIndex();
+  int transposeOffset = transposeIndex - 24;
+  if (transposeOffset != 0) {
+    // try to apply transpose,
+    if (noteInBounds(nextNote + transposeOffset)) {
+      nextNote = nextNote + transposeOffset;
+    }
+    // but if it's out of range treat it as a rest
+    else {
+      return 255;
+    }
+  }
+
+  return nextNote;
 }
 
 /**
@@ -865,38 +916,19 @@ void Arp::handleStartStep(int stepIndex) {
     return;
   }
 
-  // This is where the magic happens!
-  // `sequenceIntervals` keeps a sequence of array indexes that are set randomly
-  //  and `activeNotes` keeps a set of notes that have been played by the user.
-  // The index wraps around the total number of active notes
-  // to determine which note to play.
-  byte newNoteIndex = stepInterval % numActiveNotes;
-  byte nextNote = activeNotes[newNoteIndex];
-
-  // check to make sure we can safely apply note/octave offset
-  if (sequenceOffset[stepIndex] &&
-      noteInBounds(nextNote + sequenceOffset[stepIndex])) {
-    nextNote = nextNote + sequenceOffset[stepIndex];
+  byte nextNote = getStepNoteTransformed(stepIndex);
+  // applying the transform put us out of range, escape
+  if (nextNote == 255) {
+    return;
   }
 
-  byte transposeIndex = settings->transpose->getSteppedIndex();
-  int transposeOffset = transposeIndex - 24;
-  if (transposeOffset != 0) {
-    // try to apply transpose,
-    if (noteInBounds(nextNote + transposeOffset)) {
-      nextNote = nextNote + transposeOffset;
-    }
-    // but if it's out of range treat it as a rest
-    else {
-      stopCurrNote();
-      return;
-    }
+  if (!settings->combineNotes->getValueAsBool() || (nextNote != currNote)) {
+    byte velocity = mapVelocity(stepIndex);
+    sendNoteOn(1, nextNote, velocity);
   }
 
   currNote = nextNote;
   currStepIndex = stepIndex;
-  byte velocity = mapVelocity(stepIndex);
-  sendNoteOn(1, currNote, velocity);
 }
 
 /**

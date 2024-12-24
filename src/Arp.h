@@ -134,7 +134,7 @@ class Arp {
   byte sequenceStepVelocity[MAX_STEPS_IN_SEQ] = {0, 32, 64, 32};
 
   // Total sequence length in discrete steps
-  byte totalSequenceSteps = 4;
+  uint16_t totalSequenceSteps = 4;
   // Total sequence length in pulses
   uint16_t totalSequenceLength = 4 * PULSES_PER_QUARTER_NOTE;
 
@@ -178,6 +178,7 @@ class Arp {
   uint16_t getStepLength(uint16_t baseLength);
   String getBaseStepGate();
   uint16_t getStepGate(String baseGate, uint16_t stepLength);
+  byte getStepNoteTransformed(int stepIndex);
   void collapseNotes(byte start, byte end, bool restsAtStart);
   void generateSequence();
   void slipSequence();

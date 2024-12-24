@@ -137,6 +137,11 @@ SettingManager::SettingManager(Expressions* _expr, ButtonManager* _buttons)
                       SettingTransforms::onOffValueTransform,
                       SettingTransforms::onOffStepTransform,
                       SettingTransforms::noRandomizeTransformMin);
+  // If active, hold same notes across steps
+  combineNotes = new Setting(0, 0, 109, CHAR_C, CHAR_N, 2,
+                      SettingTransforms::onOffValueTransform,
+                      SettingTransforms::onOffStepTransform,
+                      SettingTransforms::noRandomizeTransformMin);
 
   // Whether to use an external (Et) or internal (In) clock
   // TODO: should the default be internal?
@@ -216,9 +221,10 @@ SettingManager::SettingManager(Expressions* _expr, ButtonManager* _buttons)
   playSettings[2] = clock;
   playSettings[3] = bpm;
   playSettings[4] = latch;
-  playSettings[5] = sort;
-  playSettings[6] = velocityHigh;
-  playSettings[7] = velocityLow;
+  playSettings[5] = combineNotes;
+  playSettings[6] = sort;
+  playSettings[7] = velocityHigh;
+  playSettings[8] = velocityLow;
 
   generalSettings[0] = midiChannelIn;
   generalSettings[1] = midiChannelOut;
