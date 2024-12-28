@@ -1161,7 +1161,7 @@ bool Arp::update() {
   }
 
   // calculate internal clock pulse if internal clock enabled
-  if (useInternalClock && running) {
+  if (useInternalClock) {
     unsigned long nowMicros = micros();
 
     // TODO this could be optimized by only calculating values on BPM change
@@ -1171,8 +1171,15 @@ bool Arp::update() {
     if (nowMicros - lastInternalClockPulseTime >
         timeBetweenInternalClockPulses) {
       lastInternalClockPulseTime = nowMicros;
-      handleClock(now);
+
+      // always send MIDI clock when using internal clock
+      // so other devices can sync even when not playing
       MIDI.sendClock();
+
+      // only handle the clock pulses when playing though
+      if (running) {
+        handleClock(now);
+      }
     }
   }
 
@@ -1180,11 +1187,17 @@ bool Arp::update() {
     readMidi = true;
     switch (MIDI.getType()) {
       case midi::Clock:
-        if (running && !useInternalClock) {
-          handleClock(now);
+        if (!useInternalClock) {
+          // forward MIDI clock when not using
+          // internal clock
           MIDI.sendClock();
-        } else {
-          readMidi = false;
+
+          // only use clock messages when running
+          if (running) {
+            handleClock(now);
+          } else {
+            readMidi = false;
+          }
         }
         break;
       case midi::NoteOn:
