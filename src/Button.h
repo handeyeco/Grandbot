@@ -3,7 +3,7 @@
 #ifndef BUTTON_INCL_GUARD
 #define BUTTON_INCL_GUARD
 
-#define BUTTON_MASK 0b11000111
+#define DEBOUNCE_TIMEOUT 5
 
 /**
  * State manager for an individual button
@@ -11,13 +11,13 @@
 struct Button {
  private:
   int pin;
+  bool state;
+  unsigned long debounceStart;
 
  public:
   Button(int pin);
   void read();
 
-  // used to debounce
-  uint8_t history;
   // did it just get pressed
   bool pressed;
   // did it just get released
