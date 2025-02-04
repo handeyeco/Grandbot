@@ -2,33 +2,37 @@
 
 Button::Button(int _pin) : pin(_pin) {
   pinMode(_pin, INPUT_PULLUP);
+  state = digitalRead(pin);
+  debounceStart = millis();
 }
 
 /**
  * Read and update button state
  */
 void Button::read() {
+  unsigned long now = millis();
   bool read = digitalRead(pin);
-
-  // Debounce method tracks state over several reads
-  // https://hackaday.com/2015/12/10/embed-with-elliot-debounce-your-noisy-buttons-part-ii/
-  history = history << 1;
-  history |= (read == false);
 
   pressed = false;
   released = false;
 
-  // handle press
-  if ((history & BUTTON_MASK) == 0b00000111) {
-    pressed = true;
-    history = 0b11111111;
-  }
-  // handle release
-  else if ((history & BUTTON_MASK) == 0b11000000) {
-    released = ignoreRelease ? false : true;
-    ignoreRelease = false;
-    history = 0b00000000;
-  }
+  if (read != state) {
+    if (now - debounceStart > DEBOUNCE_TIMEOUT) {
+      state = read;
 
-  held = history == 0b11111111;
+      // pressed
+      if (state == LOW) {
+        pressed = true;
+        held = true;
+      }
+      //released
+      else {
+        released = ignoreRelease ? false : true;
+        ignoreRelease = false;
+        held = false;
+      }
+    }
+  } else {
+    debounceStart = now;
+  }
 }
